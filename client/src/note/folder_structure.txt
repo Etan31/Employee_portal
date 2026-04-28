@@ -1,0 +1,131 @@
+Portal/
+│
+├── client/                          # React frontend (Vite)
+│   ├── public/
+│   └── src/
+│       ├── assets/                  # Images, icons, fonts
+│       ├── components/              # Reusable UI components
+│       │   ├── common/              # Button, Modal, Table, Badge, Toggle…
+│       │   ├── layout/              # Sidebar, Navbar, AppShell
+│       │   └── forms/               # FormInput, DatePicker, FileUpload…
+│       │
+│       ├── features/                # One folder per app module (mirrors your DB)
+│       │   ├── auth/
+│       │   │   ├── components/
+│       │   │   ├── hooks/
+│       │   │   └── authSlice.js
+│       │   ├── profile/
+│       │   │   ├── components/
+│       │   │   │   ├── ProfileSummary.jsx
+│       │   │   │   ├── PersonalDetails.jsx
+│       │   │   │   ├── EmploymentDetails.jsx
+│       │   │   │   └── OrgChart.jsx
+│       │   │   ├── hooks/
+│       │   │   │   └── useProfile.js
+│       │   │   └── profileSlice.js
+│       │   ├── time-management/
+│       │   │   ├── components/
+│       │   │   │   ├── ClockWidget.jsx
+│       │   │   │   ├── AttendanceChart.jsx
+│       │   │   │   ├── LeaveBalances.jsx
+│       │   │   │   ├── LeaveRequestForm.jsx
+│       │   │   │   └── UpcomingHolidays.jsx
+│       │   │   ├── hooks/
+│       │   │   └── timeSlice.js
+│       │   ├── preferences/
+│       │   │   ├── components/
+│       │   │   │   ├── NotificationPreferences.jsx
+│       │   │   │   └── DateTimePreferences.jsx
+│       │   │   └── hooks/
+│       │   ├── employees/
+│       │   ├── recruitment/
+│       │   ├── performance/
+│       │   ├── reimbursements/
+│       │   ├── vibe/
+│       │   ├── helpdesk/
+│       │   └── dashboard/
+│       │
+│       ├── hooks/                   # Global shared hooks
+│       │   ├── useSupabase.js
+│       │   ├── useAuth.js
+│       │   └── useDebounce.js
+│       │
+│       ├── lib/                     # Third-party client configs
+│       │   └── supabaseClient.js    # createClient() lives here
+│       │
+│       ├── services/                # All Supabase query functions
+│       │   ├── employeeService.js
+│       │   ├── attendanceService.js
+│       │   ├── leaveService.js
+│       │   └── preferencesService.js
+│       │
+│       ├── store/                   # Redux Toolkit store
+│       │   ├── index.js
+│       │   └── rootReducer.js
+│       │
+│       ├── pages/                   # Route-level page components
+│       │   ├── Dashboard.jsx
+│       │   ├── Profile.jsx
+│       │   ├── TimeManagement.jsx
+│       │   ├── Preferences.jsx
+│       │   └── NotFound.jsx
+│       │
+│       ├── routes/                  # React Router config
+│       │   ├── AppRouter.jsx
+│       │   └── ProtectedRoute.jsx
+│       │
+│       ├── utils/                   # Pure helper functions
+│       │   ├── formatDate.js
+│       │   ├── formatTime.js
+│       │   └── constants.js
+│       │
+│       ├── styles/                  # Global CSS / Tailwind config
+│       │   └── globals.css
+│       │
+│       ├── App.jsx
+│       └── main.jsx
+│
+├── server/                          # Express backend
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── supabase.js          # Supabase admin client (service role key)
+│   │   │   └── env.js               # Validated env vars
+│   │   │
+│   │   ├── middleware/
+│   │   │   ├── auth.js              # Verify Supabase JWT
+│   │   │   ├── errorHandler.js
+│   │   │   └── rateLimiter.js
+│   │   │
+│   │   ├── modules/                 # One folder per domain
+│   │   │   ├── employees/
+│   │   │   │   ├── employee.routes.js
+│   │   │   │   ├── employee.controller.js
+│   │   │   │   └── employee.service.js
+│   │   │   ├── attendance/
+│   │   │   │   ├── attendance.routes.js
+│   │   │   │   ├── attendance.controller.js
+│   │   │   │   └── attendance.service.js
+│   │   │   ├── leave/
+│   │   │   ├── preferences/
+│   │   │   ├── notifications/
+│   │   │   └── auth/
+│   │   │
+│   │   ├── utils/
+│   │   │   └── apiResponse.js       # Standardized { data, error, status }
+│   │   │
+│   │   └── app.js                   # Express app setup
+│   │
+│   ├── index.js                     # Server entry point
+│   └── package.json
+│
+├── supabase/                        # Supabase local config (optional CLI)
+│   ├── migrations/                  # All your SQL from our sessions
+│   │   ├── 001_initial_schema.sql
+│   │   ├── 002_time_management.sql
+│   │   ├── 003_preferences.sql
+│   │   └── 004_datetime_preferences.sql
+│   └── seed.sql                     # Lookup table seeds
+│
+├── .env.example
+├── .gitignore
+└── package.json                     # Root (if using workspaces)

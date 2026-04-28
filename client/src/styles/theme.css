@@ -1,0 +1,66 @@
+/* Nexus theme tokens — Professional Light Blue palette.
+ * Single source of truth for colors, radii, and shadows.
+ */
+
+:root {
+  /* Surfaces & background */
+  --nx-bg: #f3f6fb;
+  --nx-surface: #ffffff;
+  --nx-surface-2: #f8fafc;
+  --nx-border: #e3e9f2;
+  --nx-border-strong: #d3dde9;
+
+  /* Text */
+  --nx-text: #1e293b;
+  --nx-text-soft: #475569;
+  --nx-text-muted: #94a3b8;
+
+  /* Brand blues */
+  --nx-primary: #2563eb;
+  --nx-primary-600: #1d4ed8;
+  --nx-primary-700: #1e40af;
+  --nx-primary-50: #eff6ff;
+  --nx-primary-100: #dbeafe;
+
+  /* Sky highlight */
+  --nx-accent: #38bdf8;
+  --nx-accent-soft: #e0f2fe;
+
+  /* Sidebar — deep navy that complements the light blue palette
+   * (replaces the maroon/wine sidebar from the reference image) */
+  --nx-sidebar: #15233b;
+  --nx-sidebar-2: #1c2d4a;
+  --nx-sidebar-active: #2a3f63;
+  --nx-sidebar-icon: #9fb3d1;
+  --nx-sidebar-icon-active: #ffffff;
+  --nx-sidebar-rail-active: #60a5fa;
+
+  /* Pastel tile colors */
+  --nx-tile-1: #dbeafe;
+  --nx-tile-2: #e0e7ff;
+  --nx-tile-3: #cffafe;
+  --nx-tile-4: #ede9fe;
+  --nx-tile-5: #fef3c7;
+  --nx-tile-6: #fee2e2;
+
+  /* Status */
+  --nx-success: #16a34a;
+  --nx-success-soft: #dcfce7;
+  --nx-warning: #f59e0b;
+  --nx-danger: #ef4444;
+
+  /* Elevation */
+  --nx-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --nx-shadow:    0 4px 14px rgba(15, 23, 42, 0.06);
+  --nx-shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.08);
+
+  /* Radius */
+  --nx-radius-sm: 8px;
+  --nx-radius:    12px;
+  --nx-radius-lg: 18px;
+  --nx-radius-xl: 22px;
+
+  /* Type */
+  --nx-font: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue",
+             Arial, sans-serif;
+}
