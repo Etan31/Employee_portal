@@ -1,22 +1,17 @@
-/* Global resets and base typography. */
+@import './theme.css';
 
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
-}
-
-html,
-body,
-#root {
   margin: 0;
   padding: 0;
-  height: 100%;
-  background: var(--nx-bg);
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--nx-bg);
   color: var(--nx-text);
-  font-family: var(--nx-font);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -26,16 +21,33 @@ a {
 
 button {
   font-family: inherit;
+  border: none;
+  background: none;
   cursor: pointer;
 }
 
-img,
-svg {
-  display: block;
-  max-width: 100%;
+input {
+  font-family: inherit;
 }
 
-input,
-button {
-  color: inherit;
+/* Base Primitive */
+.nx-card {
+  background-color: var(--nx-surface);
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius-lg);
+  box-shadow: var(--nx-shadow-sm);
 }
+
+/* Typography utilities */
+.nx-h1 { font-size: 1.5rem; font-weight: 600; color: var(--nx-text); }
+.nx-h2 { font-size: 1.25rem; font-weight: 600; color: var(--nx-text); }
+.nx-h3 { font-size: 1.125rem; font-weight: 500; color: var(--nx-text); }
+.nx-p { font-size: 0.875rem; color: var(--nx-text-soft); }
+.nx-small { font-size: 0.75rem; color: var(--nx-text-muted); }
+
+/* Layout utilities */
+.nx-flex { display: flex; }
+.nx-items-center { align-items: center; }
+.nx-justify-between { justify-content: space-between; }
+.nx-justify-center { justify-content: center; }
+.nx-grid { display: grid; }
