@@ -1,6 +1,6 @@
 import React from 'react';
 import './PageStub.css';
-import { Icon } from '../../../../../v1/frontend/src/icons/Icon.jsx';
+import { Icon } from '../../components/Icon/Icon.jsx';
 
 export function PageStub({ title }) {
   return (

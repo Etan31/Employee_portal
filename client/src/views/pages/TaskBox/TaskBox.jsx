@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TASKS } from '../../../models/tasks.js';
 import { ME } from '../../../models/people.js';
 import { formatDate, formatShortDate, isOverdue } from '../../../controllers/format.js';
-import { Icon } from '../../../../../v1/frontend/src/icons/Icon.jsx';
+import { Icon } from '../../components/Icon/Icon.jsx';
 import './TaskBox.css';
 
 function Dropdown({ options, value, onChange }) {

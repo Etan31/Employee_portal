@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigation } from './controllers/useNavigation.js';
 import { NAV_ITEMS } from './models/nav.js';
-import { DashboardLayout } from '../../v1/frontend/src/pages/DashboardLayout.jsx';
+import { DashboardLayout } from './views/layouts/DashboardLayout/DashboardLayout.jsx';
 import { Dashboard } from './views/pages/Dashboard/Dashboard.jsx';
 import { TaskBox } from './views/pages/TaskBox/TaskBox.jsx';
 import { PageStub } from './views/pages/PageStub/PageStub.jsx';

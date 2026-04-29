@@ -5,6 +5,14 @@ const icons = {
   "layout-dashboard": (
     <path d="M3 3h7v9H3zm11 0h7v5h-7zm0 9h7v9h-7zM3 16h7v5H3z" />
   ),
+  apps: (
+    <>
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+    </>
+  ),
   "list-checks": (
     <path d="M3 6h18M3 12h18M3 18h18M8 6l2 2 4-4M8 12l2 2 4-4M8 18l2 2 4-4" />
   ),
@@ -72,6 +80,9 @@ const icons = {
     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />
   ),
   "arrow-right": <path d="M5 12h14M12 5l7 7-7 7" />,
+  shield: (
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  ),
 };
 
 export function Icon({ name, className = "", size = 20 }) {

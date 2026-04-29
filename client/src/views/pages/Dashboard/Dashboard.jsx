@@ -6,7 +6,7 @@ import { SHIFT_START, SHIFT_END, getTodayDate } from '../../../models/shift.js';
 import { useClock } from '../../../controllers/useClock.js';
 import { useTabs } from '../../../controllers/useTabs.js';
 import { formatTime, formatDate } from '../../../controllers/format.js';
-import { Icon } from '../../../../../v1/frontend/src/icons/Icon.jsx';
+import { Icon } from '../../components/Icon/Icon.jsx';
 import './Dashboard.css';
 
 export function Dashboard() {
