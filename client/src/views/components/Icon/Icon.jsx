@@ -83,6 +83,15 @@ const icons = {
   shield: (
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
   ),
+  x: <path d="M18 6 6 18M6 6l12 12" />,
+  "dots-vertical": (
+    <>
+      <circle cx="12" cy="5" r="1" fill="currentColor" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+      <circle cx="12" cy="19" r="1" fill="currentColor" />
+    </>
+  ),
+  check: <path d="M20 6 9 17l-5-5" />,
 };
 
 export function Icon({ name, className = "", size = 20 }) {
