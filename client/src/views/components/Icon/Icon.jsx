@@ -92,6 +92,10 @@ const icons = {
     </>
   ),
   check: <path d="M20 6 9 17l-5-5" />,
+  "priority-urgent": <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14" />,
+  "priority-high": <path d="m17 11-5-5-5 5M17 18l-5-5-5 5" />,
+  "priority-medium": <path d="M5 12h14" />,
+  "priority-low": <path d="m7 13 5 5 5-5M7 6l5 5 5-5" />,
 };
 
 export function Icon({ name, className = "", size = 20 }) {

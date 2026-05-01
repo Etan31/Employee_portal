@@ -33,8 +33,9 @@ function Dropdown({ options, value, onChange }) {
   );
 }
 
-export function TaskBox() {
+export function TaskBox({ isDashboard }) {
   const [filter, setFilter] = useState('assigned');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const assignedTasks = TASKS.filter(t => t.assignee.id === ME.id);
   const raisedTasks = TASKS.filter(t => t.assigner.id === ME.id);
@@ -59,12 +60,18 @@ export function TaskBox() {
   ];
 
   return (
-    <div className="nx-card nx-taskbox">
+    <div className={`nx-card nx-taskbox ${isDashboard ? 'nx-taskbox--dashboard' : ''}`}>
       
       {/* Left Pane - List */}
       <div className="nx-taskbox__list-pane">
         <div className="nx-taskbox__filter-bar">
           <Dropdown options={filterOptions} value={filter} onChange={setFilter} />
+          {!isDashboard && (
+            <button className="nx-taskbox__create-btn" onClick={() => setIsModalOpen(true)}>
+              <Icon name="user-plus" size={16} />
+              <span>Create</span>
+            </button>
+          )}
         </div>
         
         <div className="nx-taskbox__list">
@@ -163,6 +170,150 @@ export function TaskBox() {
         )}
       </div>
 
+      {isModalOpen && (
+        <CreateTaskModal onClose={() => setIsModalOpen(false)} />
+      )}
+
+    </div>
+  );
+}
+
+function CreateTaskModal({ onClose }) {
+  const [priority, setPriority] = useState('Medium');
+  const [labels, setLabels] = useState([]);
+  const [labelText, setLabelText] = useState('');
+  const [suggestedLabels] = useState(['Frontend', 'Backend', 'UI/UX', 'Bug', 'Feature', 'Security']);
+
+  const filteredLabels = suggestedLabels.filter(l => 
+    l.toLowerCase().includes(labelText.toLowerCase()) && !labels.includes(l)
+  );
+
+  const addLabel = (label) => {
+    setLabels([...labels, label]);
+    setLabelText('');
+  };
+
+  return (
+    <div className="nx-modal-overlay" onClick={onClose}>
+      <div className="nx-modal-content" onClick={e => e.stopPropagation()}>
+        <div className="nx-modal-header">
+          <h2 className="nx-modal-title">Create Task</h2>
+          <button className="nx-modal-close" onClick={onClose}><Icon name="x" size={20} /></button>
+        </div>
+
+        <div className="nx-modal-body">
+          {/* Summary / Title */}
+          <div className="nx-form-group">
+            <label className="nx-form-label">Summary</label>
+            <input type="text" className="nx-form-input" placeholder="e.g. Design new login screen" />
+          </div>
+
+          <div className="nx-form-row">
+            <div className="nx-form-group">
+              <label className="nx-form-label">Issue Type</label>
+              <select className="nx-form-select">
+                <option>Task</option>
+                <option>Bug</option>
+                <option>Story</option>
+                <option>Epic</option>
+              </select>
+            </div>
+            <div className="nx-form-group">
+              <label className="nx-form-label">Priority</label>
+              <div className="nx-priority-selector">
+                {['Urgent', 'High', 'Medium', 'Low'].map(p => (
+                  <button 
+                    key={p} 
+                    className={`nx-priority-btn ${priority === p ? 'active' : ''}`}
+                    onClick={() => setPriority(p)}
+                    title={p}
+                  >
+                    <Icon name={`priority-${p.toLowerCase()}`} size={16} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="nx-form-group">
+            <label className="nx-form-label">Description</label>
+            <textarea className="nx-form-textarea" placeholder="Add more details..."></textarea>
+          </div>
+
+          <div className="nx-form-row">
+            <div className="nx-form-group">
+              <label className="nx-form-label">Assignee</label>
+              <select className="nx-form-select">
+                <option>Unassigned</option>
+                <option>Tristan</option>
+                <option>John Doe</option>
+              </select>
+            </div>
+            <div className="nx-form-group">
+              <label className="nx-form-label">Reporter</label>
+              <select className="nx-form-select">
+                <option>Me (Tristan)</option>
+                <option>Manager</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="nx-form-group">
+            <label className="nx-form-label">Labels</label>
+            <div className="nx-label-input-container">
+              <div className="nx-labels-pills">
+                {labels.map(l => (
+                  <span key={l} className="nx-label-pill">
+                    {l}
+                    <button onClick={() => setLabels(labels.filter(x => x !== l))}><Icon name="x" size={10} /></button>
+                  </span>
+                ))}
+              </div>
+              <input 
+                type="text" 
+                className="nx-label-input" 
+                value={labelText}
+                onChange={e => setLabelText(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && labelText) {
+                    addLabel(labelText);
+                  }
+                }}
+                placeholder="Type to search or create..."
+              />
+              {labelText && (
+                <div className="nx-label-suggestions">
+                  {filteredLabels.map(l => (
+                    <div key={l} className="nx-suggestion-item" onClick={() => addLabel(l)}>{l}</div>
+                  ))}
+                  {labelText && !suggestedLabels.includes(labelText) && (
+                    <div className="nx-suggestion-item nx-suggestion-item--new" onClick={() => addLabel(labelText)}>
+                      Create new: <strong>{labelText}</strong>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="nx-form-row">
+            <div className="nx-form-group">
+              <label className="nx-form-label">Due Date {priority === 'Urgent' && <span className="nx-required">*</span>}</label>
+              <input type="date" className="nx-form-input" required={priority === 'Urgent'} />
+            </div>
+          </div>
+
+          <div className="nx-modal-actions-bar">
+            <button className="nx-action-btn"><Icon name="paperclip" size={16} /> Attach</button>
+            <button className="nx-action-btn"><Icon name="network" size={16} /> Link Issues</button>
+          </div>
+        </div>
+
+        <div className="nx-modal-footer">
+          <button className="nx-btn-ghost" onClick={onClose}>Cancel</button>
+          <button className="nx-btn-primary" onClick={onClose}>Create Task</button>
+        </div>
+      </div>
     </div>
   );
 }

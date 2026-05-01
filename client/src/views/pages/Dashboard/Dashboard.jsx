@@ -7,6 +7,7 @@ import { useClock } from '../../../controllers/useClock.js';
 import { useTabs } from '../../../controllers/useTabs.js';
 import { formatTime, formatDate } from '../../../controllers/format.js';
 import { Icon } from '../../components/Icon/Icon.jsx';
+import { TaskBox } from '../TaskBox/TaskBox.jsx';
 import './Dashboard.css';
 
 /* ── Request Sidebar Panel ── */
@@ -141,18 +142,9 @@ export function Dashboard() {
         <div className="nx-card nx-welcome-card">
           <div className="nx-welcome-card__content">
             <h1 className="nx-welcome-card__title">
-              Wrap Up with Excellence! <Icon name="sparkle" size={24} className="nx-welcome-card__sparkle" />
+              Hello there! <Icon name="sparkle" size={20} className="nx-welcome-card__sparkle" />
             </h1>
-            <p className="nx-welcome-card__subtitle">You're making great progress today.</p>
-          </div>
-          <div className="nx-welcome-card__illustration">
-            {/* Simple inline SVG illustration */}
-            <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-              <rect x="20" y="30" width="80" height="50" rx="4" fill="#e2e8f0" />
-              <rect x="25" y="35" width="70" height="40" rx="2" fill="#fff" />
-              <path d="M40 80L80 80L90 90H30L40 80Z" fill="#cbd5e1" />
-              <path d="M70 20L85 10L90 25Z" fill="#38bdf8" opacity="0.8" />
-            </svg>
+            <p className="nx-welcome-card__subtitle">Ready for another productive day?</p>
           </div>
         </div>
 
@@ -171,6 +163,35 @@ export function Dashboard() {
                 <span className="nx-app-tile__label">{app.label}</span>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Daily Focus / Team Pulse */}
+        <div className="nx-focus-section">
+          <div className="nx-apps-header">
+            <h2 className="nx-h2">Daily Focus</h2>
+          </div>
+          <div className="nx-focus-grid">
+            <div className="nx-card nx-focus-card nx-focus-card--mood">
+              <h4 className="nx-focus-card__title">How's your mood?</h4>
+              <div className="nx-focus-mood-options">
+                <button className="nx-mood-btn" title="Great"><Icon name="sparkle" size={20} /></button>
+                <button className="nx-mood-btn" title="Good"><Icon name="thumbs-up" size={20} /></button>
+                <button className="nx-mood-btn" title="Okay"><Icon name="message-square" size={20} /></button>
+              </div>
+              <div className="nx-focus-mood-input-box">
+                <input type="text" placeholder="Tell us more..." className="nx-focus-mood-input" />
+                <button className="nx-mood-submit-btn">Submit</button>
+              </div>
+            </div>
+            <div className="nx-card nx-focus-card nx-focus-card--goal">
+              <div className="nx-focus-goal-header">
+                <h4 className="nx-focus-card__title">Company Highlights</h4>
+                <span className="nx-focus-goal-tag">NEW</span>
+              </div>
+              <p className="nx-focus-goal-text">Monthly Townhall scheduled for Friday at 10 AM.</p>
+              <button className="nx-btn-link">Read More</button>
+            </div>
           </div>
         </div>
 

@@ -230,6 +230,11 @@ class DesignSystemGenerator:
                 "css_import": best_typography.get("CSS Import", "")
             },
             "key_effects": combined_effects,
+            "semantic_html": {
+                "structure": ["<main> for primary content", "<section> for distinct themes", "<nav> for navigation lists", "<article> for self-contained items"],
+                "aria_roles": ["main", "navigation", "banner", "contentinfo", "region"],
+                "headings": "H1 per page > H2 sections > H3 cards"
+            },
             "anti_patterns": reasoning.get("anti_patterns", ""),
             "decision_rules": reasoning.get("decision_rules", {}),
             "severity": reasoning.get("severity", "MEDIUM")
@@ -344,15 +349,23 @@ def format_ascii_box(design_system: dict) -> str:
             lines.append(line.ljust(BOX_WIDTH) + "|")
         lines.append("|" + " " * BOX_WIDTH + "|")
 
+    # Semantic & A11y section
+    lines.append("|  SEMANTIC HTML5 & A11Y MANDATE:".ljust(BOX_WIDTH) + "|")
+    lines.append("|     - Priority: <main>, <section>, <nav>, <article>, <header>, <footer>".ljust(BOX_WIDTH) + "|")
+    lines.append("|     - Roles: aria-label, role='main|navigation|banner|contentinfo'".ljust(BOX_WIDTH) + "|")
+    lines.append("|     - Hierarchy: Strict H1 > H2 > H3 nesting".ljust(BOX_WIDTH) + "|")
+    lines.append("|" + " " * BOX_WIDTH + "|")
+
     # Pre-Delivery Checklist section
     lines.append("|  PRE-DELIVERY CHECKLIST:".ljust(BOX_WIDTH) + "|")
     checklist_items = [
+        "[ ] Semantic HTML5 Tags (<main>, <section>, <nav>, <article>)",
+        "[ ] ARIA roles & screen reader accessibility (a11y)",
+        "[ ] Strict Heading Hierarchy (H1 > H2 > H3)",
+        "[ ] Functional React Components (Declarative Syntax)",
         "[ ] No emojis as icons (use SVG: Heroicons/Lucide)",
         "[ ] cursor-pointer on all clickable elements",
         "[ ] Hover states with smooth transitions (150-300ms)",
-        "[ ] Light mode: text contrast 4.5:1 minimum",
-        "[ ] Focus states visible for keyboard nav",
-        "[ ] prefers-reduced-motion respected",
         "[ ] Responsive: 375px, 768px, 1024px, 1440px"
     ]
     for item in checklist_items:
@@ -778,6 +791,9 @@ def format_master_md(design_system: dict) -> str:
     lines.append("- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio")
     lines.append("- ❌ **Instant state changes** — Always use transitions (150-300ms)")
     lines.append("- ❌ **Invisible focus states** — Focus states must be visible for a11y")
+    lines.append("- ❌ **Non-semantic <div> soup** — Prioritize <section>, <article>, <main>")
+    lines.append("- ❌ **Class-based logic** — Use React functional components & hooks")
+    lines.append("- ❌ **Broken Heading Flow** — Never skip heading levels (e.g., H1 to H3)")
     lines.append("")
     
     # Pre-Delivery Checklist

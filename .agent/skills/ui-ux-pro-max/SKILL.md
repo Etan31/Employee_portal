@@ -256,37 +256,52 @@ These are frequently overlooked issues that make UI look unprofessional:
 
 ---
 
+## Core Logic & Best Practices (MANDATORY)
+
+When using this skill to generate or implement UI, you **MUST** adhere to these architectural standards:
+
+### 1. Semantic HTML5 & Structure
+- **Root Container:** Always wrap page content in a `<main>` tag.
+- **Sectioning:** Use `<section>` for thematic groupings and `<article>` for self-contained content (like cards or blog posts).
+- **Navigation:** Use `<nav>` for primary and secondary navigation menus.
+- **Headers/Footers:** Use `<header>` and `<footer>` within their appropriate contexts.
+
+### 2. React Component Integrity
+- **Functional Components:** All UI elements must be functional React components using clean, declarative syntax.
+- **Lean Components:** Keep component files focused to optimize for Vite HMR performance.
+
+### 3. Accessibility (a11y)
+- **ARIA Roles:** Explicitly define `role="main|navigation|banner|contentinfo|region"` where semantic tags are insufficient.
+- **ARIA Labels:** Use `aria-label` for interactive elements without visible text.
+- **Heading Hierarchy:** Maintain a strict `H1 > H2 > H3` nesting. Never skip heading levels.
+
+### 4. Utility-First CSS (CSS3)
+- **Semantic Enhancement:** Use utility classes (e.g., Tailwind) to *enhance* semantic structure, not replace it.
+- **Modern Standards:** Prioritize Flexbox/Grid layouts and modern CSS3 transitions.
+
+---
+
 ## Pre-Delivery Checklist
 
 Before delivering UI code, verify these items:
 
-### Visual Quality
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] Brand logos are correct (verified from Simple Icons)
-- [ ] Hover states don't cause layout shift
-- [ ] Use theme colors directly (bg-primary) not var() wrapper
+### Semantic & A11y
+- [ ] Primary content wrapped in `<main>`
+- [ ] Navigation menus wrapped in `<nav>`
+- [ ] Distinct sections wrapped in `<section>` or `<article>`
+- [ ] Strict heading hierarchy (no skipped levels)
+- [ ] ARIA roles and labels added where necessary
 
-### Interaction
+### React & Performance
+- [ ] All UI built as functional React components
+- [ ] Props used for data-driven rendering
+- [ ] Component is lean and optimized for Vite HMR
+- [ ] Logic separated from layout (Data-fetching in Controllers/API)
+
+### Interaction & Style
 - [ ] All clickable elements have `cursor-pointer`
 - [ ] Hover states provide clear visual feedback
 - [ ] Transitions are smooth (150-300ms)
-- [ ] Focus states visible for keyboard navigation
-
-### Light/Dark Mode
-- [ ] Light mode text has sufficient contrast (4.5:1 minimum)
-- [ ] Glass/transparent elements visible in light mode
-- [ ] Borders visible in both modes
-- [ ] Test both modes before delivery
-
-### Layout
-- [ ] Floating elements have proper spacing from edges
-- [ ] No content hidden behind fixed navbars
+- [ ] Light mode text contrast 4.5:1 minimum
 - [ ] Responsive at 375px, 768px, 1024px, 1440px
-- [ ] No horizontal scroll on mobile
-
-### Accessibility
-- [ ] All images have alt text
-- [ ] Form inputs have labels
-- [ ] Color is not the only indicator
-- [ ] `prefers-reduced-motion` respected
+- [ ] No emojis used as icons (use SVG instead)
