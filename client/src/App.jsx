@@ -6,11 +6,17 @@ import { Dashboard } from './views/pages/Dashboard/Dashboard.jsx';
 import { TaskBox } from './views/pages/TaskBox/TaskBox.jsx';
 import { Profile } from './views/pages/Profile/Profile.jsx';
 import { PageStub } from './views/pages/PageStub/PageStub.jsx';
+import { Login } from './views/pages/Login/Login.jsx';
 
 import './styles/global.css';
 
 export default function App() {
   const { active } = useNavigation();
+
+  // If login route, don't wrap in DashboardLayout
+  if (active === 'login') {
+    return <Login />;
+  }
 
   // Find the active item to get its label for the stub
   const activeItem = NAV_ITEMS.find(item => item.id === active) || NAV_ITEMS[0];
