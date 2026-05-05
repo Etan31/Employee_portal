@@ -68,11 +68,21 @@
 
 .nx-sidebar__nav {
   flex: 1;
-  padding: 8px 12px; /* Increased side padding */
+  overflow-y: auto;
+}
+
+.nx-sidebar__list {
+  list-style: none;
+  padding: 8px 12px;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px; /* Increased gap slightly */
-  overflow-y: auto;
+  gap: 6px;
+}
+
+.nx-sidebar__list-item {
+  padding: 0;
+  margin: 0;
 }
 
 .nx-sidebar__item {

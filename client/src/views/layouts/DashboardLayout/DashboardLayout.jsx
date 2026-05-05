@@ -12,7 +12,7 @@ export function DashboardLayout({ children, activeRoute }) {
     <div className={`nx-layout ${expanded ? 'nx-layout--expanded' : 'nx-layout--collapsed'}`}>
       {/* Sidebar */}
       <aside className="nx-sidebar">
-        <div className="nx-sidebar__top">
+        <header className="nx-sidebar__top">
           <button 
             className="nx-sidebar__apps-btn" 
             onClick={() => setExpanded(!expanded)}
@@ -21,26 +21,29 @@ export function DashboardLayout({ children, activeRoute }) {
             <Icon name="apps" size={20} className="nx-sidebar__apps-icon" />
             {expanded && <span className="nx-sidebar__apps-label">All Apps</span>}
           </button>
-        </div>
+        </header>
 
         <nav className="nx-sidebar__nav">
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeRoute === item.route.replace('#/', '');
-            return (
-              <a 
-                key={item.id} 
-                href={item.route} 
-                className={`nx-sidebar__item ${isActive ? 'nx-sidebar__item--active' : ''}`}
-                title={!expanded ? item.label : undefined}
-              >
-                <Icon name={item.icon} size={18} className="nx-sidebar__icon" />
-                {expanded && <span className="nx-sidebar__label">{item.label}</span>}
-              </a>
-            );
-          })}
+          <ul className="nx-sidebar__list">
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeRoute === item.route.replace('#/', '');
+              return (
+                <li key={item.id} className="nx-sidebar__list-item">
+                  <a 
+                    href={item.route} 
+                    className={`nx-sidebar__item ${isActive ? 'nx-sidebar__item--active' : ''}`}
+                    title={!expanded ? item.label : undefined}
+                  >
+                    <Icon name={item.icon} size={18} className="nx-sidebar__icon" />
+                    {expanded && <span className="nx-sidebar__label">{item.label}</span>}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         </nav>
 
-        <div className="nx-sidebar__footer">
+        <footer className="nx-sidebar__footer">
           {expanded && (
             <div className="nx-sidebar__links">
               <a href="#/privacy" className="nx-sidebar__link">Privacy policy</a>
@@ -50,7 +53,7 @@ export function DashboardLayout({ children, activeRoute }) {
           <div className="nx-sidebar__logo-container">
             <NexusLogo expanded={expanded} />
           </div>
-        </div>
+        </footer>
       </aside>
 
       {/* Main Content Area */}

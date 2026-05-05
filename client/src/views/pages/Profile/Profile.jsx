@@ -10,19 +10,21 @@ function FeedbackCard() {
   const hasFeedback = FEEDBACK_DATA.length > 0;
 
   return (
-    <div className="nx-card nx-feedback-card">
-      <div className="nx-profile-card__header">
+    <section className="nx-card nx-feedback-card">
+      <header className="nx-profile-card__header">
         <h3 className="nx-profile-card__title">Feedback</h3>
-      </div>
+      </header>
       
       {hasFeedback ? (
-        <div className="nx-feedback-list">
+        <ul className="nx-feedback-list">
           {FEEDBACK_DATA.map(item => (
-            <div key={item.id} className="nx-feedback-item">
-              {/* feedback items here */}
-            </div>
+            <li key={item.id}>
+              <article className="nx-feedback-item">
+                {/* feedback items here */}
+              </article>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
         <div className="nx-feedback-empty">
           <img 
@@ -33,7 +35,7 @@ function FeedbackCard() {
           <p className="nx-feedback-empty-text">No feedback received, yet!</p>
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -41,25 +43,25 @@ function FeedbackCard() {
 function DataSection({ title, data, showEdit = true }) {
   return (
     <section className="nx-card nx-profile-card">
-      <div className="nx-profile-card__header">
+      <header className="nx-profile-card__header">
         <h3 className="nx-profile-card__title">{title}</h3>
         {showEdit && (
           <button className="nx-header__btn" title="Edit">
             <Icon name="pencil" size={16} />
           </button>
         )}
-      </div>
-      <div className="nx-data-grid">
+      </header>
+      <ul className="nx-data-grid">
         {data.map((item, idx) => (
-          <div key={idx} className="nx-data-item">
+          <li key={idx} className="nx-data-item">
             <span className="nx-data-label">{item.label}</span>
             <span className={`nx-data-value ${item.isLink ? 'nx-data-value--link' : ''}`}>
               {item.value}
               {item.status && <span className="nx-status-tag">{item.status}</span>}
             </span>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }
@@ -77,27 +79,33 @@ export function Profile() {
       <div className="nx-col-main nx-grid-9">
         
         {/* Main Tab Navigation */}
-        <nav className="nx-profile-nav">
-          <div className="nx-profile-tabs">
-            <button 
-              className={`nx-profile-tab ${mainTabs.active === 'overview' ? 'nx-profile-tab--active' : ''}`}
-              onClick={() => mainTabs.setActive('overview')}
-            >
-              Overview
-            </button>
-            <button 
-              className={`nx-profile-tab ${mainTabs.active === 'personal' ? 'nx-profile-tab--active' : ''}`}
-              onClick={() => mainTabs.setActive('personal')}
-            >
-              Personal Details
-            </button>
-            <button 
-              className={`nx-profile-tab ${mainTabs.active === 'employment' ? 'nx-profile-tab--active' : ''}`}
-              onClick={() => mainTabs.setActive('employment')}
-            >
-              Employment Details
-            </button>
-          </div>
+        <nav className="nx-profile-nav" aria-label="Profile navigation">
+          <ul className="nx-profile-tabs">
+            <li className="nx-profile-tab-item">
+              <button 
+                className={`nx-profile-tab ${mainTabs.active === 'overview' ? 'nx-profile-tab--active' : ''}`}
+                onClick={() => mainTabs.setActive('overview')}
+              >
+                Overview
+              </button>
+            </li>
+            <li className="nx-profile-tab-item">
+              <button 
+                className={`nx-profile-tab ${mainTabs.active === 'personal' ? 'nx-profile-tab--active' : ''}`}
+                onClick={() => mainTabs.setActive('personal')}
+              >
+                Personal Details
+              </button>
+            </li>
+            <li className="nx-profile-tab-item">
+              <button 
+                className={`nx-profile-tab ${mainTabs.active === 'employment' ? 'nx-profile-tab--active' : ''}`}
+                onClick={() => mainTabs.setActive('employment')}
+              >
+                Employment Details
+              </button>
+            </li>
+          </ul>
         </nav>
 
         {/* Content based on Main Tab */}

@@ -15,6 +15,14 @@
 .nx-profile-tabs {
   display: flex;
   gap: 32px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nx-profile-tab-item {
+  padding: 0;
+  margin: 0;
 }
 
 .nx-profile-tab {
@@ -101,6 +109,9 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px 48px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .nx-data-item {
@@ -146,6 +157,12 @@
 .nx-feedback-card {
   padding: 24px;
   height: fit-content;
+}
+
+.nx-feedback-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .nx-feedback-empty {

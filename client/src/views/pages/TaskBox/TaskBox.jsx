@@ -60,11 +60,11 @@ export function TaskBox({ isDashboard }) {
   ];
 
   return (
-    <div className={`nx-card nx-taskbox ${isDashboard ? 'nx-taskbox--dashboard' : ''}`}>
+    <section className={`nx-card nx-taskbox ${isDashboard ? 'nx-taskbox--dashboard' : ''}`}>
       
       {/* Left Pane - List */}
-      <div className="nx-taskbox__list-pane">
-        <div className="nx-taskbox__filter-bar">
+      <section className="nx-taskbox__list-pane">
+        <header className="nx-taskbox__filter-bar">
           <Dropdown options={filterOptions} value={filter} onChange={setFilter} />
           {!isDashboard && (
             <button className="nx-taskbox__create-btn" onClick={() => setIsModalOpen(true)}>
@@ -72,63 +72,66 @@ export function TaskBox({ isDashboard }) {
               <span>Create</span>
             </button>
           )}
-        </div>
+        </header>
         
-        <div className="nx-taskbox__list">
+        <ul className="nx-taskbox__list">
           {currentTasks.length === 0 ? (
-            <div className="nx-taskbox__empty">
+            <li className="nx-taskbox__empty">
               <Icon name="list-checks" size={48} className="nx-taskbox__empty-icon" />
               <p>No tasks found.</p>
-            </div>
+            </li>
           ) : (
             currentTasks.map(task => {
               const otherParty = filter === 'assigned' ? task.assigner : task.assignee;
               return (
-                <div 
-                  key={task.id} 
-                  className={`nx-task-item ${selectedId === task.id ? 'nx-task-item--selected' : ''} ${task.priority === 'HIGH' ? 'nx-task-item--high' : ''}`}
-                  onClick={() => setSelectedId(task.id)}
-                >
-                  <div className="nx-task-item__header">
-                    <span className="nx-task-item__title">{task.title}</span>
-                    <span className="nx-task-item__date">{formatShortDate(task.dueDate)}</span>
-                  </div>
-                  <div className="nx-task-item__desc">{task.description}</div>
-                  <div className="nx-task-item__footer">
-                    <span className={`nx-task-status nx-task-status--${task.status.toLowerCase()}`}>
-                      {task.status.replace('_', ' ')}
-                    </span>
-                    <div className="nx-task-item__avatar" title={otherParty.name}>
-                      {otherParty.initials}
-                    </div>
-                  </div>
-                </div>
+                <li key={task.id}>
+                  <article 
+                    className={`nx-task-item ${selectedId === task.id ? 'nx-task-item--selected' : ''} ${task.priority === 'HIGH' ? 'nx-task-item--high' : ''}`}
+                    onClick={() => setSelectedId(task.id)}
+                  >
+                    <header className="nx-task-item__header">
+                      <span className="nx-task-item__title">{task.title}</span>
+                      <span className="nx-task-item__date">{formatShortDate(task.dueDate)}</span>
+                    </header>
+                    <div className="nx-task-item__desc">{task.description}</div>
+                    <footer className="nx-task-item__footer">
+                      <span className={`nx-task-status nx-task-status--${task.status.toLowerCase()}`}>
+                        {task.status.replace('_', ' ')}
+                      </span>
+                      <div className="nx-task-item__avatar" title={otherParty.name}>
+                        {otherParty.initials}
+                      </div>
+                    </footer>
+                  </article>
+                </li>
               );
             })
           )}
-        </div>
-      </div>
+        </ul>
+      </section>
 
       {/* Right Pane - Detail */}
-      <div className="nx-taskbox__detail-pane">
+      <section className="nx-taskbox__detail-pane">
         {!selectedTask ? (
           <div className="nx-taskbox__empty nx-taskbox__empty--detail">
             <Icon name="file-text" size={48} className="nx-taskbox__empty-icon" />
             <p>Select a task to view details.</p>
           </div>
         ) : (
-          <div className="nx-task-detail">
-            <h2 className="nx-task-detail__title">{selectedTask.title}</h2>
-            <span className={`nx-task-status nx-task-status--${selectedTask.status.toLowerCase()} nx-task-detail__status`}>
-              {selectedTask.status.replace('_', ' ')}
-            </span>
+          <article className="nx-task-detail">
+            <header className="nx-task-detail__header">
+              <h2 className="nx-task-detail__title">{selectedTask.title}</h2>
+              <span className={`nx-task-status nx-task-status--${selectedTask.status.toLowerCase()} nx-task-detail__status`}>
+                {selectedTask.status.replace('_', ' ')}
+              </span>
+            </header>
 
-            <div className="nx-task-detail__section">
+            <section className="nx-task-detail__section">
               <h4 className="nx-task-detail__label">Description</h4>
               <p className="nx-task-detail__text">{selectedTask.description}</p>
-            </div>
+            </section>
 
-            <div className="nx-task-detail__section">
+            <section className="nx-task-detail__section">
               <h4 className="nx-task-detail__label">People</h4>
               <div className="nx-task-detail__people">
                 <div className="nx-task-person">
@@ -141,9 +144,9 @@ export function TaskBox({ isDashboard }) {
                   <span>{selectedTask.assigner.name}</span>
                 </div>
               </div>
-            </div>
+            </section>
 
-            <div className="nx-task-detail__section">
+            <section className="nx-task-detail__section">
               <h4 className="nx-task-detail__label">Dates</h4>
               <div className="nx-task-detail__dates">
                 <div className="nx-task-date">
@@ -164,17 +167,17 @@ export function TaskBox({ isDashboard }) {
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
             
-          </div>
+          </article>
         )}
-      </div>
+      </section>
 
       {isModalOpen && (
         <CreateTaskModal onClose={() => setIsModalOpen(false)} />
       )}
 
-    </div>
+    </section>
   );
 }
 
@@ -195,23 +198,23 @@ function CreateTaskModal({ onClose }) {
 
   return (
     <div className="nx-modal-overlay" onClick={onClose}>
-      <div className="nx-modal-content" onClick={e => e.stopPropagation()}>
-        <div className="nx-modal-header">
-          <h2 className="nx-modal-title">Create Task</h2>
-          <button className="nx-modal-close" onClick={onClose}><Icon name="x" size={20} /></button>
-        </div>
+      <section className="nx-modal-content" onClick={e => e.stopPropagation()} role="dialog" aria-labelledby="modal-title">
+        <header className="nx-modal-header">
+          <h2 className="nx-modal-title" id="modal-title">Create Task</h2>
+          <button className="nx-modal-close" onClick={onClose} aria-label="Close modal"><Icon name="x" size={20} /></button>
+        </header>
 
-        <div className="nx-modal-body">
+        <form className="nx-modal-body" onSubmit={e => e.preventDefault()}>
           {/* Summary / Title */}
           <div className="nx-form-group">
-            <label className="nx-form-label">Summary</label>
-            <input type="text" className="nx-form-input" placeholder="e.g. Design new login screen" />
+            <label className="nx-form-label" htmlFor="task-summary">Summary</label>
+            <input type="text" id="task-summary" className="nx-form-input" placeholder="e.g. Design new login screen" />
           </div>
 
           <div className="nx-form-row">
             <div className="nx-form-group">
-              <label className="nx-form-label">Issue Type</label>
-              <select className="nx-form-select">
+              <label className="nx-form-label" htmlFor="issue-type">Issue Type</label>
+              <select id="issue-type" className="nx-form-select">
                 <option>Task</option>
                 <option>Bug</option>
                 <option>Story</option>
@@ -220,13 +223,15 @@ function CreateTaskModal({ onClose }) {
             </div>
             <div className="nx-form-group">
               <label className="nx-form-label">Priority</label>
-              <div className="nx-priority-selector">
+              <div className="nx-priority-selector" role="radiogroup" aria-label="Priority selector">
                 {['Urgent', 'High', 'Medium', 'Low'].map(p => (
                   <button 
                     key={p} 
+                    type="button"
                     className={`nx-priority-btn ${priority === p ? 'active' : ''}`}
                     onClick={() => setPriority(p)}
                     title={p}
+                    aria-pressed={priority === p}
                   >
                     <Icon name={`priority-${p.toLowerCase()}`} size={16} />
                   </button>
@@ -236,22 +241,22 @@ function CreateTaskModal({ onClose }) {
           </div>
 
           <div className="nx-form-group">
-            <label className="nx-form-label">Description</label>
-            <textarea className="nx-form-textarea" placeholder="Add more details..."></textarea>
+            <label className="nx-form-label" htmlFor="task-description">Description</label>
+            <textarea id="task-description" className="nx-form-textarea" placeholder="Add more details..."></textarea>
           </div>
 
           <div className="nx-form-row">
             <div className="nx-form-group">
-              <label className="nx-form-label">Assignee</label>
-              <select className="nx-form-select">
+              <label className="nx-form-label" htmlFor="task-assignee">Assignee</label>
+              <select id="task-assignee" className="nx-form-select">
                 <option>Unassigned</option>
                 <option>Tristan</option>
                 <option>John Doe</option>
               </select>
             </div>
             <div className="nx-form-group">
-              <label className="nx-form-label">Reporter</label>
-              <select className="nx-form-select">
+              <label className="nx-form-label" htmlFor="task-reporter">Reporter</label>
+              <select id="task-reporter" className="nx-form-select">
                 <option>Me (Tristan)</option>
                 <option>Manager</option>
               </select>
@@ -259,18 +264,19 @@ function CreateTaskModal({ onClose }) {
           </div>
 
           <div className="nx-form-group">
-            <label className="nx-form-label">Labels</label>
+            <label className="nx-form-label" htmlFor="task-labels">Labels</label>
             <div className="nx-label-input-container">
               <div className="nx-labels-pills">
                 {labels.map(l => (
                   <span key={l} className="nx-label-pill">
                     {l}
-                    <button onClick={() => setLabels(labels.filter(x => x !== l))}><Icon name="x" size={10} /></button>
+                    <button type="button" onClick={() => setLabels(labels.filter(x => x !== l))} aria-label={`Remove label ${l}`}><Icon name="x" size={10} /></button>
                   </span>
                 ))}
               </div>
               <input 
                 type="text" 
+                id="task-labels"
                 className="nx-label-input" 
                 value={labelText}
                 onChange={e => setLabelText(e.target.value)}
@@ -282,38 +288,38 @@ function CreateTaskModal({ onClose }) {
                 placeholder="Type to search or create..."
               />
               {labelText && (
-                <div className="nx-label-suggestions">
+                <ul className="nx-label-suggestions">
                   {filteredLabels.map(l => (
-                    <div key={l} className="nx-suggestion-item" onClick={() => addLabel(l)}>{l}</div>
+                    <li key={l} className="nx-suggestion-item" onClick={() => addLabel(l)}>{l}</li>
                   ))}
                   {labelText && !suggestedLabels.includes(labelText) && (
-                    <div className="nx-suggestion-item nx-suggestion-item--new" onClick={() => addLabel(labelText)}>
+                    <li className="nx-suggestion-item nx-suggestion-item--new" onClick={() => addLabel(labelText)}>
                       Create new: <strong>{labelText}</strong>
-                    </div>
+                    </li>
                   )}
-                </div>
+                </ul>
               )}
             </div>
           </div>
 
           <div className="nx-form-row">
             <div className="nx-form-group">
-              <label className="nx-form-label">Due Date {priority === 'Urgent' && <span className="nx-required">*</span>}</label>
-              <input type="date" className="nx-form-input" required={priority === 'Urgent'} />
+              <label className="nx-form-label" htmlFor="due-date">Due Date {priority === 'Urgent' && <span className="nx-required">*</span>}</label>
+              <input type="date" id="due-date" className="nx-form-input" required={priority === 'Urgent'} />
             </div>
           </div>
 
           <div className="nx-modal-actions-bar">
-            <button className="nx-action-btn"><Icon name="paperclip" size={16} /> Attach</button>
-            <button className="nx-action-btn"><Icon name="network" size={16} /> Link Issues</button>
+            <button type="button" className="nx-action-btn"><Icon name="paperclip" size={16} /> Attach</button>
+            <button type="button" className="nx-action-btn"><Icon name="network" size={16} /> Link Issues</button>
           </div>
-        </div>
+        </form>
 
-        <div className="nx-modal-footer">
-          <button className="nx-btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="nx-btn-primary" onClick={onClose}>Create Task</button>
-        </div>
-      </div>
+        <footer className="nx-modal-footer">
+          <button type="button" className="nx-btn-ghost" onClick={onClose}>Cancel</button>
+          <button type="submit" className="nx-btn-primary" onClick={onClose}>Create Task</button>
+        </footer>
+      </section>
     </div>
   );
 }

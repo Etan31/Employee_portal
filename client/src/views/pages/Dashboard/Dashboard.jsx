@@ -149,30 +149,32 @@ export function Dashboard() {
         </div>
 
         {/* Recent Apps */}
-        <div className="nx-apps-section">
-          <div className="nx-apps-header">
+        <section className="nx-apps-section">
+          <header className="nx-apps-header">
             <h2 className="nx-h2">Recent Apps</h2>
             <button className="nx-btn-link">View All</button>
-          </div>
-          <div className="nx-apps-grid">
+          </header>
+          <ul className="nx-apps-grid">
             {RECENT_APPS.map(app => (
-              <div key={app.id} className="nx-app-tile">
-                <div className="nx-app-tile__icon-box">
-                  <Icon name={app.icon} size={24} />
-                </div>
-                <span className="nx-app-tile__label">{app.label}</span>
-              </div>
+              <li key={app.id}>
+                <article className="nx-app-tile">
+                  <div className="nx-app-tile__icon-box">
+                    <Icon name={app.icon} size={24} />
+                  </div>
+                  <span className="nx-app-tile__label">{app.label}</span>
+                </article>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </section>
 
         {/* Daily Focus / Team Pulse */}
-        <div className="nx-focus-section">
-          <div className="nx-apps-header">
+        <section className="nx-focus-section">
+          <header className="nx-apps-header">
             <h2 className="nx-h2">Daily Focus</h2>
-          </div>
+          </header>
           <div className="nx-focus-grid">
-            <div className="nx-card nx-focus-card nx-focus-card--mood">
+            <article className="nx-card nx-focus-card nx-focus-card--mood">
               <h4 className="nx-focus-card__title">How's your mood?</h4>
               <div className="nx-focus-mood-options">
                 <button className="nx-mood-btn" title="Great"><Icon name="sparkle" size={20} /></button>
@@ -183,17 +185,17 @@ export function Dashboard() {
                 <input type="text" placeholder="Tell us more..." className="nx-focus-mood-input" />
                 <button className="nx-mood-submit-btn">Submit</button>
               </div>
-            </div>
-            <div className="nx-card nx-focus-card nx-focus-card--goal">
-              <div className="nx-focus-goal-header">
+            </article>
+            <article className="nx-card nx-focus-card nx-focus-card--goal">
+              <header className="nx-focus-goal-header">
                 <h4 className="nx-focus-card__title">Company Highlights</h4>
                 <span className="nx-focus-goal-tag">NEW</span>
-              </div>
+              </header>
               <p className="nx-focus-goal-text">Monthly Townhall scheduled for Friday at 10 AM.</p>
               <button className="nx-btn-link">Read More</button>
-            </div>
+            </article>
           </div>
-        </div>
+        </section>
 
       </div>
 
@@ -201,14 +203,14 @@ export function Dashboard() {
       <div className="nx-col-side nx-grid-3">
         
         {/* Time Tracker */}
-        <div className="nx-card nx-time-tracker">
-          <div className="nx-time-tracker__header">
+        <section className="nx-card nx-time-tracker">
+          <header className="nx-time-tracker__header">
             <h3 className="nx-h3">Let's Get the Ball Rolling</h3>
             <div className={`nx-status-pill ${clock.clockedIn ? 'nx-status-pill--active' : ''}`}>
               <span className="nx-status-dot"></span>
               {clock.clockedIn ? 'ON THE CLOCK' : 'OFF THE CLOCK'}
             </div>
-          </div>
+          </header>
           
           <div className="nx-time-tracker__clock-row">
             <div className="nx-time-tracker__date">{formatDate(getTodayDate())}</div>
@@ -237,15 +239,15 @@ export function Dashboard() {
             {clock.clockedIn ? 'Clock Out' : 'Clock In'} <Icon name="play" size={16} />
           </button>
 
-          <div className="nx-time-tracker__footer">
+          <footer className="nx-time-tracker__footer">
             <span className="nx-p">Shift: {SHIFT_START} - {SHIFT_END}</span>
             <button className="nx-btn-link">View Policies</button>
-          </div>
-        </div>
+          </footer>
+        </section>
 
         {/* Requests Section */}
-        <div className="nx-requests-section">
-          <div className="nx-requests-header">
+        <section className="nx-requests-section">
+          <header className="nx-requests-header">
             <h3 className="nx-h3">Requests</h3>
             <div className="nx-requests-header__actions">
               <button 
@@ -262,26 +264,28 @@ export function Dashboard() {
                 <Icon name="dots-vertical" size={18} />
               </button>
             </div>
-          </div>
+          </header>
 
-          <div className="nx-requests-grid">
+          <ul className="nx-requests-grid">
             {visibleRequests.map((req, idx) => {
               const isFeatured = idx === 0;
               return (
-                <div key={req.id} className={`nx-card nx-request-card ${isFeatured ? 'nx-request-card--featured' : ''}`}>
-                  <div className={`nx-request-icon nx-request-icon--${req.color}`}>
-                    <Icon name={req.icon} size={20} />
-                  </div>
-                  <span className="nx-request-label">{req.label}</span>
-                </div>
+                <li key={req.id}>
+                  <article className={`nx-card nx-request-card ${isFeatured ? 'nx-request-card--featured' : ''}`}>
+                    <div className={`nx-request-icon nx-request-icon--${req.color}`}>
+                      <Icon name={req.icon} size={20} />
+                    </div>
+                    <span className="nx-request-label">{req.label}</span>
+                  </article>
+                </li>
               );
             })}
-          </div>
-        </div>
+          </ul>
+        </section>
 
         {/* Events */}
-        <div className="nx-card nx-events-card">
-          <div className="nx-events-tabs">
+        <section className="nx-card nx-events-card">
+          <nav className="nx-events-tabs">
             {EVENT_TABS.map(tab => (
               <button 
                 key={tab.id}
@@ -291,22 +295,24 @@ export function Dashboard() {
                 {tab.label}
               </button>
             ))}
-          </div>
-          <div className="nx-events-list">
+          </nav>
+          <ul className="nx-events-list">
             {EVENTS[tabs.active]?.map(event => (
-              <div key={event.id} className="nx-event-row">
-                <div className="nx-event-avatar">
-                  {event.name.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div className="nx-event-info">
-                  <div className="nx-event-name">{event.name}</div>
-                  <div className="nx-event-sub">{event.subtitle}</div>
-                </div>
-                <Icon name={event.icon} size={16} className="nx-event-icon" />
-              </div>
+              <li key={event.id}>
+                <article className="nx-event-row">
+                  <div className="nx-event-avatar">
+                    {event.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div className="nx-event-info">
+                    <div className="nx-event-name">{event.name}</div>
+                    <div className="nx-event-sub">{event.subtitle}</div>
+                  </div>
+                  <Icon name={event.icon} size={16} className="nx-event-icon" />
+                </article>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </section>
 
       </div>
 
