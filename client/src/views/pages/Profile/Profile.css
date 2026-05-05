@@ -1,0 +1,184 @@
+/* Profile Page Styles */
+
+.nx-profile-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Tabs Navigation */
+.nx-profile-nav {
+  border-bottom: 1px solid var(--nx-border);
+  margin-bottom: 8px;
+}
+
+.nx-profile-tabs {
+  display: flex;
+  gap: 32px;
+}
+
+.nx-profile-tab {
+  padding: 12px 4px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--nx-text-soft);
+  position: relative;
+  transition: color 0.2s;
+}
+
+.nx-profile-tab:hover {
+  color: var(--nx-text);
+}
+
+.nx-profile-tab--active {
+  color: var(--nx-primary);
+  font-weight: 600;
+}
+
+.nx-profile-tab--active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--nx-primary);
+}
+
+/* Secondary Actions / Pills */
+.nx-profile-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.nx-btn-pill {
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid var(--nx-border-strong);
+  color: var(--nx-text-soft);
+  background: var(--nx-surface);
+  transition: all 0.2s;
+}
+
+.nx-btn-pill:hover {
+  background: var(--nx-surface-2);
+  border-color: var(--nx-primary-100);
+  color: var(--nx-primary);
+}
+
+.nx-btn-pill--active {
+  background: var(--nx-primary-50);
+  border-color: var(--nx-primary);
+  color: var(--nx-primary);
+  box-shadow: 0 0 0 1px var(--nx-primary);
+}
+
+/* Section Card */
+.nx-profile-card {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.nx-profile-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nx-profile-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--nx-text);
+}
+
+/* Data Grid */
+.nx-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 48px;
+}
+
+.nx-data-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nx-data-label {
+  font-size: 0.75rem;
+  color: var(--nx-text-muted);
+  font-weight: 500;
+}
+
+.nx-data-value {
+  font-size: 0.9375rem;
+  color: var(--nx-text);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.nx-data-value--link {
+  color: var(--nx-primary);
+  text-decoration: none;
+}
+
+.nx-data-value--link:hover {
+  text-decoration: underline;
+}
+
+.nx-status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: var(--nx-success-soft);
+  color: #15803d;
+  margin-left: 8px;
+}
+
+/* Feedback Section */
+.nx-feedback-card {
+  padding: 24px;
+  height: fit-content;
+}
+
+.nx-feedback-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 0;
+  text-align: center;
+  gap: 16px;
+}
+
+.nx-feedback-illustration {
+  width: 160px;
+  opacity: 0.8;
+}
+
+.nx-feedback-empty-text {
+  font-size: 0.875rem;
+  color: var(--nx-text-soft);
+  font-weight: 500;
+}
+
+/* Sections Divider */
+.nx-profile-divider {
+  height: 1px;
+  background: var(--nx-border);
+  margin: 16px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .nx-data-grid {
+    grid-template-columns: 1fr;
+  }
+}

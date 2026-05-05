@@ -4,6 +4,7 @@ import { NAV_ITEMS } from './models/nav.js';
 import { DashboardLayout } from './views/layouts/DashboardLayout/DashboardLayout.jsx';
 import { Dashboard } from './views/pages/Dashboard/Dashboard.jsx';
 import { TaskBox } from './views/pages/TaskBox/TaskBox.jsx';
+import { Profile } from './views/pages/Profile/Profile.jsx';
 import { PageStub } from './views/pages/PageStub/PageStub.jsx';
 
 import './styles/global.css';
@@ -19,6 +20,8 @@ export default function App() {
     PageComponent = <Dashboard />;
   } else if (active === 'task-box') {
     PageComponent = <TaskBox />;
+  } else if (active === 'profile') {
+    PageComponent = <Profile />;
   } else {
     PageComponent = <PageStub title={activeItem.label} />;
   }
