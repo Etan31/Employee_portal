@@ -1,0 +1,253 @@
+.login-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--nx-surface);
+  overflow: hidden;
+}
+
+/* Left Side - Form */
+.login-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: var(--nx-surface);
+  position: relative;
+  z-index: 10;
+  max-width: 500px;
+  width: 100%;
+  overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+  .login-left {
+    flex: 0 0 480px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .login-left {
+    flex: 0 0 560px;
+  }
+}
+
+.login-form-wrapper {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--nx-primary);
+  margin-bottom: 1.5rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--nx-text);
+}
+
+.forgot-password {
+  font-size: 0.875rem;
+  color: var(--nx-primary);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.forgot-password:hover {
+  color: var(--nx-primary-700);
+  text-decoration: underline;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--nx-border-strong);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  color: var(--nx-text);
+  background-color: var(--nx-surface);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) inset;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--nx-primary);
+  box-shadow: 0 0 0 3px var(--nx-primary-50);
+}
+
+.form-input::placeholder {
+  color: var(--nx-text-muted);
+}
+
+.form-options {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.custom-checkbox {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 4px;
+  border: 1px solid var(--nx-border-strong);
+  cursor: pointer;
+  accent-color: var(--nx-primary);
+}
+
+.checkbox-text {
+  font-size: 0.875rem;
+  color: var(--nx-text-soft);
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.875rem;
+  border-radius: 8px;
+  background-color: var(--nx-primary);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+  margin-top: 0.5rem;
+}
+
+.login-button:hover {
+  background-color: var(--nx-primary-700);
+  box-shadow: 0 6px 8px -1px rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-footer {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--nx-border);
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Right Side - Image and Overlay */
+.login-right {
+  display: none;
+  flex: 1;
+  position: relative;
+  background-image: url('../../../../public/logistics_login_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@media (min-width: 1024px) {
+  .login-right {
+    display: block;
+  }
+}
+
+.login-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 4rem;
+}
+
+.overlay-content {
+  max-width: 600px;
+  color: white;
+  animation: fadeIn 1s ease-out;
+}
+
+.overlay-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.overlay-text {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+}
+
+.overlay-stats {
+  display: flex;
+  gap: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
