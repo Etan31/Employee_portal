@@ -1,12 +1,12 @@
 import React from 'react';
-import { useNavigation } from './controllers/useNavigation.js';
-import { NAV_ITEMS } from './models/nav.js';
-import { DashboardLayout } from './views/layouts/DashboardLayout/DashboardLayout.jsx';
-import { Dashboard } from './views/pages/Dashboard/Dashboard.jsx';
-import { TaskBox } from './views/pages/TaskBox/TaskBox.jsx';
-import { Profile } from './views/pages/Profile/Profile.jsx';
-import { PageStub } from './views/pages/PageStub/PageStub.jsx';
-import { Login } from './views/pages/Login/Login.jsx';
+import { useNavigation } from './hooks/useNavigation.js';
+import { NAV_ITEMS } from './data/nav.js';
+import { DashboardLayout } from './layouts/DashboardLayout/DashboardLayout.jsx';
+import { Dashboard } from './pages/Dashboard/Dashboard.jsx';
+import { TaskBox } from './pages/TaskBox/TaskBox.jsx';
+import { Profile } from './pages/Profile/Profile.jsx';
+import { PageStub } from './pages/PageStub/PageStub.jsx';
+import { Login } from './pages/Login/Login.jsx';
 
 import './styles/global.css';
 

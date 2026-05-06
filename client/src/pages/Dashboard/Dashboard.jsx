@@ -1,11 +1,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { RECENT_APPS } from '../../../models/apps.js';
-import { REQUEST_TILES, ALL_REQUESTS, DEFAULT_REQUEST_IDS } from '../../../models/requests.js';
-import { EVENT_TABS, EVENTS } from '../../../models/events.js';
-import { SHIFT_START, SHIFT_END, getTodayDate } from '../../../models/shift.js';
-import { useClock } from '../../../controllers/useClock.js';
-import { useTabs } from '../../../controllers/useTabs.js';
-import { formatTime, formatDate } from '../../../controllers/format.js';
+import { RECENT_APPS } from '../../data/apps.js';
+import { REQUEST_TILES, ALL_REQUESTS, DEFAULT_REQUEST_IDS } from '../../data/requests.js';
+import { EVENT_TABS, EVENTS } from '../../data/events.js';
+import { SHIFT_START, SHIFT_END, getTodayDate } from '../../data/shift.js';
+import { useClock } from '../../hooks/useClock.js';
+import { useTabs } from '../../hooks/useTabs.js';
+import { formatTime, formatDate } from '../../utils/format.js';
 import { Icon } from '../../components/Icon/Icon.jsx';
 import { TaskBox } from '../TaskBox/TaskBox.jsx';
 import './Dashboard.css';

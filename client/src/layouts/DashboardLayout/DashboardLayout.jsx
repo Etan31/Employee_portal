@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { NAV_ITEMS } from '../../../models/nav.js';
-import { ME } from '../../../models/people.js';
+import { NAV_ITEMS } from '../../data/nav.js';
+import { ME } from '../../data/people.js';
 import { Icon } from '../../components/Icon/Icon.jsx';
 import { NexusLogo } from '../../components/NexusLogo/NexusLogo.jsx';
 import './DashboardLayout.css';

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Icon } from '../../components/Icon/Icon.jsx';
-import { useTabs } from '../../../controllers/useTabs.js';
-import { PROFILE_DATA } from '../../../models/profileData.js';
-import { FEEDBACK_DATA } from '../../../models/feedbackData.js';
+import { useTabs } from '../../hooks/useTabs.js';
+import { PROFILE_DATA } from '../../data/profileData.js';
+import { FEEDBACK_DATA } from '../../data/feedbackData.js';
 import './Profile.css';
 
 /* ── Feedback Card Component ── */

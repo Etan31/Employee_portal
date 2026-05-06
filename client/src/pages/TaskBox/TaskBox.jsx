@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { TASKS } from '../../../models/tasks.js';
-import { ME } from '../../../models/people.js';
-import { formatDate, formatShortDate, isOverdue } from '../../../controllers/format.js';
+import { TASKS } from '../../data/tasks.js';
+import { ME } from '../../data/people.js';
+import { formatDate, formatShortDate, isOverdue } from '../../utils/format.js';
 import { Icon } from '../../components/Icon/Icon.jsx';
 import './TaskBox.css';
 
