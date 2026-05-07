@@ -1,91 +1,97 @@
 // src/hooks/auth.hooks.js
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../../supabase/supabaseClient';
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "../../../supabase/supabaseClient.js";
+import {
+  loginUser,
+  logoutUser,
+  getUserProfile,
+  registerUser,
+} from "../api/auth.api.js";
+import { normalizeRole } from "../utils/authPermissions.js";
 
 /**
  * useAuth - custom React hook to manage Supabase authentication.
- * Provides signIn, signUp, signOut, loading state, and current user session.
+ * Provides signIn, signUp, signOut, loading state, and current user profile.
  */
 export const useAuth = () => {
   const [user, setUser] = useState(null);
-  const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [role, setRole] = useState("employee");
   const [loading, setLoading] = useState(true);
 
-  // Sync session changes
+  const loadProfile = useCallback(async (userId) => {
+    try {
+      const data = await getUserProfile(userId);
+      setProfile(data);
+      setRole(normalizeRole(data?.role || data?.role_id || data?.role_name));
+    } catch (error) {
+      console.warn("Unable to load profile:", error?.message || error);
+      setProfile(null);
+      setRole("employee");
+    }
+  }, []);
+
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        setLoading(false);
+    const handleSession = async (currentSession) => {
+      const currentUser = currentSession?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        await loadProfile(currentUser.id);
+      } else {
+        setProfile(null);
+        setRole("employee");
       }
-    );
-    // Retrieve initial session
-    const currentSession = supabase.auth.getSession();
-    currentSession.then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
       setLoading(false);
+    };
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (_event, currentSession) => {
+        await handleSession(currentSession);
+      },
+    );
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSession(session);
     });
+
     return () => {
       authListener?.subscription?.unsubscribe?.();
     };
-  }, []);
+  }, [loadProfile]);
 
   const signIn = useCallback(async (email, password) => {
     setLoading(true);
-    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      console.error('SignIn error:', error.message);
+    try {
+      return await loginUser({ email, password });
+    } finally {
       setLoading(false);
-      throw error;
     }
-    // session/user will be updated via onAuthStateChange
-    setLoading(false);
-    return data;
   }, []);
 
-  const signUp = useCallback(async (email, password, firstName = null, lastName = null, roleId = null) => {
+  const signUp = useCallback(async (email, password, profileData = {}) => {
     setLoading(true);
-    const { error, data } = await supabase.auth.signUp({ email, password });
-    if (error) {
-      console.error('SignUp error:', error.message);
+    try {
+      return await registerUser({ email, password, profileData });
+    } finally {
       setLoading(false);
-      throw error;
     }
-    // After successful signup, insert profile record (if attributes provided)
-    if (firstName || lastName || roleId) {
-      const profile = {
-        id: data.user.id,
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        role_id: roleId
-      };
-      const { error: profileErr } = await supabase.from('profiles').upsert(profile);
-      if (profileErr) {
-        console.warn('Profile creation error (non‑critical):', profileErr.message);
-      }
-    }
-    setLoading(false);
-    return data;
   }, []);
 
   const signOut = useCallback(async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('SignOut error:', error.message);
+    try {
+      await logoutUser();
+    } finally {
       setLoading(false);
-      throw error;
     }
-    // auth listener will clear user/session
-    setLoading(false);
   }, []);
 
   return {
     user,
-    session,
+    profile,
+    role,
+    isAdmin: role === "admin",
+    isManager: role === "manager",
     loading,
     signIn,
     signUp,
