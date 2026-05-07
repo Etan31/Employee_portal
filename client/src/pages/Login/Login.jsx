@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import './Login.css';
+// const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' })
+
+
 
 export function Login() {
   const [email, setEmail] = useState('');
