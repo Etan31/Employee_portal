@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Login.css";
 import { useAuth } from "../../hooks/auth.hooks.js";
+const logisticsLoginBg = "../../client/public/logistics_login_bg.png"
 
 export function Login() {
   const { user, loading, signIn } = useAuth();
@@ -122,6 +123,11 @@ export function Login() {
       </div>
 
       <div className="login-right">
+        <img
+          className="login-right-image"
+                      src={logisticsLoginBg}
+          alt="Nexus Logistics background"
+        />
         <div className="login-image-overlay">
           <div className="overlay-content">
             <h2 className="overlay-title">Streamline Your Supply Chain</h2>
