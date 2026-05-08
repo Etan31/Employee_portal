@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useAuth } from "../../hooks/auth.hooks.jsx";
+import { useAuth } from "../../hooks/auth.hooks.js";
 import { Icon } from "../../components/Icon/Icon.jsx";
 import { NexusLogo } from "../../components/NexusLogo/NexusLogo.jsx";
 import "./DashboardLayout.css";
@@ -120,10 +120,10 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
               <Icon name="bell" size={20} />
               <span className="nx-badge"></span>
             </button>
-
+            
             <div className="nx-header__profile-container" ref={dropdownRef}>
-              <button
-                className={`nx-header__avatar-btn ${profileOpen ? "nx-header__avatar-btn--active" : ""}`}
+              <button 
+                className={`nx-header__avatar-btn ${profileOpen ? 'nx-header__avatar-btn--active' : ''}`}
                 onClick={() => setProfileOpen(!profileOpen)}
               >
                 <div className="nx-header__avatar">{userInitials}</div>
@@ -132,47 +132,26 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
               {profileOpen && (
                 <div className="nx-profile-dropdown">
                   <div className="nx-profile-dropdown__header">
-                    <div className="nx-profile-dropdown__avatar">
-                      {userInitials}
-                    </div>
+                    <div className="nx-profile-dropdown__avatar">{userInitials}</div>
                     <div className="nx-profile-dropdown__info">
-                      <div className="nx-profile-dropdown__name">
-                        {profile?.full_name || "User"}
-                      </div>
-                      <div className="nx-profile-dropdown__email">
-                        {profile?.email || ""}
-                      </div>
+                      <div className="nx-profile-dropdown__name">{profile?.full_name || "User"}</div>
+                      <div className="nx-profile-dropdown__email">{profile?.email || ""}</div>
                     </div>
                   </div>
                   <div className="nx-profile-dropdown__divider" />
                   <div className="nx-profile-dropdown__menu">
                     <button className="nx-profile-dropdown__item">
-                      <Icon
-                        name="user"
-                        size={16}
-                        className="nx-profile-dropdown__icon"
-                      />
+                      <Icon name="user" size={16} className="nx-profile-dropdown__icon" />
                       <span>My Profile</span>
                     </button>
                     <button className="nx-profile-dropdown__item">
-                      <Icon
-                        name="settings"
-                        size={16}
-                        className="nx-profile-dropdown__icon"
-                      />
+                      <Icon name="settings" size={16} className="nx-profile-dropdown__icon" />
                       <span>Settings</span>
                     </button>
                   </div>
                   <div className="nx-profile-dropdown__divider" />
-                  <button
-                    className="nx-profile-dropdown__logout"
-                    onClick={handleLogout}
-                  >
-                    <Icon
-                      name="logout"
-                      size={16}
-                      className="nx-profile-dropdown__icon"
-                    />
+                  <button className="nx-profile-dropdown__logout" onClick={handleLogout}>
+                    <Icon name="logout" size={16} className="nx-profile-dropdown__icon" />
                     <span>Logout</span>
                   </button>
                 </div>
