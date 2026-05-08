@@ -7,7 +7,7 @@ import { TaskBox } from "./pages/TaskBox/TaskBox.jsx";
 import { Profile } from "./pages/Profile/Profile.jsx";
 import { PageStub } from "./pages/PageStub/PageStub.jsx";
 import { Login } from "./pages/Login/Login.jsx";
-import { useAuth } from "./hooks/auth.hooks.js";
+import { useAuth } from "./hooks/auth.hooks.jsx";
 import { filterNavItemsByRole } from "./utils/authPermissions.js";
 
 import "./styles/global.css";

@@ -1,5 +1,11 @@
 // src/hooks/auth.hooks.js
-import { useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { supabase } from "../../../supabase/supabaseClient.js";
 import {
   loginUser,
@@ -9,11 +15,9 @@ import {
 } from "../api/auth.api.js";
 import { normalizeRole } from "../utils/authPermissions.js";
 
-/**
- * useAuth - custom React hook to manage Supabase authentication.
- * Provides signIn, signUp, signOut, loading state, and current user profile.
- */
-export const useAuth = () => {
+const AuthContext = createContext(null);
+
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [role, setRole] = useState("employee");
@@ -44,18 +48,24 @@ export const useAuth = () => {
       setLoading(false);
     };
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (_event, currentSession) => {
-        await handleSession(currentSession);
-      },
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      handleSession(session);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      handleSession(currentSession);
     });
 
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        handleSession(session);
+      })
+      .catch((error) => {
+        console.error("Supabase session initialization failed:", error);
+        setLoading(false);
+      });
+
     return () => {
-      authListener?.subscription?.unsubscribe?.();
+      subscription?.unsubscribe?.();
     };
   }, [loadProfile]);
 
@@ -63,8 +73,9 @@ export const useAuth = () => {
     setLoading(true);
     try {
       return await loginUser({ email, password });
-    } finally {
+    } catch (error) {
       setLoading(false);
+      throw error;
     }
   }, []);
 
@@ -72,8 +83,9 @@ export const useAuth = () => {
     setLoading(true);
     try {
       return await registerUser({ email, password, profileData });
-    } finally {
+    } catch (error) {
       setLoading(false);
+      throw error;
     }
   }, []);
 
@@ -81,20 +93,34 @@ export const useAuth = () => {
     setLoading(true);
     try {
       await logoutUser();
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
   }, []);
 
-  return {
-    user,
-    profile,
-    role,
-    isAdmin: role === "admin",
-    isManager: role === "manager",
-    loading,
-    signIn,
-    signUp,
-    signOut,
-  };
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        profile,
+        role,
+        isAdmin: role === "admin",
+        isManager: role === "manager",
+        loading,
+        signIn,
+        signUp,
+        signOut,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
 };
