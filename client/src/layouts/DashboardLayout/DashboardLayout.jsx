@@ -7,8 +7,11 @@ import "./DashboardLayout.css";
 export function DashboardLayout({ children, activeRoute, navItems }) {
   const [expanded, setExpanded] = useState(true);
   const [profileOpen, setProfileOpen] = useState(false);
-  const { profile, signOut } = useAuth();
+  const { profile, user, signOut } = useAuth();
   const dropdownRef = useRef(null);
+
+  console.log("profile: ", profile);
+  
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -31,13 +34,13 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
     }
   };
 
-  const userInitials = profile?.full_name
-    ? profile.full_name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-    : "??";
+  const userInitials = profile?.first_name
+    ? `${profile.first_name[0]}${profile.last_name?.[0] || ""}`.toUpperCase()
+    : user?.email?.[0]?.toUpperCase() || "??";
+
+  const displayName = profile?.first_name 
+    ? `${profile.first_name} ${profile.last_name || ""}`.trim()
+    : user?.email?.split('@')[0] || "User";
 
   return (
     <div
@@ -137,10 +140,10 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
                     </div>
                     <div className="nx-profile-dropdown__info">
                       <div className="nx-profile-dropdown__name">
-                        {profile?.full_name || "User"}
+                        {displayName}
                       </div>
                       <div className="nx-profile-dropdown__email">
-                        {profile?.email || ""}
+                        {profile?.email || user?.email || ""}
                       </div>
                     </div>
                   </div>

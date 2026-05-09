@@ -23,6 +23,13 @@ npm install -g pnpm
 pnpm install
 ```
 
+<!-- server -->
+```bash
+cd server
+pnpm install
+pnpm run dev  # or pnpm start
+```
+
 <!-- client -->
 
 ```bash
@@ -30,9 +37,3 @@ cd client
 pnpm run dev
 ```
 
-<!-- server -->
-```bash
-cd server
-pnpm install
-pnpm run dev  # or pnpm start
-```

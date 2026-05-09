@@ -25,11 +25,13 @@ export const AuthProvider = ({ children }) => {
 
   const loadProfile = useCallback(async (userId) => {
     try {
+      console.log("Loading profile for userId:", userId);
       const data = await getUserProfile(userId);
+      console.log("Profile data received:", data);
       setProfile(data);
       setRole(normalizeRole(data?.role || data?.role_id || data?.role_name));
     } catch (error) {
-      console.warn("Unable to load profile:", error?.message || error);
+      console.error("Critical: Unable to load profile:", error);
       setProfile(null);
       setRole("employee");
     }
