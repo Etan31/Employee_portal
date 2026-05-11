@@ -28,7 +28,13 @@ export default function App() {
   }, [active, loading, user]);
 
   if (loading) {
-    return <div className="nx-loading-screen">Loading authentication...</div>;
+    return (
+      <div className="nx-loading-screen">
+        <span className="nx-loading-brand">Nexus</span>
+        <div className="nx-loading-spinner" />
+        <p className="nx-loading-text">Signing you in…</p>
+      </div>
+    );
   }
 
   if (!user) {

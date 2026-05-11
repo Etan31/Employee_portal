@@ -42,7 +42,8 @@ export const AuthProvider = ({ children }) => {
       const currentUser = currentSession?.user ?? null;
       setUser(currentUser);
       if (currentUser) {
-        await loadProfile(currentUser.id);
+        // Load profile asynchronously without blocking loading state
+        loadProfile(currentUser.id);
       } else {
         setProfile(null);
         setRole("employee");
@@ -69,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       subscription?.unsubscribe?.();
     };
-  }, [loadProfile]);
+  }, []);
 
   const signIn = useCallback(async (email, password) => {
     setLoading(true);

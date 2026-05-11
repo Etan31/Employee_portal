@@ -30,6 +30,54 @@ input {
   font-family: inherit;
 }
 
+/* ── Auth loading screen ── */
+.nx-loading-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 55%, #1e40af 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  animation: nx-fade-in 0.3s ease;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+@keyframes nx-fade-in {
+  from { opacity: 0; transform: scale(1.015); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.nx-loading-brand {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 24px rgba(37, 99, 235, 0.45);
+}
+
+.nx-loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: #60a5fa;
+  border-radius: 50%;
+  animation: nx-spin 0.75s linear infinite;
+}
+
+@keyframes nx-spin {
+  to { transform: rotate(360deg); }
+}
+
+.nx-loading-text {
+  font-size: 0.88rem;
+  color: rgba(248, 250, 252, 0.5);
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
 /* Base Primitive */
 .nx-card {
   background-color: var(--nx-surface);
