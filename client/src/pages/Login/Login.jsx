@@ -40,9 +40,7 @@ export function Login() {
           <span className="login-brand-name">Nexus</span>
         </div>
         <div className="login-tagline">
-          <p>
-            Where Efficiency Meets the Road.
-          </p>
+          <p>Where Efficiency Meets the Road.</p>
         </div>
         <div className="login-highlight">
           <div className="login-highlight-item">
@@ -111,14 +109,24 @@ export function Login() {
               </div>
             )}
 
-            <button type="submit" className="login-button" disabled={loading || signingIn}>
-              {(loading || signingIn) ? (
+            <button
+              type="submit"
+              className="login-button"
+              disabled={loading || signingIn}
+            >
+              {loading || signingIn ? (
                 <>
                   <span className="login-button-spinner" />
                   Signing in…
                 </>
-              ) : "Log In"}
+              ) : (
+                "Log In"
+              )}
             </button>
+
+            <p className="demo-credentials">
+              <b>Demo: </b>employee@gmail.com / employee12345
+            </p>
           </form>
 
           <p className="login-footer-text">

@@ -52,6 +52,18 @@ export default function App() {
     PageComponent = <TaskBox />;
   } else if (active === "profile") {
     PageComponent = <Profile />;
+  } else if (active === "Time management") {
+    PageComponent = <TaskBox />;
+  } else if (active === "Employees") {
+    PageComponent = <TaskBox />;
+  } else if (active === "Calendar") {
+    PageComponent = <TaskBox />;
+  } else if (active === "HR Policies") {
+    PageComponent = <TaskBox />;
+  } else if (active === "Helpdesk") {
+    PageComponent = <TaskBox />;
+  } else if (active === "Org View") {
+    PageComponent = <TaskBox />;
   } else {
     PageComponent = <PageStub title={activeItem.label} />;
   }

@@ -216,6 +216,13 @@
   color: #9ca3af;
 }
 
+.demo-credentials {
+  font-size: 0.82rem;
+  opacity: 0.65;
+  color: #111827;
+  margin: 0;
+}
+
 .login-error {
   font-size: 0.9rem;
   color: #b91c1c;
