@@ -13,8 +13,7 @@ function Dropdown({ options, value, onChange }) {
     <div className="nx-dropdown">
       <button className="nx-dropdown__trigger" onClick={() => setOpen(!open)}>
         <span>{selected?.label} &middot; {selected?.count}</span>
-        <Icon name="layout-dashboard" size={16} className={`nx-dropdown__chevron ${open ? 'open' : ''}`} />
-        {/* Using a standard chevron if we had one, but we'll use a small trick with layout-dashboard or just a css arrow, actually wait, the prompt said "Add only icons you actually use", I will just use CSS border arrow for the chevron */}
+        <span className={`nx-dropdown__chevron ${open ? 'open' : ''}`} />
       </button>
       {open && (
         <div className="nx-dropdown__menu">
@@ -35,12 +34,14 @@ function Dropdown({ options, value, onChange }) {
 
 export function TaskBox({ isDashboard }) {
   const [filter, setFilter] = useState('assigned');
+  const [priorityFilter, setPriorityFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const assignedTasks = TASKS.filter(t => t.assignee.id === ME.id);
   const raisedTasks = TASKS.filter(t => t.assigner.id === ME.id);
   
-  const currentTasks = filter === 'assigned' ? assignedTasks : raisedTasks;
+  const baseTask = filter === 'assigned' ? assignedTasks : raisedTasks;
+  const currentTasks = priorityFilter === 'all' ? baseTask : baseTask.filter(t => t.priority === priorityFilter);
   
   const [selectedId, setSelectedId] = useState(null);
 
@@ -59,6 +60,13 @@ export function TaskBox({ isDashboard }) {
     { value: 'raised', label: 'Raised by Me', count: raisedTasks.length },
   ];
 
+  const priorityOptions = [
+    { value: 'all', label: 'All Priorities', count: baseTask.length },
+    { value: 'HIGH', label: 'High', count: baseTask.filter(t => t.priority === 'HIGH').length },
+    { value: 'MEDIUM', label: 'Medium', count: baseTask.filter(t => t.priority === 'MEDIUM').length },
+    { value: 'LOW', label: 'Low', count: baseTask.filter(t => t.priority === 'LOW').length },
+  ];
+
   return (
     <section className={`nx-card nx-taskbox ${isDashboard ? 'nx-taskbox--dashboard' : ''}`}>
       
@@ -73,6 +81,11 @@ export function TaskBox({ isDashboard }) {
             </button>
           )}
         </header>
+        {!isDashboard && (
+          <div className="nx-taskbox__priority-filter">
+            <Dropdown options={priorityOptions} value={priorityFilter} onChange={setPriorityFilter} />
+          </div>
+        )}
         
         <ul className="nx-taskbox__list">
           {currentTasks.length === 0 ? (
@@ -90,7 +103,12 @@ export function TaskBox({ isDashboard }) {
                     onClick={() => setSelectedId(task.id)}
                   >
                     <header className="nx-task-item__header">
-                      <span className="nx-task-item__title">{task.title}</span>
+                      <div className="nx-task-item__title-wrapper">
+                        <span className={`nx-task-priority-badge nx-task-priority-badge--${task.priority.toLowerCase()}`} title={task.priority}>
+                          <Icon name={`priority-${task.priority.toLowerCase()}`} size={14} />
+                        </span>
+                        <span className="nx-task-item__title">{task.title}</span>
+                      </div>
                       <span className="nx-task-item__date">{formatShortDate(task.dueDate)}</span>
                     </header>
                     <div className="nx-task-item__desc">{task.description}</div>
@@ -142,6 +160,16 @@ export function TaskBox({ isDashboard }) {
                 <div className="nx-task-person">
                   <div className="nx-task-person__avatar">{selectedTask.assigner.initials}</div>
                   <span>{selectedTask.assigner.name}</span>
+                </div>
+              </div>
+            </section>
+
+            <section className="nx-task-detail__section">
+              <h4 className="nx-task-detail__label">Priority</h4>
+              <div className="nx-task-priority-display">
+                <div className={`nx-priority-badge nx-priority-badge--${selectedTask.priority.toLowerCase()}`}>
+                  <Icon name={`priority-${selectedTask.priority.toLowerCase()}`} size={16} />
+                  <span>{selectedTask.priority}</span>
                 </div>
               </div>
             </section>
@@ -299,6 +327,39 @@ function CreateTaskModal({ onClose }) {
             <div className="nx-form-group nx-form-group--date">
               <label className="nx-form-label" htmlFor="due-date">Due Date {priority === 'Urgent' && <span className="nx-required">*</span>}</label>
               <input type="date" id="due-date" className="nx-form-input" required={priority === 'Urgent'} />
+            </div>
+          </div>
+
+          <div className="nx-form-group">
+            <label className="nx-form-label">Attachments</label>
+            <div className="nx-attachments-container">
+              <div className="nx-attachments-upload">
+                <input type="file" id="attachments" className="nx-attachments-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png,.gif" />
+                <label htmlFor="attachments" className="nx-attachments-label">
+                  <Icon name="file-text" size={20} />
+                  <span>Click to upload or drag files</span>
+                  <small>PDF, DOC, XLS, images up to 10MB</small>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="nx-form-group">
+            <label className="nx-form-label" htmlFor="linked-issues">Link Issues</label>
+            <input
+              type="text"
+              id="linked-issues"
+              className="nx-form-input"
+              placeholder="Search or paste issue ID (e.g., PROJ-123)"
+            />
+            <div className="nx-linked-issues-list">
+              <div className="nx-linked-issue-item">
+                <div className="nx-linked-issue-badge">PROJ-101</div>
+                <span className="nx-linked-issue-title">Update Employee Handbook</span>
+                <button type="button" className="nx-linked-issue-remove" aria-label="Remove link">
+                  <Icon name="x" size={14} />
+                </button>
+              </div>
             </div>
           </div>
         </form>

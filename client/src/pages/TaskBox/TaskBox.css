@@ -701,3 +701,212 @@
 .nx-required {
   color: var(--nx-danger);
 }
+
+/* Priority Filter Bar */
+.nx-taskbox__priority-filter {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--nx-border);
+  background: var(--nx-surface);
+}
+
+/* Priority Badge in Task Item */
+.nx-task-item__title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nx-task-priority-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  flex-shrink: 0;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+
+.nx-task-item:hover .nx-task-priority-badge {
+  opacity: 1;
+}
+
+.nx-task-priority-badge--high {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.nx-task-priority-badge--medium {
+  background: #fefce8;
+  color: #ca8a04;
+}
+
+.nx-task-priority-badge--low {
+  background: var(--nx-primary-50);
+  color: var(--nx-primary);
+}
+
+/* Priority Badge in Detail View */
+.nx-task-priority-display {
+  display: flex;
+  align-items: center;
+}
+
+.nx-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.nx-priority-badge--high {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.nx-priority-badge--medium {
+  background: #fefce8;
+  color: #ca8a04;
+  border-color: #fde047;
+}
+
+.nx-priority-badge--low {
+  background: var(--nx-primary-50);
+  color: var(--nx-primary);
+  border-color: var(--nx-primary-100);
+}
+
+/* Attachments */
+.nx-attachments-container {
+  border: 1px dashed var(--nx-border-strong);
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.nx-attachments-upload {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  background: var(--nx-surface-2);
+  transition: background 0.2s;
+}
+
+.nx-attachments-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.nx-attachments-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 16px;
+  text-align: center;
+  color: var(--nx-text-muted);
+}
+
+.nx-attachments-label span {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--nx-text);
+}
+
+.nx-attachments-label small {
+  font-size: 0.75rem;
+  color: var(--nx-text-muted);
+}
+
+.nx-attachments-input:hover ~ .nx-attachments-label {
+  color: var(--nx-primary);
+}
+
+.nx-attachments-input:hover ~ .nx-attachments-label span {
+  color: var(--nx-primary);
+}
+
+/* Linked Issues */
+.nx-linked-issues-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nx-linked-issue-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--nx-surface-2);
+  border: 1px solid var(--nx-border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.nx-linked-issue-badge {
+  padding: 2px 6px;
+  background: var(--nx-primary-50);
+  border: 1px solid var(--nx-primary-100);
+  border-radius: 4px;
+  color: var(--nx-primary-700);
+  font-weight: 600;
+  font-size: 0.65rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nx-linked-issue-title {
+  color: var(--nx-text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nx-linked-issue-remove {
+  background: none;
+  border: none;
+  padding: 4px;
+  color: var(--nx-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.nx-linked-issue-remove:hover {
+  background: var(--nx-surface);
+  color: var(--nx-text);
+}
+
+/* Dropdown Chevron Fix */
+.nx-dropdown__chevron {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--nx-text-muted);
+  border-bottom: 2px solid var(--nx-text-muted);
+  transform: rotate(45deg);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.nx-dropdown__chevron.open {
+  transform: rotate(-135deg);
+}
