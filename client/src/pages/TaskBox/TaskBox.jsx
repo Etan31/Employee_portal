@@ -205,12 +205,6 @@ function CreateTaskModal({ onClose }) {
         </header>
 
         <form className="nx-modal-body" onSubmit={e => e.preventDefault()}>
-          {/* Summary / Title */}
-          <div className="nx-form-group">
-            <label className="nx-form-label" htmlFor="task-summary">Summary</label>
-            <input type="text" id="task-summary" className="nx-form-input" placeholder="e.g. Design new login screen" />
-          </div>
-
           <div className="nx-form-row">
             <div className="nx-form-group">
               <label className="nx-form-label" htmlFor="issue-type">Issue Type</label>
@@ -221,14 +215,14 @@ function CreateTaskModal({ onClose }) {
                 <option>Epic</option>
               </select>
             </div>
-            <div className="nx-form-group">
+            <div className="nx-form-group nx-form-group--priority">
               <label className="nx-form-label">Priority</label>
               <div className="nx-priority-selector" role="radiogroup" aria-label="Priority selector">
                 {['Urgent', 'High', 'Medium', 'Low'].map(p => (
                   <button 
                     key={p} 
                     type="button"
-                    className={`nx-priority-btn ${priority === p ? 'active' : ''}`}
+                    className={`nx-priority-btn nx-priority-btn--${p.toLowerCase()} ${priority === p ? 'active' : ''}`}
                     onClick={() => setPriority(p)}
                     title={p}
                     aria-pressed={priority === p}
@@ -263,55 +257,49 @@ function CreateTaskModal({ onClose }) {
             </div>
           </div>
 
-          <div className="nx-form-group">
-            <label className="nx-form-label" htmlFor="task-labels">Labels</label>
-            <div className="nx-label-input-container">
-              <div className="nx-labels-pills">
-                {labels.map(l => (
-                  <span key={l} className="nx-label-pill">
-                    {l}
-                    <button type="button" onClick={() => setLabels(labels.filter(x => x !== l))} aria-label={`Remove label ${l}`}><Icon name="x" size={10} /></button>
-                  </span>
-                ))}
-              </div>
-              <input 
-                type="text" 
-                id="task-labels"
-                className="nx-label-input" 
-                value={labelText}
-                onChange={e => setLabelText(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && labelText) {
-                    addLabel(labelText);
-                  }
-                }}
-                placeholder="Type to search or create..."
-              />
-              {labelText && (
-                <ul className="nx-label-suggestions">
-                  {filteredLabels.map(l => (
-                    <li key={l} className="nx-suggestion-item" onClick={() => addLabel(l)}>{l}</li>
-                  ))}
-                  {labelText && !suggestedLabels.includes(labelText) && (
-                    <li className="nx-suggestion-item nx-suggestion-item--new" onClick={() => addLabel(labelText)}>
-                      Create new: <strong>{labelText}</strong>
-                    </li>
-                  )}
-                </ul>
-              )}
-            </div>
-          </div>
-
           <div className="nx-form-row">
             <div className="nx-form-group">
+              <label className="nx-form-label" htmlFor="task-labels">Labels</label>
+              <div className="nx-label-input-container">
+                <div className="nx-labels-pills">
+                  {labels.map(l => (
+                    <span key={l} className="nx-label-pill">
+                      {l}
+                      <button type="button" onClick={() => setLabels(labels.filter(x => x !== l))} aria-label={`Remove label ${l}`}><Icon name="x" size={10} /></button>
+                    </span>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  id="task-labels"
+                  className="nx-label-input"
+                  value={labelText}
+                  onChange={e => setLabelText(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && labelText) {
+                      addLabel(labelText);
+                    }
+                  }}
+                  placeholder="Type to search or create..."
+                />
+                {labelText && (
+                  <ul className="nx-label-suggestions">
+                    {filteredLabels.map(l => (
+                      <li key={l} className="nx-suggestion-item" onClick={() => addLabel(l)}>{l}</li>
+                    ))}
+                    {labelText && !suggestedLabels.includes(labelText) && (
+                      <li className="nx-suggestion-item nx-suggestion-item--new" onClick={() => addLabel(labelText)}>
+                        Create new: <strong>{labelText}</strong>
+                      </li>
+                    )}
+                  </ul>
+                )}
+              </div>
+            </div>
+            <div className="nx-form-group nx-form-group--date">
               <label className="nx-form-label" htmlFor="due-date">Due Date {priority === 'Urgent' && <span className="nx-required">*</span>}</label>
               <input type="date" id="due-date" className="nx-form-input" required={priority === 'Urgent'} />
             </div>
-          </div>
-
-          <div className="nx-modal-actions-bar">
-            <button type="button" className="nx-action-btn"><Icon name="paperclip" size={16} /> Attach</button>
-            <button type="button" className="nx-action-btn"><Icon name="network" size={16} /> Link Issues</button>
           </div>
         </form>
 
