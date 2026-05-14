@@ -1,10 +1,16 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import { verifyToken } from "./middleware/auth.middleware.js";
 import profileRoutes from "./routes/profiles.routes.js";
 import taskRoutes from "./routes/tasks.routes.js";
 
 const app = express();
+const path = require("path");
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Middleware Setup
@@ -18,6 +24,15 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 1. Serve static files from the Vite build directory
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+// 2. Handle any requests that don't match your API routes by sending index.html
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
+});
+
 
 /**
  * Health Check Route (no auth required)
