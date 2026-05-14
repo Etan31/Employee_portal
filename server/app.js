@@ -62,20 +62,16 @@ app.use("/api/protected/tasks", taskRoutes);
 /**
  * 404 Handler
  */
-app.use((req, res) => {
-  res.status(404).json({
-    error: "Not Found",
-    message: `Route ${req.method} ${req.path} does not exist`,
-  });
+app.get("/(.*)", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
 });
 
 /**
  * Global Error Handler
- * Catches errors from routes and middleware
+ * Keep this at the very bottom
  */
 app.use((err, req, res, next) => {
   console.error("[ERROR]", err);
-
   const status = err.status || err.statusCode || 500;
   const message = err.message || "Internal Server Error";
 
