@@ -7,6 +7,7 @@ export default defineConfig({
   publicDir: "./client/public",
   build: {
     outDir: "./client/dist",
+    chunkSizeWarningLimit: 1000,
   },
   plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
 });
