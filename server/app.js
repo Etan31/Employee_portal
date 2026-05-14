@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import path from "path"; 
+import path from "path";
 import { fileURLToPath } from "url";
 import { verifyToken } from "./middleware/auth.middleware.js";
 import profileRoutes from "./routes/profiles.routes.js";
@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // 2. Handle any requests that don't match your API routes by sending index.html
-app.get("/(.*)", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
 });
 
@@ -61,8 +61,6 @@ app.use("/api/protected/tasks", taskRoutes);
 /**
  * 404 Handler
  */
-
-
 
 /**
  * Global Error Handler
