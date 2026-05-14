@@ -1,17 +1,15 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
+import path from "path"; 
 import { fileURLToPath } from "url";
 import { verifyToken } from "./middleware/auth.middleware.js";
 import profileRoutes from "./routes/profiles.routes.js";
 import taskRoutes from "./routes/tasks.routes.js";
 
-const app = express();
-const path = require("path");
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const app = express();
 /**
  * Middleware Setup
  * Order matters: CORS → body parsers → auth → routes → error handling
