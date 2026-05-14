@@ -10,10 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-/**
- * Middleware Setup
- * Order matters: CORS → body parsers → auth → routes → error handling
- */
+
 const corsOptions = {
   origin: (process.env.ALLOWED_ORIGINS || "http://localhost:5173").split(","),
   credentials: true,
@@ -23,48 +20,36 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 1. Serve static files from the Vite build directory
-app.use(express.static(path.join(__dirname, "../client/dist")));
-
-// 2. Handle any requests that don't match your API routes by sending index.html
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
-});
-
 /**
- * Health Check Route (no auth required)
+ * 1. API ROUTES (Must be FIRST)
  */
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-/**
- * Public Routes (no authentication required)
- */
-// TODO: Add public routes here (e.g., /api/public/...)
-
-/**
- * Protected Routes (authentication required)
- * All routes below require valid JWT token
- */
+// Protected Routes
 app.use("/api/protected", verifyToken);
-
-/**
- * Mount protected route modules
- */
 app.use("/api/protected/profiles", profileRoutes);
 app.use("/api/protected/tasks", taskRoutes);
-// TODO: Add more routes as needed
-// import requestRoutes from './routes/requests.routes.js';
-// app.use("/api/protected/requests", requestRoutes);
 
 /**
- * 404 Handler
+ * 2. STATIC FILES (Must be AFTER API routes)
  */
+// Define the path once to avoid repetition
+const distPath = path.join(__dirname, "../client/dist");
+
+app.use(express.static(distPath));
 
 /**
- * Global Error Handler
- * Keep this at the very bottom
+ * 3. THE CATCH-ALL (Must be LAST)
+ * This handles React routing for any non-API URL
+ */
+app.get("/(.*)", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
+
+/**
+ * 4. Global Error Handler
  */
 app.use((err, req, res, next) => {
   console.error("[ERROR]", err);
