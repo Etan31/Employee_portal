@@ -97,7 +97,9 @@ export function TaskBox({ isDashboard }) {
         <header className="nx-taskbox__filter-bar">
           <div className="nx-taskbox__header-left">
             <p className="nx-taskbox__title">Tasks</p>
-            <p className="nx-taskbox__subtitle">Track work assigned to you and requests you have raised.</p>
+            <p className="nx-taskbox__subtitle">
+              Track work assigned to you and requests you have raised.
+            </p>
           </div>
 
           <div className="nx-taskbox__header-actions">
@@ -204,7 +206,9 @@ export function TaskBox({ isDashboard }) {
             <header className="nx-task-detail__header">
               <div className="nx-task-detail__heading">
                 <div className="nx-task-detail__topline">
-                  <span className="nx-task-detail__type">{selectedTask.issueType || 'Task'}</span>
+                  <span className="nx-task-detail__type">
+                    {selectedTask.issueType || "Task"}
+                  </span>
                   <span
                     className={`nx-task-status nx-task-status--${selectedTask.status.toLowerCase()} nx-task-detail__status`}
                   >
@@ -215,7 +219,9 @@ export function TaskBox({ isDashboard }) {
                 <h2 className="nx-task-detail__title">{selectedTask.title}</h2>
 
                 <div className="nx-task-detail__meta">
-                  <span className="nx-task-detail__meta-item">Priority: {selectedTask.priority}</span>
+                  <span className="nx-task-detail__meta-item">
+                    Priority: {selectedTask.priority}
+                  </span>
                   <span className="nx-task-detail__meta-item">
                     Due {formatShortDate(selectedTask.dueDate)}
                   </span>
@@ -246,20 +252,28 @@ export function TaskBox({ isDashboard }) {
             <section className="nx-task-detail__section nx-task-detail__field-grid">
               <div className="nx-task-detail__field">
                 <h4 className="nx-task-detail__field-title">Assignee</h4>
-                <p className="nx-task-detail__field-value">{selectedTask.assignee.name}</p>
+                <p className="nx-task-detail__field-value">
+                  {selectedTask.assignee.name}
+                </p>
               </div>
               <div className="nx-task-detail__field">
                 <h4 className="nx-task-detail__field-title">Reporter</h4>
-                <p className="nx-task-detail__field-value">{selectedTask.reporter?.name || selectedTask.assigner.name}</p>
+                <p className="nx-task-detail__field-value">
+                  {selectedTask.reporter?.name || selectedTask.assigner.name}
+                </p>
               </div>
               <div className="nx-task-detail__field">
                 <h4 className="nx-task-detail__field-title">Labels</h4>
                 <div className="nx-task-detail__labels">
                   {(selectedTask.labels || []).map((label) => (
-                    <span key={label} className="nx-task-detail__label-pill">{label}</span>
+                    <span key={label} className="nx-task-detail__label-pill">
+                      {label}
+                    </span>
                   ))}
                   {(selectedTask.labels || []).length === 0 && (
-                    <span className="nx-task-detail__field-value">No labels added</span>
+                    <span className="nx-task-detail__field-value">
+                      No labels added
+                    </span>
                   )}
                 </div>
               </div>
@@ -269,13 +283,17 @@ export function TaskBox({ isDashboard }) {
                   <div className="nx-task-detail__links">
                     {selectedTask.linkedIssues.map((issue) => (
                       <div key={issue.id} className="nx-task-detail__link-item">
-                        <span className="nx-task-detail__link-badge">{issue.id}</span>
+                        <span className="nx-task-detail__link-badge">
+                          {issue.id}
+                        </span>
                         <span>{issue.title}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="nx-task-detail__field-value">No linked issues</p>
+                  <p className="nx-task-detail__field-value">
+                    No linked issues
+                  </p>
                 )}
               </div>
             </section>
