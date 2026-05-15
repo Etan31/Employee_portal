@@ -95,20 +95,27 @@ export function TaskBox({ isDashboard }) {
       {/* Left Pane - List */}
       <section className="nx-taskbox__list-pane">
         <header className="nx-taskbox__filter-bar">
-          <Dropdown
-            options={filterOptions}
-            value={filter}
-            onChange={setFilter}
-          />
-          {!isDashboard && (
-            <button
-              className="nx-taskbox__create-btn"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Icon name="user-plus" size={16} />
-              <span>Create</span>
-            </button>
-          )}
+          <div className="nx-taskbox__header-left">
+            <p className="nx-taskbox__title">Tasks</p>
+            <p className="nx-taskbox__subtitle">Track work assigned to you and requests you have raised.</p>
+          </div>
+
+          <div className="nx-taskbox__header-actions">
+            <Dropdown
+              options={filterOptions}
+              value={filter}
+              onChange={setFilter}
+            />
+            {!isDashboard && (
+              <button
+                className="nx-taskbox__create-btn"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Icon name="user-plus" size={16} />
+                <span>Create</span>
+              </button>
+            )}
+          </div>
         </header>
         {!isDashboard && (
           <div className="nx-taskbox__priority-filter">
@@ -195,17 +202,106 @@ export function TaskBox({ isDashboard }) {
         ) : (
           <article className="nx-task-detail">
             <header className="nx-task-detail__header">
-              <h2 className="nx-task-detail__title">{selectedTask.title}</h2>
-              <span
-                className={`nx-task-status nx-task-status--${selectedTask.status.toLowerCase()} nx-task-detail__status`}
-              >
-                {selectedTask.status.replace("_", " ")}
-              </span>
+              <div className="nx-task-detail__heading">
+                <div className="nx-task-detail__topline">
+                  <span className="nx-task-detail__type">{selectedTask.issueType || 'Task'}</span>
+                  <span
+                    className={`nx-task-status nx-task-status--${selectedTask.status.toLowerCase()} nx-task-detail__status`}
+                  >
+                    {selectedTask.status.replace("_", " ")}
+                  </span>
+                </div>
+
+                <h2 className="nx-task-detail__title">{selectedTask.title}</h2>
+
+                <div className="nx-task-detail__meta">
+                  <span className="nx-task-detail__meta-item">Priority: {selectedTask.priority}</span>
+                  <span className="nx-task-detail__meta-item">
+                    Due {formatShortDate(selectedTask.dueDate)}
+                  </span>
+                  {isOverdue(selectedTask.dueDate) && (
+                    <span className="nx-task-badge-danger">Overdue</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="nx-task-priority-display">
+                <div
+                  className={`nx-priority-badge nx-priority-badge--${selectedTask.priority.toLowerCase()}`}
+                >
+                  <Icon
+                    name={`priority-${selectedTask.priority.toLowerCase()}`}
+                    size={16}
+                  />
+                  <span>{selectedTask.priority}</span>
+                </div>
+              </div>
             </header>
 
             <section className="nx-task-detail__section">
               <h4 className="nx-task-detail__label">Description</h4>
               <p className="nx-task-detail__text">{selectedTask.description}</p>
+            </section>
+
+            <section className="nx-task-detail__section nx-task-detail__field-grid">
+              <div className="nx-task-detail__field">
+                <h4 className="nx-task-detail__field-title">Assignee</h4>
+                <p className="nx-task-detail__field-value">{selectedTask.assignee.name}</p>
+              </div>
+              <div className="nx-task-detail__field">
+                <h4 className="nx-task-detail__field-title">Reporter</h4>
+                <p className="nx-task-detail__field-value">{selectedTask.reporter?.name || selectedTask.assigner.name}</p>
+              </div>
+              <div className="nx-task-detail__field">
+                <h4 className="nx-task-detail__field-title">Labels</h4>
+                <div className="nx-task-detail__labels">
+                  {(selectedTask.labels || []).map((label) => (
+                    <span key={label} className="nx-task-detail__label-pill">{label}</span>
+                  ))}
+                  {(selectedTask.labels || []).length === 0 && (
+                    <span className="nx-task-detail__field-value">No labels added</span>
+                  )}
+                </div>
+              </div>
+              <div className="nx-task-detail__field">
+                <h4 className="nx-task-detail__field-title">Linked Issues</h4>
+                {(selectedTask.linkedIssues || []).length > 0 ? (
+                  <div className="nx-task-detail__links">
+                    {selectedTask.linkedIssues.map((issue) => (
+                      <div key={issue.id} className="nx-task-detail__link-item">
+                        <span className="nx-task-detail__link-badge">{issue.id}</span>
+                        <span>{issue.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="nx-task-detail__field-value">No linked issues</p>
+                )}
+              </div>
+            </section>
+
+            <section className="nx-task-detail__section nx-task-detail__field-grid">
+              <div className="nx-task-detail__field">
+                <h4 className="nx-task-detail__field-title">Attachments</h4>
+                {(selectedTask.attachments || []).length > 0 ? (
+                  <ul className="nx-task-detail__attachments-list">
+                    {selectedTask.attachments.map((file) => (
+                      <li key={file}>{file}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="nx-task-detail__field-value">No attachments</p>
+                )}
+              </div>
+              <div className="nx-task-detail__field">
+                <h4 className="nx-task-detail__field-title">Dates</h4>
+                <p className="nx-task-detail__field-value">
+                  Created: {formatDate(new Date(selectedTask.createdDate))}
+                </p>
+                <p className="nx-task-detail__field-value">
+                  Due: {formatDate(new Date(selectedTask.dueDate))}
+                </p>
+              </div>
             </section>
 
             <section className="nx-task-detail__section">
@@ -230,52 +326,6 @@ export function TaskBox({ isDashboard }) {
                 </div>
               </div>
             </section>
-
-            <section className="nx-task-detail__section">
-              <h4 className="nx-task-detail__label">Priority</h4>
-              <div className="nx-task-priority-display">
-                <div
-                  className={`nx-priority-badge nx-priority-badge--${selectedTask.priority.toLowerCase()}`}
-                >
-                  <Icon
-                    name={`priority-${selectedTask.priority.toLowerCase()}`}
-                    size={16}
-                  />
-                  <span>{selectedTask.priority}</span>
-                </div>
-              </div>
-            </section>
-
-            <section className="nx-task-detail__section">
-              <h4 className="nx-task-detail__label">Dates</h4>
-              <div className="nx-task-detail__dates">
-                <div className="nx-task-date">
-                  <Icon
-                    name="calendar"
-                    size={16}
-                    className="nx-task-date__icon"
-                  />
-                  <div className="nx-task-date__info">
-                    <span className="nx-task-date__label">Created</span>
-                    <span className="nx-task-date__val">
-                      {formatDate(new Date(selectedTask.createdDate))}
-                    </span>
-                  </div>
-                </div>
-                <div className="nx-task-date">
-                  <Icon name="clock" size={16} className="nx-task-date__icon" />
-                  <div className="nx-task-date__info">
-                    <span className="nx-task-date__label">Due</span>
-                    <span className="nx-task-date__val">
-                      {formatDate(new Date(selectedTask.dueDate))}
-                      {isOverdue(selectedTask.dueDate) && (
-                        <span className="nx-task-badge-danger">Overdue</span>
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </section>
           </article>
         )}
       </section>
@@ -297,6 +347,22 @@ function CreateTaskModal({ onClose }) {
     "Feature",
     "Security",
   ]);
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+    const scrollComp = window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = "hidden";
+    if (scrollComp > 0) {
+      document.body.style.paddingRight = `${scrollComp}px`;
+    }
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+    };
+  }, []);
 
   const filteredLabels = suggestedLabels.filter(
     (l) =>
