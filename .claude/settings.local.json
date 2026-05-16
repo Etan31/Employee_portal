@@ -6,7 +6,13 @@
       "PowerShell(New-Item -ItemType Directory -Path \"d:\\\\WEB PROJECTS\\\\Employee_portal\\\\api\" -Force)",
       "Bash(Get-ChildItem -Path \"d:\\\\WEB PROJECTS\\\\Employee_portal\" -Force)",
       "Bash(Select-Object Name, PSIsContainer)",
-      "Bash(Sort-Object PSIsContainer -Descending)"
+      "Bash(Sort-Object PSIsContainer -Descending)",
+      "Bash(pnpm dev *)",
+      "Bash(pnpm build *)",
+      "Bash(python .agent/skills/ui-ux-pro-max/scripts/search.py \"HR dashboard leave management attendance metrics cards\" --domain chart)",
+      "Bash(python .agent/skills/ui-ux-pro-max/scripts/search.py \"dashboard SaaS data visualization professional\" --domain style -n 3)",
+      "Bash(python .agent/skills/ui-ux-pro-max/scripts/search.py \"dashboard cards forms animation\" --domain ux -n 3)",
+      "Bash(python .agent/skills/ui-ux-pro-max/scripts/search.py \"react dashboard\" --stack react -n 3)"
     ]
   }
 }
