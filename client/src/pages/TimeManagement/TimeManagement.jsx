@@ -44,8 +44,8 @@ function AttendanceChart({ data, viewMode }) {
   const [tooltip, setTooltip] = useState(null);
 
   const MAX_HOURS = 10;
-  const CHART_H = 100;
-  const BAR_W = viewMode === "month" ? 10 : 20;
+  const CHART_H = 72;
+  const BAR_W = viewMode === "month" ? 7 : 11;
   const GAP = viewMode === "month" ? 4 : 10;
   const PAD = { top: 10, right: 12, bottom: 28, left: 28 };
 
@@ -603,13 +603,11 @@ function QuickStatsBar() {
     <div className="nx-tm-stats-bar">
       {STAT_CONFIG.map((s) => (
         <div key={s.key} className={`nx-card nx-tm-stat-card nx-tm-stat-card--${s.accent}`}>
-          <div className="nx-tm-stat-card__header">
-            <div className={`nx-tm-stat-card__icon nx-tm-stat-card__icon--${s.accent}`}>
-              <Icon name={s.icon} size={22} />
-            </div>
+          <div className={`nx-tm-stat-card__icon nx-tm-stat-card__icon--${s.accent}`}>
+            <Icon name={s.icon} size={15} />
           </div>
-          <span className="nx-tm-stat-card__value">{QUICK_STATS[s.key]}</span>
-          <div className="nx-tm-stat-card__footer">
+          <div className="nx-tm-stat-card__body">
+            <span className="nx-tm-stat-card__value">{QUICK_STATS[s.key]}</span>
             <span className="nx-tm-stat-card__label">{s.label}</span>
             <span className="nx-tm-stat-card__unit">{s.unit}</span>
           </div>
