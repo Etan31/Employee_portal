@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./OrgChartView.css";
 import sampleData from "../../data/orgSample";
 
@@ -49,15 +49,24 @@ function OrgNode({ node }) {
 function TreeNode({ node, depth = 0 }) {
   const [open, setOpen] = useState(true);
   const hasChildren = node.children && node.children.length > 0;
+  const profile = node.data?.profile || {};
   return (
     <div className="tree-node" style={{ paddingLeft: depth * 20 }}>
       <div
         className="tree-row"
         onClick={() => hasChildren && setOpen((o) => !o)}
       >
-        {hasChildren && <span className="tree-toggle">{open ? "▾" : "▸"}</span>}
-        {!hasChildren && <span className="tree-toggle tree-leaf">•</span>}
-        <span className="tree-label">{node.label}</span>
+        {hasChildren ? (
+          <span className="tree-toggle">{open ? "▾" : "▸"}</span>
+        ) : (
+          <span className="tree-toggle tree-leaf">•</span>
+        )}
+        <div>
+          <span className="tree-label">{node.label}</span>
+          {profile.position && (
+            <span className="tree-meta">{profile.position}</span>
+          )}
+        </div>
       </div>
       {open &&
         hasChildren &&
@@ -77,6 +86,7 @@ function ListView({ data }) {
     return result;
   }
   const all = flatten(data);
+
   return (
     <div className="list-view simple-card">
       <table className="list-table">
@@ -89,12 +99,18 @@ function ListView({ data }) {
         </thead>
         <tbody>
           {all.map((n, i) => {
-            const p = n.data?.profile || {};
+            const profile = n.data?.profile || {};
             return (
               <tr key={i}>
-                <td>{p.name || n.label}</td>
-                <td>{p.position || "—"}</td>
-                <td>{p.email || "—"}</td>
+                <td>{profile.name || n.label}</td>
+                <td>{profile.position || "—"}</td>
+                <td>
+                  {profile.email ? (
+                    <a href={`mailto:${profile.email}`}>{profile.email}</a>
+                  ) : (
+                    "—"
+                  )}
+                </td>
               </tr>
             );
           })}
@@ -106,27 +122,48 @@ function ListView({ data }) {
 
 export default function OrgChartView() {
   const [view, setView] = useState("org");
+  const [variant, setVariant] = useState("standard");
+  const current = sampleData[variant] || sampleData.standard;
 
   return (
     <div className="org-wrapper">
-      <div className="view-controls">
-        {["list", "tree", "org"].map((v) => (
-          <button
-            key={v}
-            className={view === v ? "active" : ""}
-            onClick={() => setView(v)}
-          >
-            {v.charAt(0).toUpperCase() + v.slice(1)}
-          </button>
-        ))}
+      <div className="org-controls">
+        <div className="view-group">
+          {sampleData.views.map((item) => (
+            <button
+              key={item.id}
+              className={view === item.id ? "active" : ""}
+              onClick={() => setView(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="variant-group">
+          {sampleData.variants.map((item) => (
+            <button
+              key={item.id}
+              className={variant === item.id ? "active" : ""}
+              onClick={() => setVariant(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="variant-summary">
+        <span>{current.subtitle}</span>
+        <span>{current.extra}</span>
       </div>
 
       <div className="view-area">
-        {view === "list" && <ListView data={sampleData.org} />}
+        {view === "list" && <ListView data={current.org} />}
 
         {view === "tree" && (
           <div className="tree-view simple-card">
-            {sampleData.tree.map((n, i) => (
+            {current.tree.map((n, i) => (
               <TreeNode key={n.key || i} node={n} />
             ))}
           </div>
@@ -135,7 +172,7 @@ export default function OrgChartView() {
         {view === "org" && (
           <div className="org-view simple-card animate-zoom">
             <div className="org-chart">
-              {sampleData.org.map((n, i) => (
+              {current.org.map((n, i) => (
                 <OrgNode key={n.key || i} node={n} />
               ))}
             </div>
