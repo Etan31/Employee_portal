@@ -34,19 +34,20 @@ app.use("/api/protected/tasks", taskRoutes);
 
 /**
  * 2. STATIC FILES (Must be AFTER API routes)
+ * Skipped on Vercel — Vercel serves client/dist as static assets natively.
  */
-// Define the path once to avoid repetition
-const distPath = path.join(__dirname, "../client/dist");
+if (!process.env.VERCEL) {
+  const distPath = path.join(__dirname, "../client/dist");
+  app.use(express.static(distPath));
 
-app.use(express.static(distPath));
-
-/**
- * 3. THE CATCH-ALL (Must be LAST)
- * This handles React routing for any non-API URL
- */
-app.get("/(.*)", (req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
-});
+  /**
+   * 3. THE CATCH-ALL (Must be LAST)
+   * This handles React routing for any non-API URL
+   */
+  app.get("/(.*)", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
 
 /**
  * 4. Global Error Handler

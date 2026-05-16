@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "mcp__mcp-registry__search_mcp_registry",
-      "PowerShell(Start-Process \"http://localhost:5173\")"
+      "PowerShell(Start-Process \"http://localhost:5173\")",
+      "PowerShell(New-Item -ItemType Directory -Path \"d:\\\\WEB PROJECTS\\\\Employee_portal\\\\api\" -Force)"
     ]
   }
 }
