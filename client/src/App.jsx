@@ -7,6 +7,7 @@ import { TaskBox } from "./pages/TaskBox/TaskBox.jsx";
 import { Profile } from "./pages/Profile/Profile.jsx";
 import { PageStub } from "./pages/PageStub/PageStub.jsx";
 import { TimeManagement } from "./pages/TimeManagement/TimeManagement.jsx";
+import Organization from "./pages/Organization/Organization.jsx";
 import { Login } from "./pages/Login/Login.jsx";
 import { useAuth } from "./hooks/auth.hooks.jsx";
 import { filterNavItemsByRole } from "./utils/authPermissions.js";
@@ -55,6 +56,8 @@ export default function App() {
     PageComponent = <Profile />;
   } else if (active === "time-management") {
     PageComponent = <TimeManagement />;
+  } else if (active === "org-view") {
+    PageComponent = <Organization />;
   } else {
     PageComponent = <PageStub title={activeItem.label} />;
   }
