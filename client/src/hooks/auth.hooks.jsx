@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { supabase } from "../../../supabase/supabaseClient.js";
+import { supabase } from "../lib/supabaseClient.js";
 import {
   loginUser,
   logoutUser,

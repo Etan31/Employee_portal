@@ -1,4 +1,10 @@
-import { supabase } from './supabaseClient.js';
+// Run with: node --env-file=.env scripts/check-tables.js
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY,
+)
 
 const listTableDetails = async () => {
   const { data, error } = await supabase.rpc('get_schema_details');
@@ -12,7 +18,6 @@ const listTableDetails = async () => {
   data.forEach(row => {
     console.log(`\nTable: ${row.table_name}`);
     console.log(`Columns: ${row.columns.join(', ')}`);
-    // This format makes it easy to copy for your models or API fetching
   });
 };
 
