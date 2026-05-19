@@ -14,7 +14,8 @@
       "Bash(python .agent/skills/ui-ux-pro-max/scripts/search.py \"dashboard cards forms animation\" --domain ux -n 3)",
       "Bash(python .agent/skills/ui-ux-pro-max/scripts/search.py \"react dashboard\" --stack react -n 3)",
       "PowerShell(Get-ChildItem -Path \"D:\\\\WEB PROJECTS\\\\Employee_portal\" -Recurse -Depth 5 | Where-Object { $_.FullName -notmatch 'node_modules' -and $_.FullName -notmatch '\\\\.git' } | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\\", \"\"\\) } | Sort-Object)",
-      "PowerShell(Copy-Item *)"
+      "PowerShell(Copy-Item *)",
+      "PowerShell(Remove-Item *)"
     ]
   }
 }

@@ -4,7 +4,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { verifyToken } from "./middleware/auth.middleware.js";
 import profileRoutes from "./routes/profiles.routes.js";
-import taskRoutes from "./routes/tasks.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,7 +29,6 @@ app.get("/health", (req, res) => {
 // Protected Routes
 app.use("/api/protected", verifyToken);
 app.use("/api/protected/profiles", profileRoutes);
-app.use("/api/protected/tasks", taskRoutes);
 
 /**
  * 2. STATIC FILES (Must be AFTER API routes)
