@@ -10,8 +10,7 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
   const { profile, user, signOut } = useAuth();
   const dropdownRef = useRef(null);
 
-  console.log("profile: ", profile);
-  
+  console.log("userdetails: " + user?.email);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -38,9 +37,9 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
     ? `${profile.first_name[0]}${profile.last_name?.[0] || ""}`.toUpperCase()
     : user?.email?.[0]?.toUpperCase() || "??";
 
-  const displayName = profile?.first_name 
+  const displayName = profile?.first_name
     ? `${profile.first_name} ${profile.last_name || ""}`.trim()
-    : user?.email?.split('@')[0] || "User";
+    : user?.email?.split("@")[0] || "User";
 
   return (
     <div
