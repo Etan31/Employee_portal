@@ -5,19 +5,34 @@
   width: 100%;
   overflow: hidden;
   background: #eef4fb;
+  position: relative;
 }
 
-/* ── Left: image panel ── */
+/* Mobile / tablet: truck photo fills the whole page */
+@media (max-width: 767px) {
+  .login-container {
+    background-image: url("/truck_bg.jpg");
+    background-size: cover;
+    background-position: center;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 0;
+  }
+}
+
+/* ── Left: video panel (desktop only) ── */
 .login-image-panel {
   flex: 1;
   position: relative;
   overflow: hidden;
   display: none;
-  background-image:
-    linear-gradient(160deg, rgba(16, 24, 40, 0.72), rgba(248, 250, 252, 0.06)),
-    url("/truck_bg.jpg");
-  background-size: cover;
-  background-position: center;
 }
 
 @media (min-width: 768px) {
@@ -29,13 +44,24 @@
   }
 }
 
+/* Video fills the left panel */
+.login-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Reduced overlay — lets the video show through */
 .login-image-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(59, 130, 246, 0.18),
-    rgba(15, 23, 42, 0.42)
+    rgba(59, 130, 246, 0.15),
+    rgba(15, 23, 42, 0.36)
   );
   z-index: 1;
 }
@@ -51,7 +77,7 @@
   font-weight: 800;
   color: #f8fafc;
   letter-spacing: 0.06em;
-  text-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+  text-shadow: 0 2px 12px rgba(15, 23, 42, 0.4);
 }
 
 .login-tagline {
@@ -117,6 +143,21 @@
   padding: 2.75rem 2rem;
   background: #ffffff;
   box-shadow: -8px 0 50px rgba(15, 23, 42, 0.08);
+}
+
+/* On mobile: form is a card floating over the background */
+@media (max-width: 767px) {
+  .login-form-panel {
+    position: relative;
+    z-index: 1;
+    margin: 1.5rem;
+    padding: 2rem 1.5rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+    max-width: 100%;
+    width: calc(100% - 3rem);
+  }
 }
 
 @media (min-width: 768px) {
@@ -204,6 +245,7 @@
     border-color 0.2s ease,
     box-shadow 0.2s ease;
   outline: none;
+  box-sizing: border-box;
 }
 
 .form-input:focus {

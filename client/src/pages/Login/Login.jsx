@@ -33,8 +33,17 @@ export function Login() {
 
   return (
     <div className="login-container">
-      {/* Left — image with blue overlay */}
+      {/* Left — video panel (desktop) */}
       <div className="login-image-panel">
+        <video
+          className="login-bg-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source src="/truck_bg.mp4" type="video/mp4" />
+        </video>
         <div className="login-image-overlay" />
         <div className="login-brand">
           <span className="login-brand-name">Nexus</span>
