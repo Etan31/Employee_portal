@@ -1,0 +1,21 @@
+{
+  "projectId": "c56c67c1-c648-4f1e-9c44-a6993e03a56e",
+  "shape": "package",
+  "pkg": "nexus-employee-portal",
+  "globalName": "NexusPortal",
+  "srcDir": "client/src",
+  "buildCmd": "node .ds-sync/package-build.mjs --config .design-sync/config.json --node-modules ./node_modules --entry ./.design-sync/ds-entry.jsx --out ./ds-bundle",
+  "cssEntry": "client/src/styles/theme.css",
+  "componentSrcMap": {
+    "Login": ".design-sync/ds-entry.jsx",
+    "DashboardLayout": ".design-sync/ds-entry.jsx",
+    "Dashboard": "client/src/pages/Dashboard/Dashboard.jsx",
+    "TaskBox": "client/src/pages/TaskBox/TaskBox.jsx",
+    "Profile": "client/src/pages/Profile/Profile.jsx",
+    "TimeManagement": "client/src/pages/TimeManagement/TimeManagement.jsx",
+    "Organization": "client/src/pages/Organization/Organization.jsx",
+    "NexusLogo": "client/src/components/NexusLogo/NexusLogo.jsx",
+    "Icon": "client/src/components/Icon/Icon.jsx",
+    "OrgChartView": "client/src/components/OrgChartView/OrgChartView.jsx"
+  }
+}
