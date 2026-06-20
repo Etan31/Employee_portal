@@ -16,7 +16,11 @@
       "PowerShell(Get-ChildItem -Path \"D:\\\\WEB PROJECTS\\\\Employee_portal\" -Recurse -Depth 5 | Where-Object { $_.FullName -notmatch 'node_modules' -and $_.FullName -notmatch '\\\\.git' } | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\\", \"\"\\) } | Sort-Object)",
       "PowerShell(Copy-Item *)",
       "PowerShell(Remove-Item *)",
-      "PowerShell(npx impeccable skills install)"
+      "PowerShell(npx impeccable skills install)",
+      "Skill(impeccable)",
+      "PowerShell(node .claude/skills/impeccable/scripts/context.mjs)",
+      "PowerShell(Get-ChildItem \"D:\\\\WEB PROJECTS\\\\Employee_portal\" -Recurse -Name -Depth 4 | Where-Object { $_ -notmatch \"node_modules|\\\\.git\" } | Select-Object -First 80)",
+      "PowerShell(Get-ChildItem \"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\client\" -Recurse -Name | Where-Object { $_ -notmatch \"node_modules\" } | Select-Object -First 100)"
     ]
   }
 }

@@ -1011,53 +1011,13 @@
 /* Chart */
 .nx-tm-chart-wrapper {
   position: relative;
-  overflow: visible;
 }
 
-.nx-tm-chart-svg {
-  display: block;
-  overflow: visible;
+.nx-tm-chart-canvas-wrap {
+  position: relative;
+  height: 200px;
+  width: 100%;
 }
-
-.nx-tm-chart-tooltip {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  background: var(--nx-text);
-  color: rgba(255, 255, 255, 0.9);
-  border-radius: 9px;
-  padding: 9px 12px;
-  font-size: 0.73rem;
-  font-family: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  box-shadow: var(--nx-shadow-lg);
-  white-space: nowrap;
-}
-
-.nx-tm-tooltip-date {
-  font-weight: 800;
-  color: #fff;
-  font-size: 0.75rem;
-  margin-bottom: 2px;
-}
-
-.nx-tm-tooltip-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.nx-tm-tooltip-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.nx-tm-tooltip-dot--blue   { background: var(--nx-accent); }
-.nx-tm-tooltip-dot--orange { background: #f59e0b; }
 
 /* Legend */
 .nx-tm-chart-legend {

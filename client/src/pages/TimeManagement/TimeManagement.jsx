@@ -1,4 +1,16 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
+
 import { Icon } from "../../components/Icon/Icon.jsx";
 import {
   LEAVE_TYPES,
@@ -13,6 +25,8 @@ import {
 } from "../../data/timeManagement.js";
 import { formatShortDate } from "../../utils/format.js";
 import "./TimeManagement.css";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
 // ─── Circular Progress Ring ────────────────────────────────────────────────
 
@@ -38,111 +52,199 @@ function RingProgress({ pct, color, size = 56, stroke = 5 }) {
   );
 }
 
-// ─── Attendance SVG Chart ──────────────────────────────────────────────────
+// ─── Attendance Chart (Chart.js) ──────────────────────────────────────────
 
 function AttendanceChart({ data, viewMode }) {
-  const [tooltip, setTooltip] = useState(null);
+  const prefersReducedMotion = useMemo(
+    () =>
+      typeof window !== "undefined"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        : false,
+    []
+  );
 
-  const MAX_HOURS = 10;
-  const CHART_H = 72;
-  const BAR_W = viewMode === "month" ? 7 : 11;
-  const GAP = viewMode === "month" ? 4 : 10;
-  const PAD = { top: 10, right: 12, bottom: 28, left: 28 };
+  // Inline plugin — shades non-working day columns before drawing
+  const dayTypeBgPlugin = useMemo(
+    () => ({
+      id: "nx-day-type-bg",
+      beforeDraw(chart) {
+        const { ctx, chartArea, scales } = chart;
+        if (!chartArea || !scales.x) return;
+        const n = data.length;
+        const colW = (chartArea.right - chartArea.left) / n;
+        data.forEach((d, i) => {
+          if (d.type === "normal") return;
+          ctx.save();
+          ctx.fillStyle =
+            d.type === "leave"
+              ? "rgba(245,158,11,0.07)"
+              : "rgba(148,163,184,0.07)";
+          ctx.fillRect(
+            chartArea.left + i * colW,
+            chartArea.top,
+            colW,
+            chartArea.height
+          );
+          ctx.restore();
+        });
+      },
+    }),
+    [data]
+  );
 
-  const totalW = data.length * (BAR_W + GAP) - GAP + PAD.left + PAD.right;
+  const chartData = useMemo(
+    () => ({
+      labels: data.map((d) => d.label),
+      datasets: [
+        {
+          label: "Work Hours",
+          data: data.map((d) => (d.type === "normal" ? d.loggedHours : null)),
+          borderColor: "#2563eb",
+          backgroundColor(context) {
+            const { ctx, chartArea } = context.chart;
+            if (!chartArea) return "rgba(37,99,235,0.08)";
+            const grad = ctx.createLinearGradient(
+              0, chartArea.top, 0, chartArea.bottom
+            );
+            grad.addColorStop(0, "rgba(37,99,235,0.15)");
+            grad.addColorStop(0.65, "rgba(37,99,235,0.04)");
+            grad.addColorStop(1, "rgba(37,99,235,0.00)");
+            return grad;
+          },
+          fill: true,
+          tension: viewMode === "month" ? 0.45 : 0.32,
+          pointRadius: data.map((d) =>
+            d.type === "normal" ? (viewMode === "week" ? 5 : 2.5) : 0
+          ),
+          pointHoverRadius: 7,
+          pointBackgroundColor: "#2563eb",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 2.5,
+          borderWidth: 2.5,
+          spanGaps: false,
+        },
+        {
+          label: "Late (hours)",
+          data: data.map((d) =>
+            d.type === "normal" && d.lateMinutes > 0
+              ? +(d.lateMinutes / 60).toFixed(3)
+              : null
+          ),
+          borderColor: "#f59e0b",
+          backgroundColor: "transparent",
+          fill: false,
+          tension: 0.3,
+          pointRadius: data.map((d) =>
+            d.lateMinutes > 0 ? (viewMode === "week" ? 6 : 3.5) : 0
+          ),
+          pointHoverRadius: 8,
+          pointBackgroundColor: "#f59e0b",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 2,
+          borderWidth: 2,
+          borderDash: [5, 4],
+          spanGaps: false,
+        },
+      ],
+    }),
+    [data, viewMode]
+  );
+
+  const options = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: prefersReducedMotion
+        ? false
+        : { duration: 550, easing: "easeOutQuart" },
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "#1e293b",
+          titleColor: "#ffffff",
+          bodyColor: "rgba(255,255,255,0.82)",
+          borderColor: "rgba(255,255,255,0.08)",
+          borderWidth: 1,
+          padding: { x: 12, y: 9 },
+          cornerRadius: 9,
+          usePointStyle: true,
+          boxWidth: 7,
+          boxHeight: 7,
+          titleFont: {
+            size: 11.5,
+            weight: "700",
+            family: '"Plus Jakarta Sans", system-ui',
+          },
+          bodyFont: {
+            size: 11.5,
+            family: '"Plus Jakarta Sans", system-ui',
+          },
+          callbacks: {
+            title: (items) => data[items[0].dataIndex]?.date ?? "",
+            label(item) {
+              const d = data[item.dataIndex];
+              if (item.datasetIndex === 0) {
+                if (d.type === "weekend") return " Weekend / Day Off";
+                if (d.type === "leave") return " On Leave";
+                if (item.raw != null) return ` Worked: ${d.loggedHours}h`;
+              }
+              if (item.datasetIndex === 1 && item.raw != null) {
+                return ` Late: ${d.lateMinutes} min`;
+              }
+              return null;
+            },
+            labelColor(item) {
+              return item.datasetIndex === 0
+                ? { backgroundColor: "#2563eb", borderColor: "#2563eb", borderRadius: 3 }
+                : { backgroundColor: "#f59e0b", borderColor: "#f59e0b", borderRadius: 3 };
+            },
+            filter: (item) => item.raw != null,
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: {
+            maxRotation: 0,
+            font: { size: 10.5, family: '"Plus Jakarta Sans", system-ui' },
+            color: "#94a3b8",
+            padding: 8,
+            callback(value, index) {
+              if (viewMode === "week") return data[index]?.label ?? "";
+              return index % 5 === 0 ? data[index]?.label ?? "" : "";
+            },
+          },
+        },
+        y: {
+          grid: { color: "rgba(0,0,0,0.04)" },
+          border: { display: false, dash: [3, 3] },
+          min: 0,
+          max: 12,
+          ticks: {
+            font: { size: 10.5, family: '"Plus Jakarta Sans", system-ui' },
+            color: "#94a3b8",
+            stepSize: 2,
+            callback: (v) => `${v}h`,
+            padding: 8,
+          },
+        },
+      },
+    }),
+    [data, viewMode, prefersReducedMotion]
+  );
 
   return (
     <div className="nx-tm-chart-wrapper">
-      <svg
-        width="100%"
-        viewBox={`0 0 ${totalW} ${CHART_H + PAD.top + PAD.bottom}`}
-        className="nx-tm-chart-svg"
-        preserveAspectRatio="xMinYMid meet"
-      >
-        <defs>
-          <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--nx-primary)" stopOpacity="1" />
-            <stop offset="100%" stopColor="var(--nx-primary)" stopOpacity="0.55" />
-          </linearGradient>
-          <linearGradient id="lateGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#f59e0b" stopOpacity="1" />
-            <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.7" />
-          </linearGradient>
-        </defs>
-
-        {[2, 4, 6, 8, 10].map((h) => {
-          const y = PAD.top + CHART_H - (h / MAX_HOURS) * CHART_H;
-          return (
-            <g key={h}>
-              <line x1={PAD.left} x2={totalW - PAD.right} y1={y} y2={y}
-                stroke="var(--nx-border)" strokeDasharray="3 3" strokeWidth="0.8" />
-              <text x={PAD.left - 5} y={y + 4} textAnchor="end"
-                fontSize="8.5" fill="var(--nx-text-muted)" fontFamily="inherit">
-                {h}
-              </text>
-            </g>
-          );
-        })}
-
-        {data.map((d, i) => {
-          const x = PAD.left + i * (BAR_W + GAP);
-          const isGray = d.type !== "normal";
-          const rawH = isGray ? 0 : (d.loggedHours / MAX_HOURS) * CHART_H;
-          const barH = Math.max(rawH, isGray ? 4 : 2);
-          const lateH = (d.lateMinutes / 60 / MAX_HOURS) * CHART_H;
-          const barY = PAD.top + CHART_H - barH;
-          const rx = viewMode === "month" ? 3 : 5;
-
-          return (
-            <g key={`${d.date}-${i}`}
-              onMouseEnter={(e) => setTooltip({ x: e.clientX, y: e.clientY, data: d })}
-              onMouseLeave={() => setTooltip(null)}
-              style={{ cursor: "pointer" }}>
-              <rect x={x} y={isGray ? PAD.top + CHART_H - 4 : barY}
-                width={BAR_W} height={barH} rx={rx}
-                fill={isGray ? "url(#none)" : "url(#barGrad)"}
-                style={{ fill: isGray ? "var(--nx-border)" : undefined }}
-                opacity={isGray ? 0.5 : 1}
-              />
-              {!isGray && lateH > 0 && (
-                <rect x={x} y={barY - lateH + 4} width={BAR_W}
-                  height={Math.max(lateH, 3)} rx={rx}
-                  fill="url(#lateGrad)" />
-              )}
-              {(viewMode === "week" || i % 5 === 0) && (
-                <text x={x + BAR_W / 2} y={PAD.top + CHART_H + 18}
-                  textAnchor="middle" fontSize="8.5"
-                  fill="var(--nx-text-muted)" fontFamily="inherit">
-                  {d.label}
-                </text>
-              )}
-            </g>
-          );
-        })}
-      </svg>
-
-      {tooltip && (
-        <div className="nx-tm-chart-tooltip"
-          style={{ left: tooltip.x + 14, top: tooltip.y - 48 }}>
-          <span className="nx-tm-tooltip-date">{tooltip.data.date}</span>
-          {tooltip.data.type === "weekend" && <span>Weekend / Day Off</span>}
-          {tooltip.data.type === "leave" && <span>On Leave</span>}
-          {tooltip.data.type === "normal" && (
-            <>
-              <span className="nx-tm-tooltip-row">
-                <span className="nx-tm-tooltip-dot nx-tm-tooltip-dot--blue" />
-                Logged: <b>{tooltip.data.loggedHours}h</b>
-              </span>
-              {tooltip.data.lateMinutes > 0 && (
-                <span className="nx-tm-tooltip-row">
-                  <span className="nx-tm-tooltip-dot nx-tm-tooltip-dot--orange" />
-                  Late: <b>{tooltip.data.lateMinutes} min</b>
-                </span>
-              )}
-            </>
-          )}
-        </div>
-      )}
+      <div className="nx-tm-chart-canvas-wrap">
+        <Line
+          data={chartData}
+          options={options}
+          plugins={[dayTypeBgPlugin]}
+        />
+      </div>
     </div>
   );
 }
