@@ -20,7 +20,11 @@
       "Skill(impeccable)",
       "PowerShell(node .claude/skills/impeccable/scripts/context.mjs)",
       "PowerShell(Get-ChildItem \"D:\\\\WEB PROJECTS\\\\Employee_portal\" -Recurse -Name -Depth 4 | Where-Object { $_ -notmatch \"node_modules|\\\\.git\" } | Select-Object -First 80)",
-      "PowerShell(Get-ChildItem \"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\client\" -Recurse -Name | Where-Object { $_ -notmatch \"node_modules\" } | Select-Object -First 100)"
+      "PowerShell(Get-ChildItem \"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\client\" -Recurse -Name | Where-Object { $_ -notmatch \"node_modules\" } | Select-Object -First 100)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(if \\(-not \\(Test-Path \"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\.design-sync\\\\previews\"\\)\\) { New-Item -ItemType Directory \"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\.design-sync\\\\previews\" })",
+      "PowerShell(New-Item *)"
     ]
   }
 }
