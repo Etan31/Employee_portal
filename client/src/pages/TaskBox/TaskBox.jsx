@@ -33,13 +33,27 @@ export function TaskBox({ isDashboard }) {
 
   const priorityOptions = [
     { value: "all", label: "All", count: baseTask.length },
-    { value: "HIGH", label: "High", count: baseTask.filter((t) => t.priority === "HIGH").length },
-    { value: "MEDIUM", label: "Med", count: baseTask.filter((t) => t.priority === "MEDIUM").length },
-    { value: "LOW", label: "Low", count: baseTask.filter((t) => t.priority === "LOW").length },
+    {
+      value: "HIGH",
+      label: "High",
+      count: baseTask.filter((t) => t.priority === "HIGH").length,
+    },
+    {
+      value: "MEDIUM",
+      label: "Med",
+      count: baseTask.filter((t) => t.priority === "MEDIUM").length,
+    },
+    {
+      value: "LOW",
+      label: "Low",
+      count: baseTask.filter((t) => t.priority === "LOW").length,
+    },
   ];
 
   return (
-    <section className={`nx-taskbox ${isDashboard ? "nx-taskbox--dashboard" : ""}`}>
+    <section
+      className={`nx-taskbox ${isDashboard ? "nx-taskbox--dashboard" : ""}`}
+    >
       {/* Left pane */}
       <aside className="nx-taskbox__list-pane">
         <header className="nx-taskbox__header">
@@ -83,7 +97,11 @@ export function TaskBox({ isDashboard }) {
           </div>
 
           {!isDashboard && (
-            <div className="nx-priority-tabs" role="group" aria-label="Filter by priority">
+            <div
+              className="nx-priority-tabs"
+              role="group"
+              aria-label="Filter by priority"
+            >
               {priorityOptions.map((opt) => (
                 <button
                   key={opt.value}
@@ -91,7 +109,9 @@ export function TaskBox({ isDashboard }) {
                   onClick={() => setPriorityFilter(opt.value)}
                 >
                   {opt.label}
-                  {opt.count > 0 && <span className="nx-priority-tab__count">{opt.count}</span>}
+                  {opt.count > 0 && (
+                    <span className="nx-priority-tab__count">{opt.count}</span>
+                  )}
                 </button>
               ))}
             </div>
@@ -101,12 +121,17 @@ export function TaskBox({ isDashboard }) {
         <ul className="nx-taskbox__list">
           {currentTasks.length === 0 ? (
             <li className="nx-taskbox__empty">
-              <Icon name="list-checks" size={40} className="nx-taskbox__empty-icon" />
+              <Icon
+                name="list-checks"
+                size={40}
+                className="nx-taskbox__empty-icon"
+              />
               <p>No tasks found.</p>
             </li>
           ) : (
             currentTasks.map((task) => {
-              const otherParty = filter === "assigned" ? task.assigner : task.assignee;
+              const otherParty =
+                filter === "assigned" ? task.assigner : task.assignee;
               return (
                 <li key={task.id}>
                   <article
@@ -114,20 +139,34 @@ export function TaskBox({ isDashboard }) {
                     onClick={() => setSelectedId(task.id)}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => e.key === "Enter" && setSelectedId(task.id)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && setSelectedId(task.id)
+                    }
                   >
-                    <div className="nx-task-card__priority-bar" aria-hidden="true" />
+                    <div
+                      className="nx-task-card__priority-bar"
+                      aria-hidden="true"
+                    />
                     <div className="nx-task-card__body">
                       <div className="nx-task-card__head">
-                        <span className="nx-task-card__title">{task.title}</span>
-                        <span className="nx-task-card__date">{formatShortDate(task.dueDate)}</span>
+                        <span className="nx-task-card__title">
+                          {task.title}
+                        </span>
+                        <span className="nx-task-card__date">
+                          {formatShortDate(task.dueDate)}
+                        </span>
                       </div>
                       <p className="nx-task-card__desc">{task.description}</p>
                       <div className="nx-task-card__foot">
-                        <span className={`nx-status-pill nx-status-pill--${task.status.toLowerCase()}`}>
+                        <span
+                          className={`nx-status-pill nx-status-pill--${task.status.toLowerCase()}`}
+                        >
                           {task.status.replace("_", " ")}
                         </span>
-                        <div className="nx-task-card__avatar" title={otherParty.name}>
+                        <div
+                          className="nx-task-card__avatar"
+                          title={otherParty.name}
+                        >
                           {otherParty.initials}
                         </div>
                       </div>
@@ -144,7 +183,11 @@ export function TaskBox({ isDashboard }) {
       <section className="nx-taskbox__detail-pane">
         {!selectedTask ? (
           <div className="nx-taskbox__empty nx-taskbox__empty--detail">
-            <Icon name="file-text" size={40} className="nx-taskbox__empty-icon" />
+            <Icon
+              name="file-text"
+              size={40}
+              className="nx-taskbox__empty-icon"
+            />
             <p>Select a task to view details.</p>
           </div>
         ) : (
@@ -154,15 +197,22 @@ export function TaskBox({ isDashboard }) {
                 <span className="nx-chip nx-chip--type">
                   {selectedTask.issueType || "TASK"}
                 </span>
-                <span className={`nx-chip nx-chip--status nx-chip--status-${selectedTask.status.toLowerCase()}`}>
+                <span
+                  className={`nx-chip nx-chip--status nx-chip--status-${selectedTask.status.toLowerCase()}`}
+                >
                   {selectedTask.status.replace("_", " ")}
                 </span>
                 {isOverdue(selectedTask.dueDate) && (
                   <span className="nx-chip nx-chip--danger">Overdue</span>
                 )}
               </div>
-              <div className={`nx-priority-flag nx-priority-flag--${selectedTask.priority.toLowerCase()}`}>
-                <Icon name={`priority-${selectedTask.priority.toLowerCase()}`} size={14} />
+              <div
+                className={`nx-priority-flag nx-priority-flag--${selectedTask.priority.toLowerCase()}`}
+              >
+                <Icon
+                  name={`priority-${selectedTask.priority.toLowerCase()}`}
+                  size={14}
+                />
                 <span>{selectedTask.priority}</span>
               </div>
             </header>
@@ -172,21 +222,29 @@ export function TaskBox({ isDashboard }) {
             <div className="nx-task-detail__meta-row">
               <div className="nx-meta-cell">
                 <span className="nx-meta-cell__label">Priority</span>
-                <span className={`nx-meta-cell__value nx-meta-cell__value--${selectedTask.priority.toLowerCase()}`}>
+                <span
+                  className={`nx-meta-cell__value nx-meta-cell__value--${selectedTask.priority.toLowerCase()}`}
+                >
                   {selectedTask.priority}
                 </span>
               </div>
               <div className="nx-meta-cell">
                 <span className="nx-meta-cell__label">Due Date</span>
-                <span className="nx-meta-cell__value">{formatShortDate(selectedTask.dueDate)}</span>
+                <span className="nx-meta-cell__value">
+                  {formatShortDate(selectedTask.dueDate)}
+                </span>
               </div>
               <div className="nx-meta-cell">
                 <span className="nx-meta-cell__label">Status</span>
-                <span className="nx-meta-cell__value">{selectedTask.status.replace("_", " ")}</span>
+                <span className="nx-meta-cell__value">
+                  {selectedTask.status.replace("_", " ")}
+                </span>
               </div>
               <div className="nx-meta-cell">
                 <span className="nx-meta-cell__label">Created</span>
-                <span className="nx-meta-cell__value">{formatDate(new Date(selectedTask.createdDate))}</span>
+                <span className="nx-meta-cell__value">
+                  {formatDate(new Date(selectedTask.createdDate))}
+                </span>
               </div>
             </div>
 
@@ -194,14 +252,18 @@ export function TaskBox({ isDashboard }) {
 
             <section className="nx-task-detail__section">
               <h3 className="nx-detail-section-title">Description</h3>
-              <p className="nx-task-detail__desc-text">{selectedTask.description}</p>
+              <p className="nx-task-detail__desc-text">
+                {selectedTask.description}
+              </p>
             </section>
 
             <div className="nx-task-detail__field-grid">
               <div className="nx-detail-field">
                 <span className="nx-detail-field__label">Assignee</span>
                 <div className="nx-detail-field__person">
-                  <div className="nx-detail-avatar">{selectedTask.assignee.initials}</div>
+                  <div className="nx-detail-avatar">
+                    {selectedTask.assignee.initials}
+                  </div>
                   <span>{selectedTask.assignee.name}</span>
                 </div>
               </div>
@@ -209,19 +271,26 @@ export function TaskBox({ isDashboard }) {
                 <span className="nx-detail-field__label">Reporter</span>
                 <div className="nx-detail-field__person">
                   <div className="nx-detail-avatar nx-detail-avatar--alt">
-                    {selectedTask.reporter?.initials || selectedTask.assigner.initials}
+                    {selectedTask.reporter?.initials ||
+                      selectedTask.assigner.initials}
                   </div>
-                  <span>{selectedTask.reporter?.name || selectedTask.assigner.name}</span>
+                  <span>
+                    {selectedTask.reporter?.name || selectedTask.assigner.name}
+                  </span>
                 </div>
               </div>
               <div className="nx-detail-field">
                 <span className="nx-detail-field__label">Labels</span>
                 <div className="nx-detail-field__labels">
                   {(selectedTask.labels || []).length === 0 ? (
-                    <span className="nx-detail-field__empty">No labels added</span>
+                    <span className="nx-detail-field__empty">
+                      No labels added
+                    </span>
                   ) : (
                     (selectedTask.labels || []).map((label) => (
-                      <span key={label} className="nx-label-chip">{label}</span>
+                      <span key={label} className="nx-label-chip">
+                        {label}
+                      </span>
                     ))
                   )}
                 </div>
@@ -229,12 +298,18 @@ export function TaskBox({ isDashboard }) {
               <div className="nx-detail-field">
                 <span className="nx-detail-field__label">Linked Issues</span>
                 {(selectedTask.linkedIssues || []).length === 0 ? (
-                  <span className="nx-detail-field__empty">No linked issues</span>
+                  <span className="nx-detail-field__empty">
+                    No linked issues
+                  </span>
                 ) : (
                   (selectedTask.linkedIssues || []).map((issue) => (
                     <div key={issue.id} className="nx-linked-issue-row">
-                      <span className="nx-linked-issue-row__id">{issue.id}</span>
-                      <span className="nx-linked-issue-row__title">{issue.title}</span>
+                      <span className="nx-linked-issue-row__id">
+                        {issue.id}
+                      </span>
+                      <span className="nx-linked-issue-row__title">
+                        {issue.title}
+                      </span>
                     </div>
                   ))
                 )}
@@ -288,7 +363,8 @@ function CreateTaskModal({ onClose }) {
   }, []);
 
   const filteredLabels = suggestedLabels.filter(
-    (l) => l.toLowerCase().includes(labelText.toLowerCase()) && !labels.includes(l),
+    (l) =>
+      l.toLowerCase().includes(labelText.toLowerCase()) && !labels.includes(l),
   );
 
   const addLabel = (label) => {
@@ -305,15 +381,23 @@ function CreateTaskModal({ onClose }) {
         aria-labelledby="modal-title"
       >
         <header className="nx-modal-header">
-          <h2 className="nx-modal-title" id="modal-title">Create Task</h2>
-          <button className="nx-modal-close" onClick={onClose} aria-label="Close modal">
+          <h2 className="nx-modal-title" id="modal-title">
+            Create Task
+          </h2>
+          <button
+            className="nx-modal-close"
+            onClick={onClose}
+            aria-label="Close modal"
+          >
             <Icon name="x" size={18} />
           </button>
         </header>
 
         <form className="nx-modal-body" onSubmit={(e) => e.preventDefault()}>
           <div className="nx-form-group">
-            <label className="nx-form-label" htmlFor="task-title">Title</label>
+            <label className="nx-form-label" htmlFor="task-title">
+              Title
+            </label>
             <input
               type="text"
               id="task-title"
@@ -324,17 +408,23 @@ function CreateTaskModal({ onClose }) {
 
           <div className="nx-form-row">
             <div className="nx-form-group">
-              <label className="nx-form-label" htmlFor="issue-type">Issue Type</label>
+              <label className="nx-form-label" htmlFor="issue-type">
+                Issue Type
+              </label>
               <select id="issue-type" className="nx-form-select">
                 <option>Task</option>
                 <option>Bug</option>
-                <option>Story</option>
-                <option>Epic</option>
+                <option>Question</option>
+                <option>Feature</option>
               </select>
             </div>
             <div className="nx-form-group nx-form-group--priority">
               <label className="nx-form-label">Priority</label>
-              <div className="nx-priority-selector" role="radiogroup" aria-label="Priority selector">
+              <div
+                className="nx-priority-selector"
+                role="radiogroup"
+                aria-label="Priority selector"
+              >
                 {["Urgent", "High", "Medium", "Low"].map((p) => (
                   <button
                     key={p}
@@ -352,7 +442,9 @@ function CreateTaskModal({ onClose }) {
           </div>
 
           <div className="nx-form-group">
-            <label className="nx-form-label" htmlFor="task-description">Description</label>
+            <label className="nx-form-label" htmlFor="task-description">
+              Description
+            </label>
             <textarea
               id="task-description"
               className="nx-form-textarea"
@@ -362,7 +454,9 @@ function CreateTaskModal({ onClose }) {
 
           <div className="nx-form-row">
             <div className="nx-form-group">
-              <label className="nx-form-label" htmlFor="task-assignee">Assignee</label>
+              <label className="nx-form-label" htmlFor="task-assignee">
+                Assignee
+              </label>
               <select id="task-assignee" className="nx-form-select">
                 <option>Unassigned</option>
                 <option>Tristan</option>
@@ -370,7 +464,9 @@ function CreateTaskModal({ onClose }) {
               </select>
             </div>
             <div className="nx-form-group">
-              <label className="nx-form-label" htmlFor="task-reporter">Reporter</label>
+              <label className="nx-form-label" htmlFor="task-reporter">
+                Reporter
+              </label>
               <select id="task-reporter" className="nx-form-select">
                 <option>Me (Tristan)</option>
                 <option>Manager</option>
@@ -380,7 +476,9 @@ function CreateTaskModal({ onClose }) {
 
           <div className="nx-form-row">
             <div className="nx-form-group">
-              <label className="nx-form-label" htmlFor="task-labels">Labels</label>
+              <label className="nx-form-label" htmlFor="task-labels">
+                Labels
+              </label>
               <div className="nx-label-input-container">
                 {labels.length > 0 && (
                   <div className="nx-labels-pills">
@@ -389,7 +487,9 @@ function CreateTaskModal({ onClose }) {
                         {l}
                         <button
                           type="button"
-                          onClick={() => setLabels(labels.filter((x) => x !== l))}
+                          onClick={() =>
+                            setLabels(labels.filter((x) => x !== l))
+                          }
                           aria-label={`Remove label ${l}`}
                         >
                           <Icon name="x" size={10} />
@@ -412,10 +512,19 @@ function CreateTaskModal({ onClose }) {
                 {labelText && (
                   <ul className="nx-label-suggestions">
                     {filteredLabels.map((l) => (
-                      <li key={l} className="nx-suggestion-item" onClick={() => addLabel(l)}>{l}</li>
+                      <li
+                        key={l}
+                        className="nx-suggestion-item"
+                        onClick={() => addLabel(l)}
+                      >
+                        {l}
+                      </li>
                     ))}
                     {!suggestedLabels.includes(labelText) && (
-                      <li className="nx-suggestion-item nx-suggestion-item--new" onClick={() => addLabel(labelText)}>
+                      <li
+                        className="nx-suggestion-item nx-suggestion-item--new"
+                        onClick={() => addLabel(labelText)}
+                      >
                         Create: <strong>{labelText}</strong>
                       </li>
                     )}
@@ -425,7 +534,10 @@ function CreateTaskModal({ onClose }) {
             </div>
             <div className="nx-form-group">
               <label className="nx-form-label" htmlFor="due-date">
-                Due Date{priority === "Urgent" && <span className="nx-required"> *</span>}
+                Due Date
+                {priority === "Urgent" && (
+                  <span className="nx-required"> *</span>
+                )}
               </label>
               <input
                 type="date"
@@ -457,7 +569,9 @@ function CreateTaskModal({ onClose }) {
           </div>
 
           <div className="nx-form-group">
-            <label className="nx-form-label" htmlFor="linked-issues">Link Issues</label>
+            <label className="nx-form-label" htmlFor="linked-issues">
+              Link Issues
+            </label>
             <input
               type="text"
               id="linked-issues"
@@ -467,8 +581,14 @@ function CreateTaskModal({ onClose }) {
             <div className="nx-linked-issues-list">
               <div className="nx-linked-issue-item">
                 <div className="nx-linked-issue-badge">PROJ-101</div>
-                <span className="nx-linked-issue-title">Update Employee Handbook</span>
-                <button type="button" className="nx-linked-issue-remove" aria-label="Remove link">
+                <span className="nx-linked-issue-title">
+                  Update Employee Handbook
+                </span>
+                <button
+                  type="button"
+                  className="nx-linked-issue-remove"
+                  aria-label="Remove link"
+                >
                   <Icon name="x" size={14} />
                 </button>
               </div>
@@ -477,8 +597,12 @@ function CreateTaskModal({ onClose }) {
         </form>
 
         <footer className="nx-modal-footer">
-          <button type="button" className="nx-btn-ghost" onClick={onClose}>Cancel</button>
-          <button type="submit" className="nx-btn-primary" onClick={onClose}>Create Task</button>
+          <button type="button" className="nx-btn-ghost" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="submit" className="nx-btn-primary" onClick={onClose}>
+            Create Task
+          </button>
         </footer>
       </section>
     </div>
