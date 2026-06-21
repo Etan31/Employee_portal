@@ -8,6 +8,7 @@ import { Profile } from "./pages/Profile/Profile.jsx";
 import { PageStub } from "./pages/PageStub/PageStub.jsx";
 import { TimeManagement } from "./pages/TimeManagement/TimeManagement.jsx";
 import Organization from "./pages/Organization/Organization.jsx";
+import { Calendar } from "./pages/Calendar/Calendar.jsx";
 import { Login } from "./pages/Login/Login.jsx";
 import { useAuth } from "./hooks/auth.hooks.jsx";
 import { filterNavItemsByRole } from "./utils/authPermissions.js";
@@ -58,6 +59,8 @@ export default function App() {
     PageComponent = <TimeManagement />;
   } else if (active === "org-view") {
     PageComponent = <Organization />;
+  } else if (active === "calendar") {
+    PageComponent = <Calendar />;
   } else {
     PageComponent = <PageStub title={activeItem.label} />;
   }
