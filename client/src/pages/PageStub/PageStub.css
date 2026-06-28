@@ -11,7 +11,8 @@
   align-items: center;
   justify-content: center;
   padding: 48px;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   text-align: center;
   background: var(--nx-surface);
 }
@@ -27,4 +28,16 @@
 
 .nx-stub__desc {
   color: var(--nx-text-soft);
+}
+
+@media (max-width: 560px) {
+  .nx-stub {
+    height: auto;
+    min-height: calc(100vh - 180px);
+    padding: 24px 4px;
+  }
+
+  .nx-stub__card {
+    padding: 32px 24px;
+  }
 }

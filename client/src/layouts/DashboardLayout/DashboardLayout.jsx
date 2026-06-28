@@ -7,10 +7,15 @@ import "./DashboardLayout.css";
 export function DashboardLayout({ children, activeRoute, navItems }) {
   const [expanded, setExpanded] = useState(true);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { profile, user, signOut } = useAuth();
   const dropdownRef = useRef(null);
 
   console.log("userdetails: " + user?.email);
+
+  // In the mobile drawer, labels are always shown regardless of the
+  // desktop expand/collapse state.
+  const showLabels = expanded || mobileNavOpen;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -21,6 +26,17 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Reset the mobile drawer when the viewport grows to desktop width so the
+  // sidebar returns to its normal in-flow position.
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 901px)");
+    const handler = (event) => {
+      if (event.matches) setMobileNavOpen(false);
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
   }, []);
 
   const sidebarItems = navItems || [];
@@ -45,8 +61,17 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
     <div
       className={`nx-layout ${expanded ? "nx-layout--expanded" : "nx-layout--collapsed"}`}
     >
+      {/* Backdrop for the mobile drawer */}
+      <div
+        className={`nx-sidebar-backdrop ${mobileNavOpen ? "nx-sidebar-backdrop--visible" : ""}`}
+        onClick={() => setMobileNavOpen(false)}
+        aria-hidden="true"
+      />
+
       {/* Sidebar */}
-      <aside className="nx-sidebar">
+      <aside
+        className={`nx-sidebar ${mobileNavOpen ? "nx-sidebar--mobile-open" : ""}`}
+      >
         <header className="nx-sidebar__top">
           <button
             className="nx-sidebar__apps-btn"
@@ -54,9 +79,16 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
             title={expanded ? "Collapse Menu" : "Expand Menu"}
           >
             <Icon name="apps" size={20} className="nx-sidebar__apps-icon" />
-            {expanded && (
+            {showLabels && (
               <span className="nx-sidebar__apps-label">All Apps</span>
             )}
+          </button>
+          <button
+            className="nx-sidebar__drawer-close"
+            onClick={() => setMobileNavOpen(false)}
+            aria-label="Close menu"
+          >
+            <Icon name="x" size={20} />
           </button>
         </header>
 
@@ -69,14 +101,15 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
                   <a
                     href={item.route}
                     className={`nx-sidebar__item ${isActive ? "nx-sidebar__item--active" : ""}`}
-                    title={!expanded ? item.label : undefined}
+                    title={!showLabels ? item.label : undefined}
+                    onClick={() => setMobileNavOpen(false)}
                   >
                     <Icon
                       name={item.icon}
                       size={18}
                       className="nx-sidebar__icon"
                     />
-                    {expanded && (
+                    {showLabels && (
                       <span className="nx-sidebar__label">{item.label}</span>
                     )}
                   </a>
@@ -87,7 +120,7 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
         </nav>
 
         <footer className="nx-sidebar__footer">
-          {expanded && (
+          {showLabels && (
             <div className="nx-sidebar__links">
               <a href="#/privacy" className="nx-sidebar__link">
                 Privacy policy
@@ -98,7 +131,7 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
             </div>
           )}
           <div className="nx-sidebar__logo-container">
-            <NexusLogo expanded={expanded} />
+            <NexusLogo expanded={showLabels} />
           </div>
         </footer>
       </aside>
@@ -107,6 +140,14 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
       <div className="nx-main-area">
         {/* Header */}
         <header className="nx-header">
+          <button
+            className="nx-header__menu-btn"
+            onClick={() => setMobileNavOpen(true)}
+            aria-label="Open menu"
+          >
+            <Icon name="menu" size={22} />
+          </button>
+
           <div className="nx-header__search-container">
             <Icon name="search" size={16} className="nx-header__search-icon" />
             <input

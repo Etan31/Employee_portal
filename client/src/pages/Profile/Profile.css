@@ -539,6 +539,13 @@
   .ph-page {
     padding: 20px 16px;
   }
+  .ph-tab-bar {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .ph-tab-bar::-webkit-scrollbar {
+    display: none;
+  }
   .ph-hero-body {
     flex-wrap: wrap;
     padding: 0 18px 16px;

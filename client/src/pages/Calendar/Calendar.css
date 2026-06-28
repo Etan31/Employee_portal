@@ -110,7 +110,7 @@
 /* ── Weekday header row ── */
 .cal-weekday-row {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   border-bottom: 1px solid #f0f1f3;
 }
 
@@ -131,7 +131,7 @@
 /* ── Calendar grid ── */
 .cal-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 /* ── Calendar cell ── */
@@ -428,6 +428,53 @@
   .sidebar-upcoming { flex: 1 1 260px; }
   .cal-cell { min-height: 72px; }
   .cal-page-title { font-size: 20px; }
+}
+
+/* ── Phones: keep the 7-column month grid but shrink everything ── */
+@media (max-width: 600px) {
+  .calendar-page {
+    padding: 16px 12px;
+  }
+  .cal-page-header {
+    flex-wrap: wrap;
+  }
+  .cal-nav {
+    gap: 8px;
+  }
+  .cal-month-label {
+    min-width: 0;
+    flex: 1;
+    font-size: 15px;
+  }
+  .cal-weekday {
+    font-size: 10px;
+    padding: 7px 0;
+  }
+  .cal-cell {
+    min-height: 58px;
+    padding: 5px 3px 4px;
+  }
+  .cal-day-num,
+  .cal-cell--today .cal-day-num {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+  .cal-ev {
+    font-size: 9.5px;
+    padding: 1px 4px;
+  }
+  .cal-ev-more {
+    font-size: 9px;
+  }
+  .calendar-sidebar {
+    flex-direction: column;
+  }
+  .cal-legend,
+  .sidebar-upcoming {
+    flex: 1 1 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -76,6 +76,7 @@ const icons = {
   ),
   play: <path d="m5 3 14 9-14 9z" />,
   search: <path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" />,
+  menu: <path d="M3 6h18M3 12h18M3 18h18" />,
   bell: (
     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />
   ),

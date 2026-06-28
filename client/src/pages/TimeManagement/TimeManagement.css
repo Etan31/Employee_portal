@@ -1085,3 +1085,26 @@
     max-width: 468px;
   }
 }
+
+@media (max-width: 560px) {
+  .nx-tm-stats-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .nx-tm-metrics-row {
+    grid-template-columns: 1fr;
+  }
+
+  .nx-tm-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .nx-tm-requests-head,
+  .nx-tm-request-row {
+    grid-template-columns: 76px 1fr 96px;
+  }
+
+  .nx-tm-panel {
+    max-width: none;
+  }
+}
