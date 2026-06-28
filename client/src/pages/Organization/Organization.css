@@ -203,6 +203,26 @@
   .org-stat-card {
     flex: 1 1 calc(50% - 6px);
   }
+  .org-header-actions {
+    width: 100%;
+  }
+  .org-export-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .organization-page {
+    padding: 16px 12px;
+  }
+  .org-chart-body {
+    padding: 14px 10px;
+  }
+  .org-stat-card {
+    flex: 1 1 100%;
+    padding: 13px 16px;
+  }
 }
 
 @media print {

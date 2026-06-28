@@ -176,6 +176,7 @@
 
 .org-view {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 8px 0;
 }
 
@@ -241,6 +242,7 @@
 /* ── List view ── */
 .list-view {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .list-table {
@@ -292,6 +294,24 @@
   .org-controls {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+@media (max-width: 600px) {
+  .node-card {
+    min-width: 150px;
+    max-width: 172px;
+    padding: 11px 12px;
+  }
+  .org-chart {
+    padding: 4px 8px 12px;
+  }
+  .org-children {
+    gap: 10px;
+  }
+  .view-area {
+    padding-top: 14px;
+    min-height: 0;
   }
 }
 

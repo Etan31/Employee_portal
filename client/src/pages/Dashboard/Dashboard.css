@@ -907,3 +907,32 @@
   text-decoration: underline;
   opacity: 0.8;
 }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .nx-col-main { gap: 24px; }
+  .nx-focus-grid {
+    grid-template-columns: 1fr;
+  }
+  .nx-welcome-card {
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px 22px;
+  }
+}
+
+@media (max-width: 560px) {
+  .nx-welcome-card__title {
+    font-size: 1.25rem;
+  }
+  .nx-welcome-card__subtitle {
+    font-size: 0.9rem;
+  }
+  .nx-requests-grid {
+    grid-template-columns: 1fr;
+  }
+  .nx-sidebar-panel {
+    width: 100%;
+    max-width: none;
+  }
+}
