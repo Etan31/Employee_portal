@@ -14,6 +14,7 @@ import {
   registerUser,
 } from "../api/auth.api.js";
 import { normalizeRole } from "../utils/authPermissions.js";
+import { logError } from "../utils/logger.js";
 
 const AuthContext = createContext(null);
 
@@ -25,13 +26,11 @@ export const AuthProvider = ({ children }) => {
 
   const loadProfile = useCallback(async (userId) => {
     try {
-      console.log("Loading profile for userId:", userId);
       const data = await getUserProfile(userId);
-      console.log("Profile data received:", data);
       setProfile(data);
       setRole(normalizeRole(data?.role || data?.role_id || data?.role_name));
     } catch (error) {
-      console.error("Critical: Unable to load profile:", error);
+      logError("Critical: Unable to load profile:", error);
       setProfile(null);
       setRole("employee");
     }
@@ -63,7 +62,7 @@ export const AuthProvider = ({ children }) => {
         handleSession(session);
       })
       .catch((error) => {
-        console.error("Supabase session initialization failed:", error);
+        logError("Supabase session initialization failed:", error);
         setLoading(false);
       });
 
@@ -97,7 +96,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await logoutUser();
     } catch (error) {
-      console.error("Logout failed:", error);
+      logError("Logout failed:", error);
     }
   }, []);
 

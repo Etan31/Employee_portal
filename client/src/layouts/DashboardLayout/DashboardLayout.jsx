@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/auth.hooks.jsx";
 import { Icon } from "../../components/Icon/Icon.jsx";
 import { NexusLogo } from "../../components/NexusLogo/NexusLogo.jsx";
+import { logError } from "../../utils/logger.js";
 import "./DashboardLayout.css";
 
 export function DashboardLayout({ children, activeRoute, navItems }) {
@@ -10,8 +11,6 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { profile, user, signOut } = useAuth();
   const dropdownRef = useRef(null);
-
-  console.log("userdetails: " + user?.email);
 
   // In the mobile drawer, labels are always shown regardless of the
   // desktop expand/collapse state.
@@ -45,7 +44,7 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
     try {
       await signOut();
     } catch (error) {
-      console.error("Logout failed:", error);
+      logError("Logout failed:", error);
     }
   };
 
