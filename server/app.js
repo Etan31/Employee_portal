@@ -3,6 +3,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { verifyToken } from "./middleware/auth.middleware.js";
+import { supabaseAdmin } from "./utils/supabaseAdmin.js";
 import profileRoutes from "./routes/profiles.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,6 +25,35 @@ app.use(express.urlencoded({ extended: true }));
  */
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+/**
+ * Deep health check that also touches the database, so a single ping keeps
+ * both this backend and the Supabase project alive. Uses a HEAD count query
+ * (no rows transferred) to stay lightweight.
+ */
+app.get("/health/db", async (req, res) => {
+  try {
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .select("id", { head: true, count: "exact" })
+      .limit(1);
+
+    if (error) throw error;
+
+    res.json({
+      status: "ok",
+      db: "reachable",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    res.status(503).json({
+      status: "error",
+      db: "unreachable",
+      message: err.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 
 // Protected Routes
