@@ -25,7 +25,8 @@
       "PowerShell(Get-ChildItem *)",
       "PowerShell(if \\(-not \\(Test-Path \"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\.design-sync\\\\previews\"\\)\\) { New-Item -ItemType Directory \"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\.design-sync\\\\previews\" })",
       "PowerShell(New-Item *)",
-      "PowerShell(Get-ChildItem -Path \"D:\\\\WEB PROJECTS\\\\Employee_portal\" -Recurse -Directory -Depth 3 | Where-Object { $_.FullName -notmatch 'node_modules|\\\\.git|dist|build' } | Select-Object FullName)"
+      "PowerShell(Get-ChildItem -Path \"D:\\\\WEB PROJECTS\\\\Employee_portal\" -Recurse -Directory -Depth 3 | Where-Object { $_.FullName -notmatch 'node_modules|\\\\.git|dist|build' } | Select-Object FullName)",
+      "PowerShell(node --check \"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\server\\\\app.js\"; if \\($?\\) { \"app.js: syntax OK\" })"
     ]
   }
 }
