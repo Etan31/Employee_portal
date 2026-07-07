@@ -114,6 +114,38 @@ catch (error) {
 }
 ```
 
+**Nexus Employee Portal (this project) — implemented record:**
+
+- **Import path:** `client/src/pages/ErrorPage/ErrorPage.jsx`, exporting `ErrorPage`,
+  `NotFound`, `AuthError`, `ServerError`. Content/icon/tone table lives alongside it in
+  `client/src/pages/ErrorPage/errorContent.js`. Boundary: `client/src/components/ErrorBoundary/ErrorBoundary.jsx`.
+- **Props:** `<ErrorPage code={404} standalone detail primaryAction secondaryAction showQuickLinks />`.
+  `NotFound` takes no props (fixed 404, auto-fills `detail` with the attempted hash).
+  `AuthError`/`ServerError` take `{ code }`. `standalone` swaps to a full-viewport,
+  unauthenticated-style layout (forced for 401; defaults on for 503 since maintenance is
+  whole-app, not one route). `showQuickLinks` renders role-filtered nav links, computed via
+  the existing `filterNavItemsByRole` — this is what makes the page genuinely per-user dynamic.
+- **Styling approach — global CSS, not CSS Modules.** This deviates from this file's
+  general Frontend rule above ("CSS: use CSS Modules; avoid inline styles"): the project
+  has zero `.module.css` files anywhere (confirmed by search before implementing) — every
+  existing page (`Login.css`, `PageStub.css`, `Dashboard.css`, etc.) uses a co-located
+  plain CSS file imported directly. `ErrorPage.css` follows that established convention
+  for consistency rather than introducing a second styling system for one feature.
+- **Animation — CSS `@keyframes`, not `motion/react`/`framer-motion`.** Neither library is
+  installed and the project already hand-rolls staggered entrance keyframes twice
+  (`nx-fade-in` in `global.css`, `dropdownSlideIn` in `DashboardLayout.css`), each paired
+  with a `prefers-reduced-motion` override — `ErrorPage.css` follows the same pattern
+  (icon → code/title → message → actions → quick-links, ~60ms steps). Adding a motion
+  library for a handful of elements that animate once on mount would violate this file's
+  own "no external libraries unless absolutely necessary" rule.
+- **Router integration:** this app has no react-router; `client/src/App.jsx` is a
+  hand-rolled hash router. The "catch-all" for 404 is a lookup against the full
+  `NAV_ITEMS` list (not the role-filtered one — filtering first made the 403 check
+  unreachable and indistinguishable from 404). 401 replaces a prior silent
+  `location.hash = "#/login"` redirect with an explicit `<AuthError code={401}/>` screen.
+  403 is real but currently inert infrastructure: no nav item sets `allowedRoles` yet, so
+  it activates automatically the moment one does, without further wiring.
+
 ### Database (Supabase / Postgres)
 
 - Use migrations for schema changes; never alter production directly.
