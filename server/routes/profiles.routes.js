@@ -3,14 +3,9 @@ import {
   requireRole,
   requireOwnerOrAdmin,
 } from "../middleware/auth.middleware.js";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin as supabase } from "../utils/supabaseAdmin.js";
 
 const router = express.Router();
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY,
-);
 
 /**
  * GET /api/protected/profiles/me

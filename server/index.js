@@ -1,35 +1,26 @@
 import "./env.js";
 import app from "./app.js";
+import { logger } from "./utils/logger.js";
 
-// CHANGE THIS: Always check process.env.PORT first for production
+// PORT is provided by the host in production; fall back to SERVER_PORT then 3000 locally.
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || "development";
 
-// ADD '0.0.0.0': This ensures the server accepts external connections
+// Bind 0.0.0.0 so the server accepts external connections on hosted environments.
 const server = app.listen(PORT, "0.0.0.0", () => {
-  console.log(`
-╔══════════════════════════════════════╗
-║   Employee Portal Server             ║
-║   Environment: ${NODE_ENV.padEnd(20)} ║
-║   Port: ${String(PORT).padEnd(30)} ║
-╚══════════════════════════════════════╝
-  `);
-});
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  console.log("SIGTERM received, shutting down gracefully...");
-  server.close(() => {
-    console.log("Server closed");
-    process.exit(0);
-  });
+  logger.info(`Employee Portal server listening on port ${PORT} (${NODE_ENV})`);
 });
 
-process.on("SIGINT", () => {
-  console.log("SIGINT received, shutting down gracefully...");
+// Graceful shutdown on termination signals.
+const shutdown = (signal) => {
+  logger.info(`${signal} received, shutting down gracefully...`);
   server.close(() => {
-    console.log("Server closed");
+    logger.info("Server closed");
     process.exit(0);
   });
-});
+};
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 
 export default server;

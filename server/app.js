@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import { verifyToken } from "./middleware/auth.middleware.js";
 import { supabaseAdmin } from "./utils/supabaseAdmin.js";
 import profileRoutes from "./routes/profiles.routes.js";
+import { logger } from "./utils/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,9 +17,31 @@ const corsOptions = {
   credentials: true,
 };
 
+// Baseline security headers (no external dependency). Applied to every response.
+app.use((req, res, next) => {
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader(
+    "Strict-Transport-Security",
+    "max-age=31536000; includeSubDomains",
+  );
+  // Allow the SPA to reach Supabase (REST + realtime websocket) and inline styles from PrimeReact.
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "img-src 'self' data: https:",
+      "style-src 'self' 'unsafe-inline'",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+    ].join("; "),
+  );
+  next();
+});
+
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
 /**
  * 1. API ROUTES (Must be FIRST)
@@ -80,8 +103,8 @@ if (!process.env.VERCEL) {
 /**
  * 4. Global Error Handler
  */
-app.use((err, req, res, next) => {
-  console.error("[ERROR]", err);
+app.use((err, req, res, _next) => {
+  logger.error(err);
   const status = err.status || err.statusCode || 500;
   const message = err.message || "Internal Server Error";
 

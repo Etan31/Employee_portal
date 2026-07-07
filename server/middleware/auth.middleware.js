@@ -1,14 +1,6 @@
 import jwt from "jsonwebtoken";
-import { createClient } from "@supabase/supabase-js";
-
-/**
- * Initialize Supabase client for JWT verification
- * Uses the Supabase API key as the JWT secret
- */
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY, // Service role key for backend
-);
+import { supabaseAdmin as supabase } from "../utils/supabaseAdmin.js";
+import { logger } from "../utils/logger.js";
 
 /**
  * Extract JWT token from Authorization header
@@ -34,7 +26,7 @@ async function verifySupabaseToken(token) {
     });
     return payload;
   } catch (error) {
-    throw new Error(`Invalid token: ${error.message}`);
+    throw new Error(`Invalid token: ${error.message}`, { cause: error });
   }
 }
 
@@ -113,7 +105,7 @@ export const verifyToken = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error("[AUTH ERROR]", error.message);
+    logger.error("Auth:", error.message);
     res.status(401).json({
       error: "Unauthorized",
       message: error.message,
