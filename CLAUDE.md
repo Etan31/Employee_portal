@@ -146,6 +146,61 @@ catch (error) {
   403 is real but currently inert infrastructure: no nav item sets `allowedRoles` yet, so
   it activates automatically the moment one does, without further wiring.
 
+### Logo & Favicon
+
+Default theme for any new project's logo/favicon: a single-letter monogram badge, not an
+abstract icon or mascot. Document the contract here so it's reused, not reinvented per project.
+
+**Pattern:**
+- **Shape:** a rounded-square "box" (not a circle), one letter — the project's initial —
+  centered inside it. Corner radius roughly 25-30% of the box side (a squircle/app-icon feel,
+  not a subtle rounded rect).
+- **Colors:** near-black background with a visible hue cast (not pure black/gray — pick the
+  brand's primary hue and darken it toward black), with the letter rendered in a bright
+  accent/highlight color from the palette so it pops against the dark box. Avoid plain
+  white-on-brand-color or brand-color-on-white; the dark-box-plus-highlight-letter combo reads
+  as more premium and matches the reference apps this convention is based on.
+- **Font:** use the project's single body/heading font (see the Fonts rule above), bold weight
+  (700-800), not a hand-drawn vector glyph — a real `<text>` element renders more legibly at
+  favicon sizes and stays consistent with the rest of the UI's type.
+- **Two render targets, same design:**
+  1. `public/favicon.svg` (or equivalent), referenced from `index.html`'s `<link rel="icon">`.
+     This file renders **outside the page's CSS cascade** — it cannot use `var(--*)` custom
+     properties or the page's `@font-face`. Hardcode the color values (snapshot the tokens) and
+     use a safe system-font stack (e.g. `Arial, Helvetica, sans-serif`) instead of the webfont.
+     **XML/SVG comments cannot contain a double hyphen (`--`) anywhere in them** — this silently
+     breaks the file (invalid XML), which browsers handle by falling back to a default/blank
+     icon with no visible error. If a comment needs to reference a CSS custom property, spell
+     it out ("the nx accent token") rather than writing `var(--nx-accent)` literally in the
+     comment.
+  2. An in-app logo component (sidebar/header), which *does* run inside the page — use the real
+     `var(--*)` tokens and the real webfont here so it's the source of truth and stays in sync
+     with future palette changes automatically. The favicon is a manually-kept-in-sync snapshot
+     of this component's design, not the other way around.
+- **Contrast check both places:** if the app has a dark sidebar/header, make sure the badge's
+  background is distinguishably darker or lighter than that surface — an identical dark shade
+  will make the box's edges disappear and only the letter will read.
+- **Favicon caching:** after changing `favicon.svg`, a normal or hard refresh often won't show
+  the new icon — browsers cache favicons separately from the page. Verify by hitting the SVG's
+  URL directly in a new tab, or an incognito window, before concluding a code change failed.
+
+**Nexus Employee Portal (this project) — implemented record:**
+
+- **Files:** `client/public/favicon.svg` (standalone, hardcoded hex) and
+  `client/src/components/NexusLogo/NexusLogo.jsx` (in-app, `var(--nx-*)` tokens) — both draw
+  the same "N" monogram and must be kept visually in sync by hand.
+- **Colors:** background is `--nx-logo-bg` (`#060a18`, theme.css) — a new token scoped to the
+  logo only (not a general surface color; do not reuse elsewhere). Letter is `--nx-accent`
+  (`#38bdf8`), the existing highlight/accent token.
+- **Font:** in-app uses `'Plus Jakarta Sans', sans-serif` (the app's one loaded font) at
+  `font-weight: 800`; the standalone favicon falls back to `Arial, Helvetica, sans-serif` bold
+  since it can't load the webfont outside the page context.
+- **Shape:** `rx="9"` rounded rect on a 30x30 box inside a 32x32 viewBox (roughly 30% corner
+  radius), letter centered via `text-anchor="middle"` + `dominant-baseline="middle"`.
+- **Title:** `index.html`'s `<title>` was also updated to `Nexus Employee Portal` (was the
+  generic scaffold default `employee-portal`) so the browser tab reads correctly next to the
+  new favicon.
+
 ### Database (Supabase / Postgres)
 
 - Use migrations for schema changes; never alter production directly.
