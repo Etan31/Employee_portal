@@ -1,14 +1,7 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useNavigation } from "./hooks/useNavigation.js";
-import { NAV_ITEMS } from "./data/nav.js";
+import { NAV_ITEMS, HIDDEN_ROUTES } from "./data/nav.js";
 import { DashboardLayout } from "./layouts/DashboardLayout/DashboardLayout.jsx";
-import { Dashboard } from "./pages/Dashboard/Dashboard.jsx";
-import { TaskBox } from "./pages/TaskBox/TaskBox.jsx";
-import { Profile } from "./pages/Profile/Profile.jsx";
-import { PageStub } from "./pages/PageStub/PageStub.jsx";
-import { TimeManagement } from "./pages/TimeManagement/TimeManagement.jsx";
-import Organization from "./pages/Organization/Organization.jsx";
-import { Calendar } from "./pages/Calendar/Calendar.jsx";
 import { Login } from "./pages/Login/Login.jsx";
 import { NotFound, AuthError } from "./pages/ErrorPage/ErrorPage.jsx";
 import { useAuth } from "./hooks/auth.hooks.jsx";
@@ -16,17 +9,48 @@ import { filterNavItemsByRole } from "./utils/authPermissions.js";
 
 import "./styles/global.css";
 
+// Pages are lazy so each route ships as its own chunk. Login + ErrorPage stay
+// eager: auth/error paths must not depend on a chunk fetch succeeding.
+const Dashboard = lazy(() => import("./pages/Dashboard/Dashboard.jsx").then((m) => ({ default: m.Dashboard })));
+const TaskBox = lazy(() => import("./pages/TaskBox/TaskBox.jsx").then((m) => ({ default: m.TaskBox })));
+const Profile = lazy(() => import("./pages/Profile/Profile.jsx").then((m) => ({ default: m.Profile })));
+const TimeManagement = lazy(() => import("./pages/TimeManagement/TimeManagement.jsx").then((m) => ({ default: m.TimeManagement })));
+const Organization = lazy(() => import("./pages/Organization/Organization.jsx"));
+const Calendar = lazy(() => import("./pages/Calendar/Calendar.jsx").then((m) => ({ default: m.Calendar })));
+const Employees = lazy(() => import("./pages/Employees/Employees.jsx").then((m) => ({ default: m.Employees })));
+const HRPolicies = lazy(() => import("./pages/HRPolicies/HRPolicies.jsx").then((m) => ({ default: m.HRPolicies })));
+const Helpdesk = lazy(() => import("./pages/Helpdesk/Helpdesk.jsx").then((m) => ({ default: m.Helpdesk })));
+const Settings = lazy(() => import("./pages/Settings/Settings.jsx").then((m) => ({ default: m.Settings })));
+const PageStub = lazy(() => import("./pages/PageStub/PageStub.jsx").then((m) => ({ default: m.PageStub })));
+
 const LAST_ROUTE_KEY = "nx:lastValidRoute";
+
+const PAGE_COMPONENTS = {
+  dashboard: Dashboard,
+  "task-box": TaskBox,
+  profile: Profile,
+  "time-management": TimeManagement,
+  "org-view": Organization,
+  calendar: Calendar,
+  employees: Employees,
+  "hr-policies": HRPolicies,
+  helpdesk: Helpdesk,
+  settings: Settings,
+};
 
 export default function App() {
   const { active } = useNavigation();
   const { user, loading, role } = useAuth();
 
-  // Look up against the full nav list (not the role-filtered one) so a restricted-but-known
-  // route can be told apart from a route that doesn't exist at all.
+  // Look up against the full route set (not the role-filtered one) so a
+  // restricted-but-known route can be told apart from a route that doesn't exist.
   const permittedNav = filterNavItemsByRole(NAV_ITEMS, role);
-  const requestedItem = NAV_ITEMS.find((item) => item.id === active);
-  const isPermitted = permittedNav.some((item) => item.id === active);
+  const requestedItem =
+    NAV_ITEMS.find((item) => item.id === active) ||
+    HIDDEN_ROUTES.find((item) => item.id === active);
+  const isPermitted =
+    permittedNav.some((item) => item.id === active) ||
+    HIDDEN_ROUTES.some((item) => item.id === active);
 
   useEffect(() => {
     if (!loading && user && active === "login") {
@@ -61,42 +85,33 @@ export default function App() {
     return null;
   }
 
+  let pageContent;
   if (!requestedItem) {
-    return (
-      <DashboardLayout activeRoute={active} navItems={permittedNav}>
-        <NotFound />
-      </DashboardLayout>
-    );
-  }
-
-  if (!isPermitted) {
-    return (
-      <DashboardLayout activeRoute={active} navItems={permittedNav}>
-        <AuthError code={403} />
-      </DashboardLayout>
-    );
-  }
-
-  let PageComponent;
-  if (active === "dashboard") {
-    PageComponent = <Dashboard key={active} />;
-  } else if (active === "task-box") {
-    PageComponent = <TaskBox key={active} />;
-  } else if (active === "profile") {
-    PageComponent = <Profile key={active} />;
-  } else if (active === "time-management") {
-    PageComponent = <TimeManagement key={active} />;
-  } else if (active === "org-view") {
-    PageComponent = <Organization key={active} />;
-  } else if (active === "calendar") {
-    PageComponent = <Calendar key={active} />;
+    pageContent = <NotFound />;
+  } else if (!isPermitted) {
+    pageContent = <AuthError code={403} />;
   } else {
-    PageComponent = <PageStub key={active} title={requestedItem.label} />;
+    const PageComponent = PAGE_COMPONENTS[active];
+    pageContent = (
+      <Suspense
+        fallback={
+          <div className="nx-page-loading">
+            <div className="nx-page-loading__spinner" />
+          </div>
+        }
+      >
+        {PageComponent ? (
+          <PageComponent key={active} />
+        ) : (
+          <PageStub key={active} title={requestedItem.label} />
+        )}
+      </Suspense>
+    );
   }
 
   return (
     <DashboardLayout activeRoute={active} navItems={permittedNav}>
-      {PageComponent}
+      {pageContent}
     </DashboardLayout>
   );
 }

@@ -49,3 +49,8 @@ export const NAV_ITEMS = [
     route: "#/org-view",
   },
 ];
+
+// Routes reachable by all authenticated users but not shown in the sidebar.
+export const HIDDEN_ROUTES = [
+  { id: "settings", label: "Settings", icon: "settings", route: "#/settings" },
+];
