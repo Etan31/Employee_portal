@@ -8,7 +8,13 @@ trustworthy — efficient with warmth, never playful (see PRODUCT.md).
 
 1. **No hardcoded colors.** Every color in page CSS must be a `var(--nx-*)` token. The only
    exceptions: the navy auth gradient (`linear-gradient(160deg, #0f172a 0%, #1e3a5f 55%, #1e40af 100%)`)
-   on standalone screens, and rgba() shadows/overlays derived from token colors.
+   on standalone screens, rgba() shadows/overlays derived from token colors, and
+   `client/public/favicon.svg` (a standalone file outside the CSS cascade — browsers don't
+   apply page CSS custom properties to it, so its colors are a hardcoded snapshot of
+   `--nx-logo-bg`/`--nx-accent`; keep them in sync if those tokens ever change). The in-app
+   logo mark (`components/NexusLogo/NexusLogo.jsx`) uses the real `var(--nx-*)` tokens and
+   is the source of truth for the same dark-box "N" glyph. `--nx-logo-bg` itself is scoped
+   to the logo only (see its comment in theme.css) — don't reuse it as a general surface color.
    Cool-gray hexes (`#111827 #374151 #6b7280 #9ca3af #e5e7eb #e8eaed #f8f9fb`) map to slate
    tokens: `--nx-ink / --nx-text / --nx-text-soft / --nx-text-muted / --nx-border / --nx-border / --nx-bg`.
 2. **Type scale only** (`--nx-fs-*`): page h1 = `xl`/600, section h2 = `lg`/600, card h3 =

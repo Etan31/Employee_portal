@@ -1,17 +1,22 @@
-import React from 'react';
-
 export function NexusLogo({ expanded }) {
   return (
-    <div className={`nx-nexus-logo ${expanded ? 'nx-nexus-logo--expanded' : 'nx-nexus-logo--collapsed'}`} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-      <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16 2L2 9L16 16L30 9L16 2Z" fill="var(--nx-accent)"/>
-        <path d="M2 23L16 30L30 23V9L16 16L2 9V23Z" fill="var(--nx-primary)"/>
+    <div className={`nx-nexus-logo ${expanded ? "nx-nexus-logo--expanded" : "nx-nexus-logo--collapsed"}`}>
+      <svg width="30" height="30" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="var(--nx-logo-bg)" />
+        <text
+          x="16"
+          y="17"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontFamily="'Plus Jakarta Sans', sans-serif"
+          fontWeight="800"
+          fontSize="19"
+          fill="var(--nx-accent)"
+        >
+          N
+        </text>
       </svg>
-      {expanded && (
-        <span style={{ color: '#fff', fontSize: '1rem', fontWeight: 600, letterSpacing: '0.5px' }}>
-          Nexus
-        </span>
-      )}
+      {expanded && <span className="nx-nexus-logo__label">Nexus</span>}
     </div>
   );
 }

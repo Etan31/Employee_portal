@@ -150,6 +150,19 @@
   justify-content: center;
 }
 
+.nx-nexus-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--nx-sp-3);
+}
+
+.nx-nexus-logo__label {
+  color: #ffffff;
+  font-size: var(--nx-fs-md);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 /* Main Area */
 .nx-main-area {
   flex: 1;

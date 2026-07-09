@@ -26,6 +26,10 @@
   --nx-primary-600: #1d4ed8;
   --nx-primary-700: #1e40af;
   --nx-accent: #38bdf8;
+  /* Logo mark only (sidebar badge + favicon.svg source of truth) - near-black
+     with a visible blue cast, deliberately darker than --nx-ink for contrast
+     against the navy sidebar background. Not for general UI use. */
+  --nx-logo-bg: #060a18;
 
   /* Status */
   --nx-success: #16a34a;
