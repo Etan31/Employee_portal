@@ -27,7 +27,8 @@
       "PowerShell(New-Item *)",
       "PowerShell(Get-ChildItem -Path \"D:\\\\WEB PROJECTS\\\\Employee_portal\" -Recurse -Directory -Depth 3 | Where-Object { $_.FullName -notmatch 'node_modules|\\\\.git|dist|build' } | Select-Object FullName)",
       "PowerShell(node --check \"D:\\\\WEB PROJECTS\\\\Employee_portal\\\\server\\\\app.js\"; if \\($?\\) { \"app.js: syntax OK\" })",
-      "PowerShell($url = \"https://raw.githubusercontent.com/Etan31/claude-config/main/fullstack-claude.md\"; $out = \"C:\\\\Users\\\\trist\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--WEB-PROJECTS-Employee-portal\\\\16e470b4-44c3-47ce-bd83-1c6c26693435\\\\scratchpad\\\\fullstack-claude.md\"; Invoke-WebRequest -Uri $url -OutFile $out; \"Downloaded $\\(\\(Get-Item $out\\).Length\\) bytes\")"
+      "PowerShell($url = \"https://raw.githubusercontent.com/Etan31/claude-config/main/fullstack-claude.md\"; $out = \"C:\\\\Users\\\\trist\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--WEB-PROJECTS-Employee-portal\\\\16e470b4-44c3-47ce-bd83-1c6c26693435\\\\scratchpad\\\\fullstack-claude.md\"; Invoke-WebRequest -Uri $url -OutFile $out; \"Downloaded $\\(\\(Get-Item $out\\).Length\\) bytes\")",
+      "PowerShell(git add *)"
     ]
   }
 }
