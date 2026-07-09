@@ -1,3 +1,30 @@
+export const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+export const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+export const VIEW_OPTIONS = [
+  { id: 'all',         label: 'View All' },
+  { id: 'leave',       label: 'All Leave' },
+  { id: 'team',        label: 'My Team Leave' },
+  { id: 'mine',        label: 'My Leave' },
+  { id: 'pending',     label: 'Pending Leave' },
+  { id: 'birthdays',   label: 'Birthdays' },
+  { id: 'anniversary', label: 'Anniversaries' },
+];
+
+// Legend entries reference a tone id; the tone colors live in Calendar.css as tokens.
+export const LEGEND = [
+  { tone: 'approved',    label: 'Approved Leave' },
+  { tone: 'sick',        label: 'Sick Leave' },
+  { tone: 'pending',     label: 'Pending Leave' },
+  { tone: 'holiday',     label: 'Public Holiday' },
+  { tone: 'anniversary', label: 'Work Anniversary' },
+  { tone: 'birthday',    label: 'Birthday' },
+];
+
 export const PH_HOLIDAYS = [
   { id: 'h1',  title: "New Year's Day",             date: '2026-01-01' },
   { id: 'h2',  title: 'EDSA People Power Revolution', date: '2026-02-25' },

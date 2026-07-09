@@ -1,36 +1,15 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import './Calendar.css';
 import {
+  MONTH_NAMES,
+  DAY_NAMES,
+  VIEW_OPTIONS,
+  LEGEND,
   PH_HOLIDAYS,
   LEAVE_EVENTS,
   ANNIVERSARY_EVENTS,
   BIRTHDAY_EVENTS,
-} from '../../data/calendarEvents';
-
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-const VIEW_OPTIONS = [
-  { id: 'all',       label: 'View All' },
-  { id: 'leave',     label: 'All Leave' },
-  { id: 'team',      label: 'My Team Leave' },
-  { id: 'mine',      label: 'My Leave' },
-  { id: 'pending',   label: 'Pending Leave' },
-  { id: 'birthdays', label: 'Birthdays' },
-  { id: 'anniversary', label: 'Anniversaries' },
-];
-
-const LEGEND = [
-  { label: 'Approved Leave',  color: '#059669' },
-  { label: 'Sick Leave',      color: '#7c3aed' },
-  { label: 'Pending Leave',   color: '#d97706' },
-  { label: 'Public Holiday',  color: '#dc2626' },
-  { label: 'Work Anniversary',color: '#4f46e5' },
-  { label: 'Birthday',        color: '#db2777' },
-];
+} from '../../data/calendarEvents.js';
 
 const TODAY = new Date();
 
@@ -99,26 +78,18 @@ function getEventsForDate(date, filter) {
   return events;
 }
 
-function eventClass(ev) {
-  if (ev.eventType === 'holiday')     return 'cal-ev cal-ev--holiday';
-  if (ev.eventType === 'birthday')    return 'cal-ev cal-ev--birthday';
-  if (ev.eventType === 'anniversary') return 'cal-ev cal-ev--anniversary';
-  if (ev.status === 'sick')           return 'cal-ev cal-ev--sick';
-  if (ev.status === 'pending')        return 'cal-ev cal-ev--pending';
-  return 'cal-ev cal-ev--approved';
+// Single source for the tone used by day-cell chips, upcoming dots, and the legend.
+function eventTone(ev) {
+  if (ev.eventType === 'holiday')     return 'holiday';
+  if (ev.eventType === 'birthday')    return 'birthday';
+  if (ev.eventType === 'anniversary') return 'anniversary';
+  if (ev.status === 'sick')           return 'sick';
+  if (ev.status === 'pending')        return 'pending';
+  return 'approved';
 }
 
 function eventLabel(ev) {
   return ev.eventType === 'holiday' ? ev.title : ev.person;
-}
-
-function eventDotColor(ev) {
-  if (ev.eventType === 'holiday')     return '#dc2626';
-  if (ev.eventType === 'birthday')    return '#db2777';
-  if (ev.eventType === 'anniversary') return '#4f46e5';
-  if (ev.status === 'sick')           return '#7c3aed';
-  if (ev.status === 'pending')        return '#d97706';
-  return '#059669';
 }
 
 function eventTypeLabel(ev) {
@@ -172,7 +143,7 @@ function CalCell({ cell, filter, isToday }) {
       <span className="cal-day-num">{cell.date.getDate()}</span>
       <div className="cal-events">
         {shown.map(ev => (
-          <div key={ev.id} className={eventClass(ev)} title={`${eventLabel(ev)} — ${eventTypeLabel(ev)}`}>
+          <div key={ev.id} className={`cal-ev cal-ev--${eventTone(ev)}`} title={`${eventLabel(ev)} — ${eventTypeLabel(ev)}`}>
             {eventLabel(ev)}
           </div>
         ))}
@@ -216,7 +187,7 @@ function UpcomingList({ filter }) {
           <div className="upcoming-date-label">{fmt(date)}</div>
           {evs.map(ev => (
             <div key={ev.id} className="upcoming-event">
-              <span className="upcoming-dot" style={{ background: eventDotColor(ev) }} />
+              <span className={`upcoming-dot upcoming-dot--${eventTone(ev)}`} />
               <div className="upcoming-event-body">
                 <div className="upcoming-event-type">{eventTypeLabel(ev).toUpperCase()}</div>
                 <div className="upcoming-event-name">{eventLabel(ev)}</div>
@@ -313,6 +284,7 @@ export function Calendar() {
             <button
               className="sidebar-filter-btn"
               onClick={() => setFilterOpen(o => !o)}
+              aria-expanded={filterOpen}
             >
               <span>{activeLabel}</span>
               <ChevronDown />
@@ -335,8 +307,8 @@ export function Calendar() {
           {/* Legend */}
           <div className="cal-legend">
             {LEGEND.map(l => (
-              <div key={l.label} className="legend-row">
-                <span className="legend-dot" style={{ background: l.color }} />
+              <div key={l.tone} className="legend-row">
+                <span className={`legend-dot legend-dot--${l.tone}`} />
                 <span className="legend-label">{l.label}</span>
               </div>
             ))}

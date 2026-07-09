@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -12,16 +12,19 @@ import {
 } from "chart.js";
 
 import { Icon } from "../../components/Icon/Icon.jsx";
+import { useAppData } from "../../hooks/appData.hooks.jsx";
 import {
   LEAVE_TYPES,
   LEAVE_REASONS,
   RECIPIENTS,
-  LEAVE_REQUESTS,
   HOLIDAYS,
   LEAVE_BALANCES,
   ATTENDANCE_WEEK,
   ATTENDANCE_MONTH,
+  ATTENDANCE_METRICS,
+  ATTENDANCE_LEGEND,
   QUICK_STATS,
+  QUICK_STAT_CONFIG,
 } from "../../data/timeManagement.js";
 import { formatShortDate } from "../../utils/format.js";
 import "./TimeManagement.css";
@@ -255,12 +258,6 @@ function AttendancePanel() {
   const [viewMode, setViewMode] = useState("week");
   const data = viewMode === "week" ? ATTENDANCE_WEEK : ATTENDANCE_MONTH;
 
-  const metrics = [
-    { label: "Avg. Work Duration", value: "9:06:00", accent: "blue" },
-    { label: "Avg. Late By",       value: "00:04:00", accent: "orange" },
-    { label: "Avg. Overtime",      value: "00:00:00", accent: "green" },
-  ];
-
   return (
     <section className="nx-card nx-tm-attendance-panel">
       <header className="nx-tm-panel-header">
@@ -280,7 +277,7 @@ function AttendancePanel() {
       </header>
 
       <div className="nx-tm-metrics-row">
-        {metrics.map((m) => (
+        {ATTENDANCE_METRICS.map((m) => (
           <div key={m.label} className={`nx-tm-metric-tile nx-tm-metric-tile--${m.accent}`}>
             <span className="nx-tm-metric-tile__value">{m.value}</span>
             <span className="nx-tm-metric-tile__label">{m.label}</span>
@@ -291,11 +288,7 @@ function AttendancePanel() {
       <AttendanceChart data={data} viewMode={viewMode} />
 
       <div className="nx-tm-chart-legend">
-        {[
-          { cls: "gray", label: "Weekly Off / Holiday / Leave" },
-          { cls: "blue", label: "Logged Hours" },
-          { cls: "orange", label: "Late By" },
-        ].map((l) => (
+        {ATTENDANCE_LEGEND.map((l) => (
           <span key={l.cls} className={`nx-tm-legend-item nx-tm-legend-item--${l.cls}`}>
             {l.label}
           </span>
@@ -308,10 +301,10 @@ function AttendancePanel() {
 // ─── Leave Balances Panel ──────────────────────────────────────────────────
 
 const BALANCE_COLORS = {
-  blue:   "#2563eb",
-  amber:  "#f59e0b",
-  violet: "#8b5cf6",
-  green:  "#16a34a",
+  blue: "var(--nx-primary)",
+  amber: "var(--nx-warning)",
+  violet: "var(--nx-violet)",
+  green: "var(--nx-success)",
 };
 
 function LeaveBalancesPanel({ onApply }) {
@@ -373,7 +366,7 @@ function HolidaysPanel() {
       </header>
 
       <ul className="nx-tm-holidays-list">
-        {visible.map((h, idx) => {
+        {visible.map((h) => {
           const d = new Date(h.date + "T00:00:00");
           const month = d.toLocaleString("default", { month: "short" });
           const day = d.getDate();
@@ -693,17 +686,10 @@ function PendingRequestsPanel({ requests, onNewRequest }) {
 
 // ─── Quick Stats Bar ───────────────────────────────────────────────────────
 
-const STAT_CONFIG = [
-  { key: "totalLeavesThisYear", label: "Leaves Taken", icon: "calendar", accent: "blue", unit: "days" },
-  { key: "remainingLeaves",     label: "Remaining",    icon: "check",    accent: "green", unit: "days" },
-  { key: "daysAbsent",          label: "Days Absent",  icon: "clock",    accent: "amber", unit: "days" },
-  { key: "avgWorkHours",        label: "Avg. Work Hrs", icon: "trending-up", accent: "violet", unit: "hrs/day" },
-];
-
 function QuickStatsBar() {
   return (
     <div className="nx-tm-stats-bar">
-      {STAT_CONFIG.map((s) => (
+      {QUICK_STAT_CONFIG.map((s) => (
         <div key={s.key} className={`nx-card nx-tm-stat-card nx-tm-stat-card--${s.accent}`}>
           <div className={`nx-tm-stat-card__icon nx-tm-stat-card__icon--${s.accent}`}>
             <Icon name={s.icon} size={15} />
@@ -722,9 +708,9 @@ function QuickStatsBar() {
 // ─── Page Root ─────────────────────────────────────────────────────────────
 
 export function TimeManagement() {
+  const { leaveRequests, addLeaveRequest } = useAppData();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [defaultLeaveType, setDefaultLeaveType] = useState("");
-  const [requests, setRequests] = useState(LEAVE_REQUESTS);
 
   const openSidebar = (leaveType = "") => {
     setDefaultLeaveType(leaveType);
@@ -732,14 +718,15 @@ export function TimeManagement() {
   };
 
   const handleNewRequest = (req) => {
-    setRequests((prev) => [{ ...req, id: `lr${Date.now()}` }, ...prev]);
+    addLeaveRequest({ ...req, id: `lr${Date.now()}` });
   };
 
   return (
     <>
       <div className="nx-col-main nx-grid-9">
+        <h1 className="nx-tm-page-title">Time Management</h1>
         <QuickStatsBar />
-        <PendingRequestsPanel requests={requests} onNewRequest={() => openSidebar()} />
+        <PendingRequestsPanel requests={leaveRequests} onNewRequest={() => openSidebar()} />
         <AttendancePanel />
       </div>
 
