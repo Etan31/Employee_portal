@@ -1,17 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { TASKS } from "../../data/tasks.js";
-import { ME } from "../../data/people.js";
+import { useState, useEffect } from "react";
+import { ME, ROSTER } from "../../data/people.js";
+import { useAppData } from "../../hooks/appData.hooks.jsx";
 import { formatDate, formatShortDate, isOverdue } from "../../utils/format.js";
 import { Icon } from "../../components/Icon/Icon.jsx";
 import "./TaskBox.css";
 
+// Maps task status to the shared .nx-status-pill modifier in global.css
+const STATUS_PILL = {
+  OPEN: "neutral",
+  IN_PROGRESS: "info",
+  BLOCKED: "warning",
+  DONE: "success",
+};
+
+const PEOPLE = [ME, ...ROSTER];
+
+// Page-owned UI copy for the label autocomplete
+const SUGGESTED_LABELS = [
+  "Frontend",
+  "Backend",
+  "UI/UX",
+  "Bug",
+  "Feature",
+  "Security",
+];
+
 export function TaskBox({ isDashboard }) {
+  const { tasks, addTask, ready } = useAppData();
   const [filter, setFilter] = useState("assigned");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
-  const assignedTasks = TASKS.filter((t) => t.assignee.id === ME.id);
-  const raisedTasks = TASKS.filter((t) => t.assigner.id === ME.id);
+  const assignedTasks = tasks.filter((t) => t.assignee.id === ME.id);
+  const raisedTasks = tasks.filter((t) => t.assigner.id === ME.id);
 
   const baseTask = filter === "assigned" ? assignedTasks : raisedTasks;
   const currentTasks =
@@ -19,17 +41,22 @@ export function TaskBox({ isDashboard }) {
       ? baseTask
       : baseTask.filter((t) => t.priority === priorityFilter);
 
-  const [selectedId, setSelectedId] = useState(null);
+  // Falls back to the first task in the current list whenever the explicitly
+  // selected id isn't in it (e.g. right after switching filters), without an
+  // effect+setState round-trip.
+  const effectiveSelectedId = currentTasks.some((t) => t.id === selectedId)
+    ? selectedId
+    : (currentTasks[0]?.id ?? null);
+  const selectedTask = currentTasks.find((t) => t.id === effectiveSelectedId);
 
-  useEffect(() => {
-    if (currentTasks.length > 0) {
-      setSelectedId(currentTasks[0].id);
-    } else {
-      setSelectedId(null);
-    }
-  }, [filter, currentTasks.length]);
-
-  const selectedTask = currentTasks.find((t) => t.id === selectedId);
+  // Store the new task, surface the list it lives in, and select it
+  const handleCreateTask = (task) => {
+    addTask(task);
+    setFilter(task.assignee.id === ME.id ? "assigned" : "raised");
+    setPriorityFilter("all");
+    setSelectedId(task.id);
+    setIsModalOpen(false);
+  };
 
   const priorityOptions = [
     { value: "all", label: "All", count: baseTask.length },
@@ -50,6 +77,14 @@ export function TaskBox({ isDashboard }) {
     },
   ];
 
+  if (!ready) {
+    return (
+      <div className="nx-page-loading">
+        <div className="nx-page-loading__spinner" />
+      </div>
+    );
+  }
+
   return (
     <section
       className={`nx-taskbox ${isDashboard ? "nx-taskbox--dashboard" : ""}`}
@@ -59,7 +94,7 @@ export function TaskBox({ isDashboard }) {
         <header className="nx-taskbox__header">
           <div className="nx-taskbox__header-top">
             <div className="nx-taskbox__header-info">
-              <h2 className="nx-taskbox__title">Tasks</h2>
+              <h1 className="nx-taskbox__title">Task Box</h1>
               <p className="nx-taskbox__subtitle">
                 Track work assigned to you and requests you have raised.
               </p>
@@ -69,13 +104,13 @@ export function TaskBox({ isDashboard }) {
                 className="nx-taskbox__create-btn"
                 onClick={() => setIsModalOpen(true)}
               >
-                <Icon name="user-plus" size={15} />
+                <Icon name="plus-circle" size={15} />
                 <span>Create</span>
               </button>
             )}
           </div>
 
-          <div className="nx-segment-control" role="tablist">
+          <div className="nx-segment-control" role="tablist" aria-label="Task list filter">
             <button
               role="tab"
               aria-selected={filter === "assigned"}
@@ -105,6 +140,7 @@ export function TaskBox({ isDashboard }) {
               {priorityOptions.map((opt) => (
                 <button
                   key={opt.value}
+                  aria-pressed={priorityFilter === opt.value}
                   className={`nx-priority-tab ${priorityFilter === opt.value ? "active" : ""} ${opt.value !== "all" ? `nx-priority-tab--${opt.value.toLowerCase()}` : ""}`}
                   onClick={() => setPriorityFilter(opt.value)}
                 >
@@ -135,7 +171,7 @@ export function TaskBox({ isDashboard }) {
               return (
                 <li key={task.id}>
                   <article
-                    className={`nx-task-card ${selectedId === task.id ? "nx-task-card--selected" : ""} nx-task-card--priority-${task.priority.toLowerCase()}`}
+                    className={`nx-task-card ${effectiveSelectedId === task.id ? "nx-task-card--selected" : ""} nx-task-card--priority-${task.priority.toLowerCase()}`}
                     onClick={() => setSelectedId(task.id)}
                     role="button"
                     tabIndex={0}
@@ -159,7 +195,7 @@ export function TaskBox({ isDashboard }) {
                       <p className="nx-task-card__desc">{task.description}</p>
                       <div className="nx-task-card__foot">
                         <span
-                          className={`nx-status-pill nx-status-pill--${task.status.toLowerCase()}`}
+                          className={`nx-status-pill nx-status-pill--${STATUS_PILL[task.status] || "neutral"}`}
                         >
                           {task.status.replace("_", " ")}
                         </span>
@@ -191,19 +227,21 @@ export function TaskBox({ isDashboard }) {
             <p>Select a task to view details.</p>
           </div>
         ) : (
-          <article className="nx-task-detail">
+          <article className="nx-task-detail" key={selectedTask.id}>
             <header className="nx-task-detail__header">
               <div className="nx-task-detail__chips">
                 <span className="nx-chip nx-chip--type">
                   {selectedTask.issueType || "TASK"}
                 </span>
                 <span
-                  className={`nx-chip nx-chip--status nx-chip--status-${selectedTask.status.toLowerCase()}`}
+                  className={`nx-status-pill nx-status-pill--${STATUS_PILL[selectedTask.status] || "neutral"}`}
                 >
                   {selectedTask.status.replace("_", " ")}
                 </span>
                 {isOverdue(selectedTask.dueDate) && (
-                  <span className="nx-chip nx-chip--danger">Overdue</span>
+                  <span className="nx-status-pill nx-status-pill--danger">
+                    Overdue
+                  </span>
                 )}
               </div>
               <div
@@ -217,7 +255,7 @@ export function TaskBox({ isDashboard }) {
               </div>
             </header>
 
-            <h1 className="nx-task-detail__title">{selectedTask.title}</h1>
+            <h2 className="nx-task-detail__title">{selectedTask.title}</h2>
 
             <div className="nx-task-detail__meta-row">
               <div className="nx-meta-cell">
@@ -333,23 +371,28 @@ export function TaskBox({ isDashboard }) {
         )}
       </section>
 
-      {isModalOpen && <CreateTaskModal onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && (
+        <CreateTaskModal
+          onClose={() => setIsModalOpen(false)}
+          onCreate={handleCreateTask}
+        />
+      )}
     </section>
   );
 }
 
-function CreateTaskModal({ onClose }) {
+function CreateTaskModal({ onClose, onCreate }) {
+  const [title, setTitle] = useState("");
+  const [titleError, setTitleError] = useState("");
+  const [issueType, setIssueType] = useState("Task");
+  const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("Medium");
+  const [assigneeId, setAssigneeId] = useState(ME.id);
+  const [reporterId, setReporterId] = useState(ME.id);
+  const [dueDate, setDueDate] = useState("");
+  const [attachments, setAttachments] = useState([]);
   const [labels, setLabels] = useState([]);
   const [labelText, setLabelText] = useState("");
-  const [suggestedLabels] = useState([
-    "Frontend",
-    "Backend",
-    "UI/UX",
-    "Bug",
-    "Feature",
-    "Security",
-  ]);
 
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
@@ -362,7 +405,7 @@ function CreateTaskModal({ onClose }) {
     };
   }, []);
 
-  const filteredLabels = suggestedLabels.filter(
+  const filteredLabels = SUGGESTED_LABELS.filter(
     (l) =>
       l.toLowerCase().includes(labelText.toLowerCase()) && !labels.includes(l),
   );
@@ -372,12 +415,41 @@ function CreateTaskModal({ onClose }) {
     setLabelText("");
   };
 
+  const findPerson = (id) => PEOPLE.find((p) => p.id === id) || ME;
+
+  // Builds a record matching the TASKS shape and hands it to the shared store
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      setTitleError("Title is required.");
+      return;
+    }
+    const now = new Date();
+    onCreate({
+      id: `TASK-${Date.now()}`,
+      title: title.trim(),
+      issueType,
+      description: description.trim(),
+      status: "OPEN",
+      priority: priority.toUpperCase(),
+      assigner: ME,
+      reporter: findPerson(reporterId),
+      assignee: findPerson(assigneeId),
+      labels,
+      linkedIssues: [],
+      attachments,
+      createdDate: now.toISOString(),
+      dueDate: dueDate ? new Date(dueDate).toISOString() : now.toISOString(),
+    });
+  };
+
   return (
     <div className="nx-modal-overlay" onClick={onClose}>
       <section
         className="nx-modal-content"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
+        aria-modal="true"
         aria-labelledby="modal-title"
       >
         <header className="nx-modal-header">
@@ -393,7 +465,11 @@ function CreateTaskModal({ onClose }) {
           </button>
         </header>
 
-        <form className="nx-modal-body" onSubmit={(e) => e.preventDefault()}>
+        <form
+          id="nx-create-task-form"
+          className="nx-modal-body"
+          onSubmit={handleSubmit}
+        >
           <div className="nx-form-group">
             <label className="nx-form-label" htmlFor="task-title">
               Title
@@ -403,7 +479,19 @@ function CreateTaskModal({ onClose }) {
               id="task-title"
               className="nx-form-input"
               placeholder="What needs to be done?"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (titleError) setTitleError("");
+              }}
+              aria-invalid={Boolean(titleError)}
+              aria-describedby={titleError ? "task-title-error" : undefined}
             />
+            {titleError && (
+              <span className="nx-form-error" id="task-title-error">
+                {titleError}
+              </span>
+            )}
           </div>
 
           <div className="nx-form-row">
@@ -411,7 +499,12 @@ function CreateTaskModal({ onClose }) {
               <label className="nx-form-label" htmlFor="issue-type">
                 Issue Type
               </label>
-              <select id="issue-type" className="nx-form-select">
+              <select
+                id="issue-type"
+                className="nx-form-select"
+                value={issueType}
+                onChange={(e) => setIssueType(e.target.value)}
+              >
                 <option>Task</option>
                 <option>Bug</option>
                 <option>Question</option>
@@ -423,16 +516,18 @@ function CreateTaskModal({ onClose }) {
               <div
                 className="nx-priority-selector"
                 role="radiogroup"
-                aria-label="Priority selector"
+                aria-label="Priority"
               >
                 {["Urgent", "High", "Medium", "Low"].map((p) => (
                   <button
                     key={p}
                     type="button"
+                    role="radio"
                     className={`nx-priority-btn nx-priority-btn--${p.toLowerCase()} ${priority === p ? "active" : ""}`}
                     onClick={() => setPriority(p)}
                     title={p}
-                    aria-pressed={priority === p}
+                    aria-label={`${p} priority`}
+                    aria-checked={priority === p}
                   >
                     <Icon name={`priority-${p.toLowerCase()}`} size={16} />
                   </button>
@@ -449,6 +544,8 @@ function CreateTaskModal({ onClose }) {
               id="task-description"
               className="nx-form-textarea"
               placeholder="Add more details..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
@@ -457,19 +554,34 @@ function CreateTaskModal({ onClose }) {
               <label className="nx-form-label" htmlFor="task-assignee">
                 Assignee
               </label>
-              <select id="task-assignee" className="nx-form-select">
-                <option>Unassigned</option>
-                <option>Tristan</option>
-                <option>John Doe</option>
+              <select
+                id="task-assignee"
+                className="nx-form-select"
+                value={assigneeId}
+                onChange={(e) => setAssigneeId(e.target.value)}
+              >
+                {PEOPLE.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.id === ME.id ? `Me (${p.name})` : p.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="nx-form-group">
               <label className="nx-form-label" htmlFor="task-reporter">
                 Reporter
               </label>
-              <select id="task-reporter" className="nx-form-select">
-                <option>Me (Tristan)</option>
-                <option>Manager</option>
+              <select
+                id="task-reporter"
+                className="nx-form-select"
+                value={reporterId}
+                onChange={(e) => setReporterId(e.target.value)}
+              >
+                {PEOPLE.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.id === ME.id ? `Me (${p.name})` : p.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -505,7 +617,10 @@ function CreateTaskModal({ onClose }) {
                   value={labelText}
                   onChange={(e) => setLabelText(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && labelText) addLabel(labelText);
+                    if (e.key === "Enter" && labelText) {
+                      e.preventDefault();
+                      addLabel(labelText);
+                    }
                   }}
                   placeholder="Type to search or create..."
                 />
@@ -520,7 +635,7 @@ function CreateTaskModal({ onClose }) {
                         {l}
                       </li>
                     ))}
-                    {!suggestedLabels.includes(labelText) && (
+                    {!SUGGESTED_LABELS.includes(labelText) && (
                       <li
                         className="nx-suggestion-item nx-suggestion-item--new"
                         onClick={() => addLabel(labelText)}
@@ -543,13 +658,17 @@ function CreateTaskModal({ onClose }) {
                 type="date"
                 id="due-date"
                 className="nx-form-input"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
                 required={priority === "Urgent"}
               />
             </div>
           </div>
 
           <div className="nx-form-group">
-            <label className="nx-form-label">Attachments</label>
+            <label className="nx-form-label" htmlFor="attachments">
+              Attachments
+            </label>
             <div className="nx-attachments-container">
               <div className="nx-attachments-upload">
                 <input
@@ -558,39 +677,21 @@ function CreateTaskModal({ onClose }) {
                   className="nx-attachments-input"
                   multiple
                   accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png,.gif"
+                  onChange={(e) =>
+                    setAttachments(
+                      Array.from(e.target.files).map((f) => f.name),
+                    )
+                  }
                 />
                 <label htmlFor="attachments" className="nx-attachments-label">
                   <Icon name="file-text" size={20} />
-                  <span>Click to upload or drag files</span>
+                  <span>
+                    {attachments.length > 0
+                      ? attachments.join(", ")
+                      : "Click to upload or drag files"}
+                  </span>
                   <small>PDF, DOC, XLS, images up to 10 MB</small>
                 </label>
-              </div>
-            </div>
-          </div>
-
-          <div className="nx-form-group">
-            <label className="nx-form-label" htmlFor="linked-issues">
-              Link Issues
-            </label>
-            <input
-              type="text"
-              id="linked-issues"
-              className="nx-form-input"
-              placeholder="Search or paste issue ID (e.g., PROJ-123)"
-            />
-            <div className="nx-linked-issues-list">
-              <div className="nx-linked-issue-item">
-                <div className="nx-linked-issue-badge">PROJ-101</div>
-                <span className="nx-linked-issue-title">
-                  Update Employee Handbook
-                </span>
-                <button
-                  type="button"
-                  className="nx-linked-issue-remove"
-                  aria-label="Remove link"
-                >
-                  <Icon name="x" size={14} />
-                </button>
               </div>
             </div>
           </div>
@@ -600,7 +701,11 @@ function CreateTaskModal({ onClose }) {
           <button type="button" className="nx-btn-ghost" onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" className="nx-btn-primary" onClick={onClose}>
+          <button
+            type="submit"
+            form="nx-create-task-form"
+            className="nx-btn-primary"
+          >
             Create Task
           </button>
         </footer>
