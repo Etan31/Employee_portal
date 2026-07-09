@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import OrgChartView from "../../components/OrgChartView/OrgChartView";
+import { useAsyncData } from "../../hooks/useAsyncData.js";
+import { getOrgStats } from "../../utils/orgData.js";
 import "./Organization.css";
 
 function SearchIcon() {
   return (
-    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       <circle cx={11} cy={11} r={8} />
       <line x1={21} y1={21} x2={16.65} y2={16.65} />
     </svg>
@@ -49,22 +51,14 @@ const STAT_ICONS = {
   ),
 };
 
-const PALETTES = {
-  blue:    { bg: "#eff6ff", icon: "#3b82f6", val: "#1d4ed8" },
-  purple:  { bg: "#f5f3ff", icon: "#8b5cf6", val: "#6d28d9" },
-  emerald: { bg: "#ecfdf5", icon: "#10b981", val: "#047857" },
-  amber:   { bg: "#fffbeb", icon: "#f59e0b", val: "#b45309" },
-};
-
 function StatCard({ icon, label, value, color }) {
-  const c = PALETTES[color];
   return (
     <div className="org-stat-card">
-      <div className="org-stat-icon" style={{ background: c.bg }}>
-        <span style={{ color: c.icon, display: "flex" }}>{STAT_ICONS[icon]}</span>
+      <div className={`org-stat-icon org-stat-icon--${color}`}>
+        {STAT_ICONS[icon]}
       </div>
       <div>
-        <div className="org-stat-value" style={{ color: c.val }}>{value}</div>
+        <div className={`org-stat-value org-stat-value--${color}`}>{value}</div>
         <div className="org-stat-label">{label}</div>
       </div>
     </div>
@@ -73,6 +67,14 @@ function StatCard({ icon, label, value, color }) {
 
 export default function Organization() {
   const [search, setSearch] = useState("");
+  const { data } = useAsyncData(() => import("../../data/orgSample.js"));
+
+  const stats = useMemo(() => {
+    if (!data) return null;
+    const sample = data.default;
+    const tree = sample.large?.org || sample.standard.org;
+    return getOrgStats(tree);
+  }, [data]);
 
   return (
     <div className="organization-page">
@@ -80,7 +82,7 @@ export default function Organization() {
         <div className="org-header-left">
           <div className="org-title-row">
             <h1 className="org-title">Organization</h1>
-            <span className="org-badge">20 employees</span>
+            {stats && <span className="org-badge">{stats.total} employees</span>}
           </div>
           <p className="org-sub">Explore structure, reporting lines, and roles across Nexus.</p>
         </div>
@@ -92,12 +94,14 @@ export default function Organization() {
         </div>
       </header>
 
-      <div className="org-stats">
-        <StatCard icon="users"  label="Total Employees" value="20" color="blue"    />
-        <StatCard icon="layout" label="Departments"      value="4"  color="purple"  />
-        <StatCard icon="branch" label="Reporting Levels" value="3"  color="emerald" />
-        <StatCard icon="check"  label="Open Roles"       value="2"  color="amber"   />
-      </div>
+      {stats && (
+        <div className="org-stats">
+          <StatCard icon="users"  label="Total Employees"   value={stats.total} color="blue" />
+          <StatCard icon="layout" label="Departments"       value={stats.units} color="purple" />
+          <StatCard icon="branch" label="Reporting Levels"  value={stats.reportingLevels} color="emerald" />
+          <StatCard icon="check"  label="Individual Contributors" value={stats.individualContributors} color="amber" />
+        </div>
+      )}
 
       <div className="org-chart-card">
         <div className="org-toolbar">
