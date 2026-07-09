@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 @import './theme.css';
 
 * {
@@ -7,7 +8,7 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background-color: var(--nx-bg);
   color: var(--nx-text);
   line-height: 1.5;
@@ -26,7 +27,9 @@ button {
   cursor: pointer;
 }
 
-input {
+input,
+select,
+textarea {
   font-family: inherit;
 }
 
@@ -40,13 +43,7 @@ input {
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
-  animation: nx-fade-in 0.3s ease;
-  font-family: 'Inter', system-ui, sans-serif;
-}
-
-@keyframes nx-fade-in {
-  from { opacity: 0; transform: scale(1.015); }
-  to   { opacity: 1; transform: scale(1); }
+  animation: nx-scale-in var(--nx-dur) var(--nx-ease);
 }
 
 .nx-loading-brand {
@@ -66,16 +63,29 @@ input {
   animation: nx-spin 0.75s linear infinite;
 }
 
-@keyframes nx-spin {
-  to { transform: rotate(360deg); }
-}
-
 .nx-loading-text {
-  font-size: 0.88rem;
+  font-size: var(--nx-fs-base);
   color: rgba(248, 250, 252, 0.5);
   font-weight: 500;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+}
+
+/* ── Lazy-route fallback (in-shell, subtle) ── */
+.nx-page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+.nx-page-loading__spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--nx-border);
+  border-top-color: var(--nx-primary);
+  border-radius: 50%;
+  animation: nx-spin 0.75s linear infinite;
 }
 
 /* Base Primitive */
@@ -86,12 +96,12 @@ input {
   box-shadow: var(--nx-shadow-sm);
 }
 
-/* Typography utilities */
-.nx-h1 { font-size: 1.5rem; font-weight: 600; color: var(--nx-text); }
-.nx-h2 { font-size: 1.25rem; font-weight: 600; color: var(--nx-text); }
-.nx-h3 { font-size: 1.125rem; font-weight: 500; color: var(--nx-text); }
-.nx-p { font-size: 0.875rem; color: var(--nx-text-soft); }
-.nx-small { font-size: 0.75rem; color: var(--nx-text-muted); }
+/* Typography utilities — the app type scale (see theme.css) */
+.nx-h1 { font-size: var(--nx-fs-xl); font-weight: 600; color: var(--nx-text); letter-spacing: -0.01em; }
+.nx-h2 { font-size: var(--nx-fs-lg); font-weight: 600; color: var(--nx-text); }
+.nx-h3 { font-size: var(--nx-fs-md); font-weight: 600; color: var(--nx-text); }
+.nx-p { font-size: var(--nx-fs-base); color: var(--nx-text-soft); }
+.nx-small { font-size: var(--nx-fs-xs); color: var(--nx-text-muted); }
 
 /* Layout utilities */
 .nx-flex { display: flex; }
@@ -99,3 +109,70 @@ input {
 .nx-justify-between { justify-content: space-between; }
 .nx-justify-center { justify-content: center; }
 .nx-grid { display: grid; }
+
+/* Shared two-column page layout (main + side rail) used inside .nx-dashboard-grid
+   by both Dashboard and Time Management — keep in global.css, not a page file, so
+   either page works regardless of which page's CSS chunk loaded first. */
+.nx-col-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-sp-6);
+}
+
+.nx-col-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-sp-5);
+}
+
+/* ── Shared status pill (single definition; page files must not redefine) ── */
+.nx-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: var(--nx-fs-xs);
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.nx-status-pill--success { background: var(--nx-success-soft); color: var(--nx-success-strong); }
+.nx-status-pill--warning { background: var(--nx-warning-soft); color: var(--nx-warning-strong); }
+.nx-status-pill--danger { background: var(--nx-danger-soft); color: var(--nx-danger-strong); }
+.nx-status-pill--violet { background: var(--nx-violet-soft); color: var(--nx-violet); }
+.nx-status-pill--info { background: var(--nx-primary-50); color: var(--nx-primary-600); }
+.nx-status-pill--neutral { background: var(--nx-surface-2); color: var(--nx-text-soft); }
+
+/* ── Canonical entrance keyframes (page files must not redefine these names) ── */
+@keyframes nx-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes nx-slide-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes nx-scale-in {
+  from { opacity: 0; transform: scale(1.015); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes nx-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Reduced motion: instant transitions everywhere, no exceptions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

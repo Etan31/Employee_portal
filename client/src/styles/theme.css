@@ -1,21 +1,45 @@
+/*
+ * Nexus design tokens. Single source of truth — page CSS must use these vars,
+ * not hardcoded hex values. See DESIGN.md for usage rules.
+ *
+ * Breakpoint convention (media queries cannot use vars):
+ *   wide 1200px | tablet 900px | phone 560px
+ */
 :root {
+  /* Surfaces & borders */
   --nx-bg: #f3f6fb;
   --nx-surface: #ffffff;
   --nx-surface-2: #f8fafc;
   --nx-border: #e3e9f2;
   --nx-border-strong: #d3dde9;
+
+  /* Text (single slate family) */
+  --nx-ink: #0f172a;
   --nx-text: #1e293b;
   --nx-text-soft: #475569;
   --nx-text-muted: #94a3b8;
+
+  /* Brand */
   --nx-primary: #2563eb;
   --nx-primary-50: #eff6ff;
   --nx-primary-100: #dbeafe;
+  --nx-primary-600: #1d4ed8;
   --nx-primary-700: #1e40af;
   --nx-accent: #38bdf8;
-  --nx-danger: #ef4444;
-  --nx-warning: #f59e0b;
+
+  /* Status */
+  --nx-success: #16a34a;
+  --nx-success-strong: #15803d;
   --nx-success-soft: #dcfce7;
-  
+  --nx-danger: #ef4444;
+  --nx-danger-strong: #b91c1c;
+  --nx-danger-soft: #fee2e2;
+  --nx-warning: #f59e0b;
+  --nx-warning-strong: #b45309;
+  --nx-warning-soft: #fef3c7;
+  --nx-violet: #7c3aed;
+  --nx-violet-soft: #ede9fe;
+
   /* Tile Palette - Soft Pastels */
   --nx-tile-1: #e0f2fe; /* Sky */
   --nx-tile-2: #fef3c7; /* Amber */
@@ -24,12 +48,38 @@
   --nx-tile-5: #fee2e2; /* Red */
   --nx-tile-6: #f3e8ff; /* Purple */
 
+  /* Type scale: h1=xl/600, h2=lg/600, h3=md/600, body=base, meta=sm, badge=xs */
+  --nx-fs-xs: 0.75rem;
+  --nx-fs-sm: 0.8125rem;
+  --nx-fs-base: 0.875rem;
+  --nx-fs-md: 1rem;
+  --nx-fs-lg: 1.125rem;
+  --nx-fs-xl: 1.375rem;
+  --nx-fs-2xl: 1.75rem;
+
+  /* Spacing scale */
+  --nx-sp-1: 4px;
+  --nx-sp-2: 8px;
+  --nx-sp-3: 12px;
+  --nx-sp-4: 16px;
+  --nx-sp-5: 24px;
+  --nx-sp-6: 32px;
+  --nx-sp-7: 48px;
+
+  /* Motion */
+  --nx-ease: cubic-bezier(0, 0, 0.2, 1);
+  --nx-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --nx-dur-fast: 150ms;
+  --nx-dur: 250ms;
+  --nx-dur-slow: 400ms;
+
   /* Shadows */
   --nx-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --nx-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --nx-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
   /* Radius */
+  --nx-radius-sm: 8px;
   --nx-radius: 12px;
   --nx-radius-lg: 18px;
 }
