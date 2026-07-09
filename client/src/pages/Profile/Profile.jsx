@@ -1,38 +1,9 @@
 import { useState, useMemo } from 'react';
+import { EMPLOYEE_PROFILE as EMP, tenureMonths } from '../../data/profileData.js';
+import { useAuth } from '../../hooks/auth.hooks.jsx';
+import { updateUserProfile } from '../../api/auth.api.js';
+import { logError } from '../../utils/logger.js';
 import './Profile.css';
-
-const EMP = {
-  name: 'Tristan Ehron A. Tumbaga',
-  initials: 'TE',
-  position: 'Junior Programmer',
-  dept: 'Information Technology',
-  company: 'Delbros Leasing',
-  id: 'D-0030226-01011',
-  email: 'tatumbaga@delbros.com',
-  personalEmail: 'tristan.ehron.tumbaga@gmail.com',
-  phone: '+63 963 071 9746',
-  location: 'PASCOR Drive, Paranaque, Metro Manila',
-  joined: 'March 9, 2026',
-  joinedDate: [2026, 2, 9],
-  birthday: 'May 31, 2002',
-  jobLevel: 'Rank & File',
-  religion: 'Catholic',
-  gender: 'Male',
-  nickname: 'Etan',
-  tin: '669-080-885',
-  philhealth: '132502029014',
-  pagibig: '121356480612',
-  sss: '3534927588',
-  skills: ['Word', 'Excel', 'Outlook', 'PowerPoint', 'Cloud Networking', 'File Sharing', 'Microsoft Excel (Advanced)'],
-};
-
-function tenureMonths() {
-  const now = new Date();
-  const [y, m, d] = EMP.joinedDate;
-  let months = (now.getFullYear() - y) * 12 + (now.getMonth() - m);
-  if (now.getDate() < d) months--;
-  return Math.max(0, months);
-}
 
 const IcMail = () => (
   <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -71,15 +42,6 @@ const IcPencil = () => (
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
   </svg>
 );
-const IcShare = () => (
-  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="18" cy="5" r="3"/>
-    <circle cx="6" cy="12" r="3"/>
-    <circle cx="18" cy="19" r="3"/>
-    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-  </svg>
-);
 const IcClock = () => (
   <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/>
@@ -100,11 +62,10 @@ const IcDoc = () => (
     <line x1="16" y1="17" x2="8" y2="17"/>
   </svg>
 );
-const IcReceipt = () => (
+const IcSettings = () => (
   <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2z"/>
-    <line x1="16" y1="10" x2="8" y2="10"/>
-    <line x1="16" y1="14" x2="8" y2="14"/>
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
   </svg>
 );
 const IcExtLink = () => (
@@ -115,7 +76,7 @@ const IcExtLink = () => (
   </svg>
 );
 const IcSmiley = () => (
-  <svg width={36} height={36} viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+  <svg width={36} height={36} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/>
     <path d="M8 13s1.5 2 4 2 4-2 4-2"/>
     <line x1="9" y1="9" x2="9.01" y2="9"/>
@@ -155,12 +116,75 @@ function Pills({ options, active, onChange }) {
   );
 }
 
+/* First/last name are the only fields the real `profiles` table backs today
+   (see supabase/migrations/v2/002_profiles.schema.sql) — this edits just those. */
+function EditProfileForm({ initialFirst, initialLast, onCancel, onSaved }) {
+  const { user, refreshProfile } = useAuth();
+  const [firstName, setFirstName] = useState(initialFirst);
+  const [lastName, setLastName] = useState(initialLast);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSave = async () => {
+    if (!user?.id) return;
+    setSaving(true);
+    setError('');
+    try {
+      await updateUserProfile(user.id, {
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+      });
+      await refreshProfile();
+      onSaved();
+    } catch (err) {
+      logError('Profile update failed:', err);
+      setError('Could not save changes. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="ph-edit-form">
+      <div className="ph-edit-form__row">
+        <label className="ph-edit-form__field">
+          <span>First Name</span>
+          <input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+        </label>
+        <label className="ph-edit-form__field">
+          <span>Last Name</span>
+          <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
+        </label>
+      </div>
+      {error && <p className="ph-edit-form__error">{error}</p>}
+      <div className="ph-edit-form__actions">
+        <button className="ph-btn ph-btn-ghost" onClick={onCancel} disabled={saving}>Cancel</button>
+        <button className="ph-btn ph-btn-primary" onClick={handleSave} disabled={saving}>
+          {saving ? 'Saving...' : 'Save'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function Profile() {
+  const { user, profile } = useAuth();
   const [mainTab, setMainTab]           = useState('Overview');
   const [overviewTab, setOverviewTab]   = useState('Profile Summary');
   const [personalTab, setPersonalTab]   = useState('Biographical');
   const [employmentTab, setEmploymentTab] = useState('Work & Role');
+  const [isEditing, setIsEditing] = useState(false);
   const tenure = useMemo(() => tenureMonths(), []);
+
+  const firstName = profile?.first_name ?? EMP.name.split(' ')[0];
+  const lastName = profile?.last_name ?? EMP.name.split(' ').slice(-1)[0];
+  const displayName = (profile?.first_name || profile?.last_name)
+    ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim()
+    : EMP.name;
+  const initials = (profile?.first_name || profile?.last_name)
+    ? `${(profile.first_name || '')[0] || ''}${(profile.last_name || '')[0] || ''}`.toUpperCase() || EMP.initials
+    : EMP.initials;
+  const workEmail = user?.email || EMP.email;
 
   return (
     <div className="ph-page">
@@ -169,9 +193,9 @@ export function Profile() {
       <div className="ph-hero">
         <div className="ph-hero-banner" />
         <div className="ph-hero-body">
-          <div className="ph-avatar">{EMP.initials}</div>
+          <div className="ph-avatar">{initials}</div>
           <div className="ph-identity">
-            <h1 className="ph-name">{EMP.name}</h1>
+            <h1 className="ph-name">{displayName}</h1>
             <div className="ph-title-row">
               <span className="ph-position">{EMP.position}</span>
               <span className="ph-sept">·</span>
@@ -186,10 +210,19 @@ export function Profile() {
             </div>
           </div>
           <div className="ph-hero-actions">
-            <button className="ph-btn ph-btn-ghost"><IcPencil />Edit Profile</button>
-            <button className="ph-btn ph-btn-ghost"><IcShare />Share</button>
+            <button className="ph-btn ph-btn-ghost" onClick={() => setIsEditing((v) => !v)}>
+              <IcPencil />{isEditing ? 'Close' : 'Edit Profile'}
+            </button>
           </div>
         </div>
+        {isEditing && (
+          <EditProfileForm
+            initialFirst={firstName}
+            initialLast={lastName}
+            onCancel={() => setIsEditing(false)}
+            onSaved={() => setIsEditing(false)}
+          />
+        )}
         <div className="ph-stats">
           <div className="ph-stat">
             <span className="ph-stat-val">{tenure}</span>
@@ -239,11 +272,10 @@ export function Profile() {
                 <>
                   <div className="ph-section-head">
                     <h2 className="ph-section-title">Profile Summary</h2>
-                    <button className="ph-edit-btn"><IcPencil />Edit</button>
                   </div>
                   <DataGrid items={[
                     { label: 'Employee ID',      value: EMP.id },
-                    { label: 'Email',            value: EMP.email },
+                    { label: 'Email',            value: workEmail },
                     { label: 'Department',       value: EMP.dept },
                     { label: 'Company',          value: EMP.company },
                     { label: 'Birthday',         value: EMP.birthday },
@@ -257,7 +289,6 @@ export function Profile() {
                 <>
                   <div className="ph-section-head">
                     <h2 className="ph-section-title">Access &amp; Privacy</h2>
-                    <button className="ph-edit-btn"><IcPencil />Edit</button>
                   </div>
                   <DataGrid items={[
                     { label: 'Show Date of Birth Year', value: 'Yes' },
@@ -270,7 +301,6 @@ export function Profile() {
                 <>
                   <div className="ph-section-head">
                     <h2 className="ph-section-title">About Me</h2>
-                    <button className="ph-edit-btn"><IcPencil />Edit</button>
                   </div>
                   <DataGrid items={[
                     { label: 'Nickname', value: EMP.nickname },
@@ -296,13 +326,10 @@ export function Profile() {
                 <>
                   <div className="ph-section-head">
                     <h2 className="ph-section-title">Biographical</h2>
-                    <button className="ph-edit-btn"><IcPencil />Edit</button>
                   </div>
                   <DataGrid items={[
-                    { label: 'First Name',   value: 'Tristan' },
-                    { label: 'Last Name',    value: 'Tumbaga' },
-                    { label: 'Middle Name',  value: 'Ehron A.' },
-                    { label: 'Suffix',       value: 'N/A' },
+                    { label: 'First Name',   value: firstName },
+                    { label: 'Last Name',    value: lastName },
                     { label: 'Nickname',     value: EMP.nickname },
                     { label: 'Gender',       value: EMP.gender },
                     { label: 'Birthday',     value: EMP.birthday },
@@ -316,7 +343,6 @@ export function Profile() {
                 <>
                   <div className="ph-section-head">
                     <h2 className="ph-section-title">Contact</h2>
-                    <button className="ph-edit-btn"><IcPencil />Edit</button>
                   </div>
                   <DataGrid items={[
                     { label: 'Personal Email',  value: EMP.personalEmail },
@@ -329,7 +355,6 @@ export function Profile() {
                 <>
                   <div className="ph-section-head">
                     <h2 className="ph-section-title">Current Address</h2>
-                    <button className="ph-edit-btn"><IcPencil />Edit</button>
                   </div>
                   <DataGrid items={[
                     { label: 'House / Wing / Unit', value: 'West Parc Drive, Alabang' },
@@ -343,7 +368,6 @@ export function Profile() {
                 <>
                   <div className="ph-section-head">
                     <h2 className="ph-section-title">Identity Numbers</h2>
-                    <button className="ph-edit-btn"><IcPencil />Edit</button>
                   </div>
                   <div className="ph-data-grid">
                     {[
@@ -417,7 +441,7 @@ export function Profile() {
               <span className="ph-side-icon"><IcMail /></span>
               <div>
                 <div className="ph-side-row-label">Work Email</div>
-                <div className="ph-side-row-val">{EMP.email}</div>
+                <div className="ph-side-row-val">{workEmail}</div>
               </div>
             </div>
             <div className="ph-side-row">
@@ -449,14 +473,14 @@ export function Profile() {
               <span className="ph-quick-link-label">My Tasks</span>
               <IcExtLink />
             </a>
-            <a href="#/" className="ph-quick-link">
+            <a href="#/hr-policies" className="ph-quick-link">
               <span className="ph-quick-link-icon"><IcDoc /></span>
-              <span className="ph-quick-link-label">HR Documents</span>
+              <span className="ph-quick-link-label">HR Policies</span>
               <IcExtLink />
             </a>
-            <a href="#/" className="ph-quick-link">
-              <span className="ph-quick-link-icon"><IcReceipt /></span>
-              <span className="ph-quick-link-label">Payroll &amp; Benefits</span>
+            <a href="#/settings" className="ph-quick-link">
+              <span className="ph-quick-link-icon"><IcSettings /></span>
+              <span className="ph-quick-link-label">Settings</span>
               <IcExtLink />
             </a>
           </div>

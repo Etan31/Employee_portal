@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./Login.css";
 import { useAuth } from "../../hooks/auth.hooks.jsx";
 
@@ -97,7 +97,10 @@ export function Login() {
                 <label htmlFor="password" className="form-label">
                   Password
                 </label>
-                <a href="#/login" className="forgot-link">
+                <a
+                  href="mailto:hr@delbros.com?subject=Password%20Reset%20Request"
+                  className="forgot-link"
+                >
                   Forgot?
                 </a>
               </div>

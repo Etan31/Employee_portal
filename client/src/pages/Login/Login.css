@@ -1,12 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500;1,600&display=swap');
 
-/* ── Layout ── */
+/* ── Layout ──
+   This is a standalone, full-viewport auth screen with its own hero-image
+   layout — the 1024px split point is where the two-panel hero collapses to a
+   single mobile card, distinct from the in-app content breakpoints (1200/900/560). */
 .login-container {
   display: flex;
   min-height: 100vh;
   width: 100%;
   overflow: hidden;
-  background: #0f172a;
+  background: var(--nx-ink);
   position: relative;
 }
 
@@ -35,6 +38,7 @@
   position: relative;
   overflow: hidden;
   display: none;
+  /* Exception (DESIGN.md): the sanctioned navy auth gradient. */
   background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 55%, #1e40af 100%);
 }
 
@@ -105,7 +109,7 @@
 
 .login-brand-name {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 13px;
+  font-size: var(--nx-fs-sm);
   font-weight: 600;
   letter-spacing: 0.3em;
   text-transform: uppercase;
@@ -130,6 +134,8 @@
   border-radius: 2px;
 }
 
+/* Decorative hero headline — deliberately outside the fixed type scale, same
+   spirit as the Cormorant Garamond exception documented in DESIGN.md. */
 .login-tagline p {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(34px, 4vw, 50px);
@@ -137,7 +143,7 @@
   font-style: italic;
   line-height: 1.08;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: var(--nx-surface);
   text-shadow: 0 2px 32px rgba(0, 0, 0, 0.35);
   margin: 0;
 }
@@ -152,7 +158,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: var(--nx-surface);
 }
 
 /* On mobile/tablet: form is a card floating over the background */
@@ -162,7 +168,7 @@
     z-index: 1;
     margin: 1.5rem;
     padding: 2rem 1.5rem;
-    border-radius: 20px;
+    border-radius: var(--nx-radius-lg);
     background: rgba(255, 255, 255, 0.95);
     box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
     width: calc(100% - 3rem);
@@ -178,7 +184,6 @@
 }
 
 .login-form-wrapper {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   width: 100%;
   max-width: 340px;
   padding: 48px 0;
@@ -192,27 +197,24 @@
 
 .login-form-header {
   text-align: center;
-  margin-bottom: 36px;
+  margin-bottom: var(--nx-sp-6);
 }
 
 .login-form-header h1 {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 30px;
+  font-size: var(--nx-fs-2xl);
   font-weight: 700;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
   line-height: 1.1;
-  color: #111827;
-  margin: 0 0 8px;
+  color: var(--nx-ink);
+  margin-bottom: var(--nx-sp-2);
 }
 
 .login-form-header p {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 11px;
+  font-size: var(--nx-fs-xs);
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #6b7280;
-  margin: 0;
+  color: var(--nx-text-soft);
 }
 
 .login-form-header::after {
@@ -221,9 +223,9 @@
   width: 32px;
   height: 2px;
   border-radius: 2px;
-  background: #111827;
+  background: var(--nx-ink);
   opacity: 0.15;
-  margin: 18px auto 0;
+  margin: var(--nx-sp-4) auto 0;
 }
 
 .login-form {
@@ -232,7 +234,7 @@
 }
 
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: var(--nx-sp-4);
 }
 
 .form-label-row {
@@ -243,11 +245,10 @@
 }
 
 .form-label {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 11.5px;
+  font-size: var(--nx-fs-xs);
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: #374151;
+  color: var(--nx-text);
   display: block;
   margin-bottom: 7px;
 }
@@ -258,64 +259,61 @@
 }
 
 .forgot-link {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 12px;
+  font-size: var(--nx-fs-xs);
   font-weight: 500;
-  color: #2563eb;
-  transition: color 0.15s ease;
+  color: var(--nx-primary);
+  transition: color var(--nx-dur-fast) var(--nx-ease);
   text-decoration: none;
 }
 
 .forgot-link:hover {
-  color: #1d4ed8;
+  color: var(--nx-primary-600);
   text-decoration: underline;
 }
 
 .form-input {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   width: 100%;
-  padding: 12px 15px;
-  border: 1.5px solid #d1d5db;
-  border-radius: 10px;
-  font-size: 14px;
-  color: #111827;
-  background: #ffffff;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  padding: var(--nx-sp-3) var(--nx-sp-4);
+  border: 1.5px solid var(--nx-border-strong);
+  border-radius: var(--nx-radius);
+  font-size: var(--nx-fs-base);
+  color: var(--nx-ink);
+  background: var(--nx-surface);
+  transition: border-color var(--nx-dur-fast) var(--nx-ease), box-shadow var(--nx-dur-fast) var(--nx-ease);
   outline: none;
   box-sizing: border-box;
 }
 
 .form-input:focus {
-  border-color: #2563eb;
+  border-color: var(--nx-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
 }
 
 .form-input::placeholder {
-  color: #9ca3af;
+  color: var(--nx-text-muted);
 }
 
 .login-error {
-  font-size: 0.9rem;
-  color: #b91c1c;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  border-radius: 10px;
-  padding: 0.85rem 1rem;
-  margin-bottom: 12px;
+  font-size: var(--nx-fs-base);
+  color: var(--nx-danger-strong);
+  background: var(--nx-danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--nx-radius);
+  padding: var(--nx-sp-3) var(--nx-sp-4);
+  margin-bottom: var(--nx-sp-3);
 }
 
 .login-button {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   width: 100%;
-  padding: 13px;
-  border-radius: 10px;
-  background: #2563eb;
-  color: #ffffff;
+  padding: var(--nx-sp-3);
+  border-radius: var(--nx-radius);
+  background: var(--nx-primary);
+  color: var(--nx-surface);
   font-weight: 700;
-  font-size: 14px;
+  font-size: var(--nx-fs-base);
   letter-spacing: 0.01em;
-  transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
-  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.18);
+  transition: filter var(--nx-dur-fast) var(--nx-ease), box-shadow var(--nx-dur-fast) var(--nx-ease), transform var(--nx-dur-fast) var(--nx-ease);
+  box-shadow: 0 18px 40px -12px rgba(37, 99, 235, 0.18);
   margin-top: 6px;
   cursor: pointer;
   border: none;
@@ -323,7 +321,7 @@
 
 .login-button:hover:not(:disabled) {
   filter: brightness(0.88);
-  box-shadow: 0 16px 40px rgba(37, 99, 235, 0.27);
+  box-shadow: 0 16px 40px -12px rgba(37, 99, 235, 0.27);
   transform: translateY(-1px);
 }
 
@@ -341,30 +339,24 @@
   width: 15px;
   height: 15px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
+  border-top-color: var(--nx-surface);
   border-radius: 50%;
-  animation: login-btn-spin 0.7s linear infinite;
+  animation: nx-spin 0.7s linear infinite;
   vertical-align: middle;
   margin-right: 0.45rem;
 }
 
-@keyframes login-btn-spin {
-  to { transform: rotate(360deg); }
-}
-
 .demo-credentials {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 12px;
-  color: #6b7280;
+  font-size: var(--nx-fs-xs);
+  color: var(--nx-text-soft);
   text-align: center;
-  margin-top: 18px;
+  margin-top: var(--nx-sp-4);
   line-height: 1.6;
 }
 
 .login-footer-text {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 11.5px;
-  color: #6b7280;
+  font-size: var(--nx-fs-xs);
+  color: var(--nx-text-soft);
   text-align: center;
-  margin-top: 32px;
+  margin-top: var(--nx-sp-6);
 }

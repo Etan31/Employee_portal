@@ -71,6 +71,13 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  // Re-fetch the signed-in user's profile (e.g. after a profile edit).
+  const refreshProfile = useCallback(async () => {
+    if (user?.id) {
+      await loadProfile(user.id);
+    }
+  }, [user?.id, loadProfile]);
+
   const signIn = useCallback(async (email, password) => {
     setLoading(true);
     try {
@@ -112,6 +119,7 @@ export const AuthProvider = ({ children }) => {
         signIn,
         signUp,
         signOut,
+        refreshProfile,
       }}
     >
       {children}
