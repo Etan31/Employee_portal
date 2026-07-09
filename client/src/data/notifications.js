@@ -1,0 +1,68 @@
+// Shaped like the Supabase v2 `notifications` table:
+// (id, user_id, type, title, message, is_read, created_at)
+// `type` drives the icon in the bell panel: leave | task | attendance | recognition | system
+export const NOTIFICATIONS = [
+  {
+    id: 1,
+    user_id: null,
+    type: "leave",
+    title: "Leave request approved",
+    message: "Your vacation leave for Jul 21-23 was approved by your manager.",
+    is_read: false,
+    created_at: "2026-07-08T08:40:00+08:00",
+  },
+  {
+    id: 2,
+    user_id: null,
+    type: "task",
+    title: "New task assigned",
+    message: "You were assigned 'Update Employee Handbook' due Jul 15.",
+    is_read: false,
+    created_at: "2026-07-08T07:55:00+08:00",
+  },
+  {
+    id: 3,
+    user_id: null,
+    type: "attendance",
+    title: "Missing checkout",
+    message: "No checkout was logged yesterday. Submit a regularization request.",
+    is_read: false,
+    created_at: "2026-07-07T18:20:00+08:00",
+  },
+  {
+    id: 4,
+    user_id: null,
+    type: "recognition",
+    title: "You received recognition points",
+    message: "Nicole Anderson sent you 50 points for the Q2 audit support.",
+    is_read: true,
+    created_at: "2026-07-06T15:02:00+08:00",
+  },
+  {
+    id: 5,
+    user_id: null,
+    type: "system",
+    title: "Holiday reminder",
+    message: "Eid'l Adha (regular holiday) falls on Friday next week.",
+    is_read: true,
+    created_at: "2026-07-05T09:00:00+08:00",
+  },
+  {
+    id: 6,
+    user_id: null,
+    type: "leave",
+    title: "Team absence",
+    message: "2 teammates are on leave today. Check the calendar for coverage.",
+    is_read: true,
+    created_at: "2026-07-04T08:15:00+08:00",
+  },
+  {
+    id: 7,
+    user_id: null,
+    type: "system",
+    title: "Policy sign-off due",
+    message: "The updated Code of Conduct needs your acknowledgement by Jul 18.",
+    is_read: true,
+    created_at: "2026-07-03T10:30:00+08:00",
+  },
+];

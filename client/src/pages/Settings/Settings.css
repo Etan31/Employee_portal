@@ -1,0 +1,208 @@
+.set-page {
+  padding: var(--nx-sp-6);
+}
+
+.set-header {
+  margin-bottom: var(--nx-sp-5);
+  animation: nx-slide-in var(--nx-dur) var(--nx-ease) both;
+}
+
+.set-sub {
+  margin-top: var(--nx-sp-1);
+  font-size: var(--nx-fs-sm);
+  color: var(--nx-text-soft);
+}
+
+.set-load-error {
+  margin-top: var(--nx-sp-4);
+  font-size: var(--nx-fs-base);
+  color: var(--nx-danger-strong);
+}
+
+/* Tabs */
+.set-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--nx-sp-2);
+  margin-bottom: var(--nx-sp-5);
+  border-bottom: 1px solid var(--nx-border);
+  animation: nx-slide-in var(--nx-dur) var(--nx-ease) 60ms both;
+}
+
+.set-tab {
+  padding: var(--nx-sp-2) var(--nx-sp-1);
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-size: var(--nx-fs-base);
+  font-weight: 600;
+  color: var(--nx-text-muted);
+  transition: color var(--nx-dur-fast) var(--nx-ease), border-color var(--nx-dur-fast) var(--nx-ease);
+}
+
+.set-tab:hover {
+  color: var(--nx-text);
+}
+
+.set-tab--active {
+  color: var(--nx-primary);
+  border-bottom-color: var(--nx-primary);
+}
+
+.set-saved {
+  margin-left: auto;
+  padding-bottom: var(--nx-sp-2);
+  font-size: var(--nx-fs-sm);
+  font-weight: 600;
+  color: var(--nx-success-strong);
+  opacity: 0;
+  transition: opacity var(--nx-dur) var(--nx-ease);
+}
+
+.set-saved--visible {
+  opacity: 1;
+}
+
+/* Notifications */
+.set-notif-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-sp-4);
+}
+
+.set-notif-group {
+  padding: var(--nx-sp-4) var(--nx-sp-5);
+  animation: nx-slide-in var(--nx-dur) var(--nx-ease) both;
+}
+
+.set-notif-group__title {
+  margin-bottom: var(--nx-sp-3);
+}
+
+.set-notif-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.set-notif-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(4, 72px);
+  align-items: center;
+  gap: var(--nx-sp-2);
+  padding: var(--nx-sp-2) 0;
+  border-top: 1px solid var(--nx-border);
+}
+
+.set-notif-row--head {
+  border-top: none;
+  padding-bottom: var(--nx-sp-2);
+}
+
+.set-notif-row__desc {
+  font-size: var(--nx-fs-base);
+  color: var(--nx-text);
+  padding-right: var(--nx-sp-3);
+}
+
+.set-notif-row__channel-label {
+  font-size: var(--nx-fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--nx-text-muted);
+  text-align: center;
+}
+
+.set-notif-row__dash {
+  text-align: center;
+  color: var(--nx-border-strong);
+}
+
+/* Toggle switch */
+.set-toggle {
+  justify-self: center;
+  position: relative;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--nx-border-strong);
+  transition: background-color var(--nx-dur-fast) var(--nx-ease);
+}
+
+.set-toggle--on {
+  background: var(--nx-primary);
+}
+
+.set-toggle__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--nx-surface);
+  transition: transform var(--nx-dur-fast) var(--nx-ease);
+}
+
+.set-toggle--on .set-toggle__knob {
+  transform: translateX(14px);
+}
+
+.set-toggle:focus-visible,
+.set-tab:focus-visible {
+  outline: 2px solid var(--nx-primary);
+  outline-offset: 2px;
+}
+
+/* Preferences */
+.set-prefs {
+  max-width: 480px;
+  padding: var(--nx-sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-sp-4);
+  animation: nx-scale-in var(--nx-dur) var(--nx-ease) both;
+}
+
+.set-prefs__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-sp-1);
+}
+
+.set-prefs__label {
+  font-size: var(--nx-fs-sm);
+  font-weight: 600;
+  color: var(--nx-text-soft);
+}
+
+.set-prefs__select {
+  padding: var(--nx-sp-2) var(--nx-sp-3);
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius);
+  background: var(--nx-surface);
+  color: var(--nx-text);
+  font-size: var(--nx-fs-base);
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--nx-dur-fast) var(--nx-ease), box-shadow var(--nx-dur-fast) var(--nx-ease);
+}
+
+.set-prefs__select:focus {
+  border-color: var(--nx-primary);
+  box-shadow: 0 0 0 3px var(--nx-primary-50);
+}
+
+@media (max-width: 560px) {
+  .set-page {
+    padding: var(--nx-sp-4);
+  }
+
+  .set-notif-row {
+    grid-template-columns: 1fr repeat(4, 48px);
+    font-size: var(--nx-fs-sm);
+  }
+
+  .set-notif-row__desc {
+    font-size: var(--nx-fs-sm);
+  }
+}
