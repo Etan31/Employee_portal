@@ -21,7 +21,7 @@ export const logoutUser = async () => {
 export const getUserProfile = async (userId) => {
   const { data, error } = await supabase
     .from("profiles")
-    .select("*")
+    .select("*, roles(name)")
     .eq("id", userId)
     .single();
 
@@ -29,7 +29,7 @@ export const getUserProfile = async (userId) => {
     if (error.code === "PGRST116") return null;
     throw error;
   }
-  return data;
+  return data ? { ...data, role: data.roles?.name || "employee" } : null;
 };
 
 export const updateUserProfile = async (userId, updates) => {
@@ -47,15 +47,18 @@ export const updateUserProfile = async (userId, updates) => {
 };
 
 export const registerUser = async ({ email, password, profileData = {} }) => {
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
+      },
+    },
+  });
   if (error) {
     throw error;
-  }
-
-  if (data?.user && Object.keys(profileData).length > 0) {
-    await supabase
-      .from("profiles")
-      .upsert({ id: data.user.id, email, ...profileData });
   }
 
   return data;

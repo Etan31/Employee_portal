@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import { supabaseAdmin as supabase } from "../utils/supabaseAdmin.js";
 import { logger } from "../utils/logger.js";
 
@@ -15,19 +14,14 @@ function extractToken(authHeader) {
 
 /**
  * Verify Supabase JWT token
- * Validates signature using Supabase's JWT secret
+ * Validates the token with the project's Auth server, including current signing keys.
  */
 async function verifySupabaseToken(token) {
-  try {
-    // Decode the token using Supabase's public key
-    // For production, implement proper JWT verification using RS256
-    const payload = jwt.verify(token, process.env.SUPABASE_JWT_SECRET, {
-      algorithms: ["HS256"],
-    });
-    return payload;
-  } catch (error) {
-    throw new Error(`Invalid token: ${error.message}`, { cause: error });
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data?.user) {
+    throw new Error("Invalid or expired session. Please sign in again.");
   }
+  return { sub: data.user.id, email: data.user.email };
 }
 
 /**
