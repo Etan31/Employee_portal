@@ -41,28 +41,30 @@ runs from the repo root.
 ## Environment
 
 The root `.env` is shared by both apps (Vite reads it; the server loads it via `server/env.js`).
-See `server/.env.example` for the server keys.
+See `.env.example` for the configuration and [supabase/SETUP.md](supabase/SETUP.md)
+for creating a fresh or replacement Supabase project.
 
 Client (must be `VITE_`-prefixed, non-secret):
 
 ```
 VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 ```
 
 Server (secret, never shipped to the browser):
 
 ```
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_KEY=your-service-role-key
-SUPABASE_JWT_SECRET=your-jwt-secret
+SUPABASE_SECRET_KEY=your-secret-key
 ALLOWED_ORIGINS=http://localhost:5173
 PORT=3000
 NODE_ENV=development
 ```
 
-The server exits at startup if `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, or `SUPABASE_JWT_SECRET`
-is missing.
+The server requires `SUPABASE_URL` and `SUPABASE_SECRET_KEY` (or legacy
+`SUPABASE_SERVICE_KEY`). It verifies user tokens through Supabase Auth, supporting
+the current signing keys without a shared JWT secret. The frontend also accepts
+the legacy `VITE_SUPABASE_ANON_KEY` configuration.
 
 ## Local development
 
