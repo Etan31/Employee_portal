@@ -2,8 +2,20 @@ services:
   - type: web
     name: nexus
     runtime: node
-    buildCommand: pnpm install --no-frozen-lockfile && pnpm build
+    plan: free
+    buildCommand: pnpm install --frozen-lockfile --prod=false && pnpm build
     startCommand: node server/index.js
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: 22.20.0
+      - key: VITE_SUPABASE_URL
+        value: https://vqdnrzsjkakubsiyqmfq.supabase.co
+      - key: VITE_SUPABASE_PUBLISHABLE_KEY
+        value: sb_publishable_4dYk6CbHLHRtLvJsYb6Z_A_blTbs7-_
+      - key: SUPABASE_URL
+        value: https://vqdnrzsjkakubsiyqmfq.supabase.co
+      - key: SUPABASE_SECRET_KEY
+        sync: false

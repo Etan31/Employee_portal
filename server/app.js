@@ -13,7 +13,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 const corsOptions = {
-  origin: (process.env.ALLOWED_ORIGINS || "http://localhost:5173").split(","),
+  origin: (process.env.ALLOWED_ORIGINS || process.env.RENDER_EXTERNAL_URL || "http://localhost:5173")
+    .split(",")
+    .map((origin) => origin.trim()),
   credentials: true,
 };
 
@@ -32,6 +34,7 @@ app.use((req, res, next) => {
     [
       "default-src 'self'",
       "img-src 'self' data: https:",
+      "media-src 'self'",
       "style-src 'self' 'unsafe-inline'",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
     ].join("; "),
