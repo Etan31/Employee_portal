@@ -3,7 +3,8 @@ const route = (id, label, permission, extra = {}) => ({
 });
 
 export const SHARED_ROUTES = [
-  route('dashboard', 'Dashboard', 'dashboard.read', { home: 5 }),
+  route('dashboard', 'Dashboard', 'dashboard.read', { home: 1, permissions: [], anyPermissions: ['dashboard.read','admin.workspace','hr.workspace','manager.workspace','support.workspace'] }),
+  route('my-dashboard', 'My Dashboard', 'dashboard.read', { hidden: true }),
   route('task-box', 'Task Box', 'task.self', { icon: 'list-checks' }),
   route('profile', 'Profile', 'profile.self', { icon: 'user' }),
   route('time-management', 'Time management', 'time.self', { icon: 'clock' }),
@@ -30,12 +31,18 @@ export const WORKSPACES = [
     modules: [['queues', 'Queue Inbox', 'ticket.triage'], ['my-tickets', 'My Assigned Tickets', 'ticket.assigned'], ['escalations', 'SLAs & Escalations', 'ticket.escalate'], ['knowledge-base', 'Knowledge Base', 'knowledge.manage'], ['reports', 'Queue Analytics', 'queue.report.read']] },
 ];
 
+const FEATURE_PATHS = {
+  admin: { accounts: 'accounts', roles: 'roles-permissions', organization: 'organization-configuration', 'feature-flags': 'feature-flags', integrations: 'integrations', audit: 'security-audit', health: 'system-health' },
+  hr: { employees: 'people-administration', 'employee-records': 'employee-records', lifecycle: 'employee-lifecycle', 'leave-policies': 'leave-policies', 'leave-adjustments': 'leave-adjustments', holidays: 'holiday-administration', policies: 'policy-administration', requests: 'people-requests', reports: 'people-reports' },
+  manager: { team: 'team', calendar: 'team-calendar', 'leave-approvals': 'leave-approvals', 'attendance-exceptions': 'attendance-exceptions', tasks: 'team-tasks', reports: 'team-reports' },
+  support: { queues: 'queues', 'my-tickets': 'assigned-tickets', escalations: 'escalations', 'knowledge-base': 'knowledge-base', reports: 'queue-analytics' },
+};
+
 export const ROUTES = [
   ...SHARED_ROUTES,
   ...WORKSPACES.flatMap((workspace) => [
-    route(workspace.id, workspace.label, workspace.permission, { home: workspace.home, workspace: workspace.id }),
     ...workspace.modules.map(([id, label, permission]) => route(`${workspace.id}/${id}`, label, permission, {
-      workspace: workspace.id, hidden: true, available: workspace.id === 'admin' && ['accounts', 'roles', 'audit'].includes(id),
+      route: `#/${FEATURE_PATHS[workspace.id][id]}`, workspace: workspace.id, hidden: true, available: workspace.id === 'admin' && ['accounts', 'roles', 'audit'].includes(id),
       permissions: [workspace.permission, permission],
     })),
   ]),

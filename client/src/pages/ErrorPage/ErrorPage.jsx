@@ -29,7 +29,7 @@ export function ErrorPage({
 
   const goBack = () => {
     const lastRoute = sessionStorage.getItem(LAST_ROUTE_KEY);
-    const item = ROUTES.find(item => item.id === lastRoute);
+    const item = ROUTES.find(item => item.route === `#/${lastRoute}`);
     navigate(canAccess(item, permissions) ? item.route : homeRoute(ROUTES, permissions) || '#/login');
   };
 

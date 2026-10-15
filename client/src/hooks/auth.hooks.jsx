@@ -16,9 +16,11 @@ export const AuthProvider = ({ children }) => {
     const revision = ++generation.current;
     const user = session?.user ?? null;
     const sameUser = currentId.current === user?.id;
-    if (!sameUser) {
+    if (sessionStorage.getItem('nx:identity') !== (user?.id || null)) {
       sessionStorage.removeItem('nx:lastValidRoute');
       sessionStorage.removeItem('nx:workspace');
+      if (user) sessionStorage.setItem('nx:identity', user.id);
+      else sessionStorage.removeItem('nx:identity');
     }
     currentId.current = user?.id ?? null;
     if (!background || !sameUser) setState({ user, ...emptyAccess, loading: Boolean(user), accessError: null });

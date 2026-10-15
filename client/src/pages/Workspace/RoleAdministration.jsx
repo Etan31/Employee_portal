@@ -36,7 +36,7 @@ export function RoleAdministration({ readOnly = false }) {
     } finally { setSaving(false); }
   };
   return <section className="nx-workspace">
-    <header><a href="#/admin">System Administration</a><h1 className="nx-h1">{readOnly ? 'Accounts' : 'Roles & Permissions'}</h1>
+    <header><a href="#/dashboard">System Administration</a><h1 className="nx-h1">{readOnly ? 'Accounts' : 'Roles & Permissions'}</h1>
       <p>{readOnly ? 'Account status and assigned roles.' : 'Assign one or more roles. Each change requires a reason and is recorded in the security audit.'}</p></header>
     {error && <div role="alert"><p>{error}</p><button className="nx-workspace__button" onClick={() => setAttempt(value => value + 1)}>Retry</button></div>}
     {notice && <p role="status">{notice}</p>}
@@ -72,7 +72,7 @@ export function AccessAudit() {
     getAccessAudit().then(data => { if (active) { setRows(data); setError(''); } }).catch(() => { if (active) setError('Audit records could not be loaded.'); });
     return () => { active = false; };
   }, [attempt]);
-  return <section className="nx-workspace"><header><a href="#/admin">System Administration</a><h1 className="nx-h1">Security Audit</h1><p>The latest 100 role-assignment changes.</p></header>
+  return <section className="nx-workspace"><header><a href="#/dashboard">System Administration</a><h1 className="nx-h1">Security Audit</h1><p>The latest 100 role-assignment changes.</p></header>
     {error && <div role="alert">{error} <button className="nx-workspace__button" onClick={() => setAttempt(value => value + 1)}>Retry</button></div>}
     {!rows && !error && <p role="status">Loading audit records…</p>}
     {rows && <div className="nx-card nx-workspace__panel">{rows.length ? <ol className="nx-workspace__audit">{rows.map(row => <li key={row.id}>
