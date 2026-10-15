@@ -6,7 +6,7 @@ The portal uses Supabase Auth for identity and database permissions for access. 
 
 **After the implemented 006 migration:** apply `supabase/migrations/007_hr_support_authorization.sql` once in SQL Editor, then sign in again (or refocus the portal to revalidate access). The supplied export has HR and Support assignments without permissions for those roles. This follow-up explicitly adds their shared employee and workspace capabilities. It leaves Admin/Manager grants and all account assignments intact. A private migration marker prevents retries from restoring rights revoked afterward. No rerun of 006 is required for this follow-up.
 
-Successful login selects `#/admin`, `#/manager`, `#/hr`, `#/support`, or `#/dashboard` from current effective permissions. Multi-role users can access every workspace they have been granted; an authorized requested destination takes precedence. Workspace child routes require both their workspace-entry capability and their action capability. Role names alone grant no access.
+Successful login uses `#/dashboard` for all roles. Dashboard content is selected from current permissions; users with multiple authorized workspaces can switch them without changing the URL. A permitted requested feature destination takes precedence after login. Feature routes require both their workspace-entry capability and their action capability. No role directory appears in feature URLs.
 
 1. Back up the database and inspect existing roles and identity-table policies. Apply the entire `supabase/migrations/006_rbac.sql` in Supabase SQL Editor before deploying this client/API. Do not rerun `bootstrap.sql` on an existing project.
    Retries reuse compatible tables/indexes and replace migration-owned functions, policies and the profile trigger. Populated role codes are preserved; only missing/blank codes are filled. Existing codes must be unique lowercase identifiers matching the intended permission seeds. A mismatched table definition stops the migration for inspection rather than deleting data. Do not rerun the legacy `rls-setup.sql` (it contains a duplicate policy and assumes additional tables).
@@ -31,7 +31,8 @@ The migration deliberately replaces all existing policies on `profiles`, `roles`
 
 ## Routes and enforcement
 
-- Employee routes stay at their existing hashes; `#/admin`, `#/hr`, `#/manager` and `#/support` are workspace homes. `client/src/data/nav.js` defines every route's required capability.
+- `#/dashboard` is the shared home. Features use URLs such as `#/accounts`, `#/roles-permissions`, `#/employee-records`, `#/leave-approvals` and `#/queues`. Role directories are no longer registered. Employee self-service is available at `#/my-dashboard` and through the dashboard workspace selector.
+- `ProtectedRoute` checks authentication and resolved database grants before mounting a page. It waits for access resolution, sends anonymous visitors to login, and renders 403 for denied access. `route` applies the central registry policy; optional `requiredRoles` checks any matching role code and `requiredPermissions` requires every listed capability. The outer application guard requires a valid session; each registered page has a separate explicit policy.
 - Admin accounts, role assignments and security audit are functional. Other workspace modules have guarded URLs and clearly marked unavailable screens; their business workflows are not implemented.
 - The sidebar, route guard, login destination and error recovery use the same permission registry. A capability is required even for hidden routes. Custom roles may combine existing capabilities without login changes.
 - `GET /api/protected/access-context` returns the authenticated account's current access. Invalid sessions return 401; inactive/unassigned accounts and permission denials return 403; access-resolution failures return 503.
@@ -47,4 +48,4 @@ New roles require a unique `roles.code`, `role_permissions` rows, and `user_role
 - `pnpm run test:rbac:browser`: Playwright with local mocked Supabase responses and Microsoft Edge; no live credentials/data. Uses port 5179 and shuts down its test server.
 - `pnpm run build`: production client build.
 
-The migration must still be applied and smoke-tested against the actual Supabase project. Local tests do not confirm deployed policies or provider signup settings. Employee demo modules remain sample-data features.
+The user has applied migrations 006 and 007. This protected-wrapper/URL refactor requires no additional SQL. Local tests do not confirm deployed provider settings. Employee demo modules remain sample-data features.

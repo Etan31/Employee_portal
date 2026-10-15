@@ -154,3 +154,10 @@ this stack.
 - Reviewed the implemented 006 SQL and database export; HR and Support assignments had no role permissions. Added `007_hr_support_authorization.sql` to grant their employee/workspace access once without resetting other roles or assignments.
 - Added shared client/API access-response validation and required workspace plus action permissions on child routes.
 - Verified login destinations and cross-role denials using sanitized exported grants: 20 database/API tests, 7 browser scenarios, targeted lint and production build. Apply 007 in Supabase to enable the missing HR/Support access; unfinished modules remain placeholders.
+
+## 2026-10-15 — Protected route wrapper and shared dashboard URL
+
+- Added `ProtectedRoute` to check the authenticated session, roles and permissions before mounting protected pages; denied access returns 403.
+- All roles now enter through `#/dashboard`. Replaced role-directory URLs with feature URLs and added permission-checked workspace switching on the dashboard.
+- Workspace preferences persist across reloads and clear on account changes. API/database authorization remains enforced; no SQL changes required.
+- Verified 22 policy/database tests, 10 browser scenarios, targeted lint and production build.
