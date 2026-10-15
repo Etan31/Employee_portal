@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { exportedAuthorizationFixture } from './helpers/exported-authorization.mjs';
-import { ROUTES, SHARED_ROUTES } from '../client/src/data/nav.js';
-import { loginDestination, canAccess, homeRoute } from '../client/src/utils/access.js';
+import { ROUTES, SHARED_ROUTES, WORKSPACES } from '../client/src/data/nav.js';
+import { loginDestination, canAccess, homeRoute, authorizedWorkspace } from '../client/src/utils/access.js';
 import { resolveAccessContext } from '../shared/authorization.js';
 
 const followup = fs.readFileSync('supabase/migrations/007_hr_support_authorization.sql', 'utf8');
@@ -12,14 +12,14 @@ test('exported HR/support assignments need the follow-up grants to reach their w
   const fixture = await exportedAuthorizationFixture({applyFollowup:false});
   try {
     for (const role of ['hr_administrator','support_agent']) {
-      assert.equal(homeRoute(ROUTES,(await fixture.accessFor(role)).permissions),'#/dashboard');
+      assert.equal(authorizedWorkspace(WORKSPACES,(await fixture.accessFor(role)).permissions),null);
     }
     await fixture.db.exec('RESET ROLE');
     const before = (await fixture.db.query('SELECT * FROM public.user_roles ORDER BY user_id, role_id')).rows;
     await fixture.db.exec(followup);
     assert.deepEqual((await fixture.db.query('SELECT * FROM public.user_roles ORDER BY user_id, role_id')).rows,before);
-    assert.equal(homeRoute(ROUTES,(await fixture.accessFor('hr_administrator')).permissions),'#/hr');
-    assert.equal(homeRoute(ROUTES,(await fixture.accessFor('support_agent')).permissions),'#/support');
+    assert.equal(authorizedWorkspace(WORKSPACES,(await fixture.accessFor('hr_administrator')).permissions).id,'hr');
+    assert.equal(authorizedWorkspace(WORKSPACES,(await fixture.accessFor('support_agent')).permissions).id,'support');
   } finally { await fixture.db.close(); }
 });
 
@@ -31,10 +31,10 @@ test('all exported role combinations receive their own login home and deny other
       const account = fixture.accounts.find(account => account.code === code);
       const verified = resolveAccessContext(access,account.id);
       assert.ok(verified);
-      assert.equal(loginDestination(ROUTES,verified.permissions,null),`#/${workspace}`);
+      assert.equal(loginDestination(ROUTES,verified.permissions,null),'#/dashboard');
       for (const route of SHARED_ROUTES) assert.ok(canAccess(route,verified.permissions),`${code}: ${route.id}`);
       for (const route of ROUTES.filter(route=>route.workspace && route.workspace !== workspace)) assert.equal(canAccess(route,verified.permissions),false,`${code}: ${route.id}`);
-      assert.equal(loginDestination(ROUTES,verified.permissions,'admin/roles'),code==='admin'?'#/admin/roles':`#/${workspace}`);
+      assert.equal(loginDestination(ROUTES,verified.permissions,'admin/roles'),code==='admin'?'#/roles-permissions':'#/dashboard');
     }
   } finally { await fixture.db.close(); }
 });

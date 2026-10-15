@@ -2,8 +2,8 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { PGlite } from '@electric-sql/pglite';
-import { ROUTES } from '../client/src/data/nav.js';
-import { canAccess, homeRoute, loginDestination } from '../client/src/utils/access.js';
+import { ROUTES, WORKSPACES } from '../client/src/data/nav.js';
+import { canAccess, homeRoute, loginDestination, authorizedWorkspace } from '../client/src/utils/access.js';
 
 const db = new PGlite();
 const ids = Object.fromEntries(['admin', 'employee', 'manager', 'hr_administrator', 'support_agent', 'other', 'custom', 'inactive', 'unassigned'].map((name, index) => [name, `00000000-0000-0000-0000-${String(index + 1).padStart(12, '0')}`]));
@@ -46,7 +46,7 @@ before(async () => {
 after(async () => db.close());
 
 test('all five existing roles migrate to explicit grants and correct homes', async () => {
-  for (const [role, route] of Object.entries({admin:'#/admin', employee:'#/dashboard', manager:'#/manager', hr_administrator:'#/hr', support_agent:'#/support'})) {
+  for (const [role, route] of Object.entries({admin:'#/dashboard', employee:'#/dashboard', manager:'#/dashboard', hr_administrator:'#/dashboard', support_agent:'#/dashboard'})) {
     const access = await context(role);
     assert.equal(access.active, true);
     assert.ok(access.roles.some(item => item.code === role));
@@ -97,13 +97,13 @@ test('custom and multiple roles reuse capabilities without client changes', asyn
   await db.exec("INSERT INTO public.roles(name, code) VALUES ('Team Coordinator', 'coordinator'); INSERT INTO public.role_permissions SELECT id, 'manager.workspace' FROM public.roles WHERE code = 'coordinator';");
   await db.query("INSERT INTO public.user_roles SELECT $1, id, NULL, now() FROM public.roles WHERE code = 'coordinator'", [ids.custom]);
   const custom = await context('custom');
-  assert.equal(homeRoute(ROUTES, custom.permissions), '#/manager');
+  assert.equal(homeRoute(ROUTES, custom.permissions), '#/dashboard');
   await owner();
   await db.query("INSERT INTO public.user_roles SELECT $1, id, NULL, now() FROM public.roles WHERE code = 'support_agent'", [ids.manager]);
   const multi = await context('manager');
   assert.ok(multi.permissions.includes('support.workspace'));
   assert.ok(multi.permissions.includes('manager.workspace'));
-  assert.equal(homeRoute(ROUTES, multi.permissions, 'support'), '#/support');
+  assert.equal(authorizedWorkspace(WORKSPACES, multi.permissions, 'support').id, 'support');
 });
 test('role changes are atomic, audited, and protect the last administrator', async () => {
   await asUser('admin');
