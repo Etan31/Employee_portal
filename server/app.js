@@ -84,7 +84,12 @@ app.get("/health/db", async (req, res) => {
 
 // Protected Routes
 app.use("/api/protected", verifyToken);
+app.get("/api/protected/access-context", (req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.json({ active: req.user.active, profile: req.user.profile, roles: req.user.roles, permissions: req.user.permissions });
+});
 app.use("/api/protected/profiles", profileRoutes);
+app.use("/api", (_req, res) => res.status(404).json({ error: "Not Found" }));
 
 /**
  * 2. STATIC FILES (Must be AFTER API routes)

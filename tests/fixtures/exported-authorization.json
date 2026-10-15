@@ -1,0 +1,202 @@
+{
+  "source": "Sanitized authorization configuration from Tables_and_Data.JSON, 2026-10-15; identities and contact fields omitted.",
+  "roleSets": [
+    [
+      "employee"
+    ],
+    [
+      "admin",
+      "employee"
+    ],
+    [
+      "employee",
+      "hr_administrator"
+    ],
+    [
+      "employee",
+      "manager"
+    ],
+    [
+      "employee",
+      "support_agent"
+    ]
+  ],
+  "grants": [
+    {
+      "role": "employee",
+      "permission": "calendar.read"
+    },
+    {
+      "role": "employee",
+      "permission": "dashboard.read"
+    },
+    {
+      "role": "employee",
+      "permission": "directory.read"
+    },
+    {
+      "role": "employee",
+      "permission": "org.read"
+    },
+    {
+      "role": "employee",
+      "permission": "policy.read"
+    },
+    {
+      "role": "employee",
+      "permission": "preferences.self"
+    },
+    {
+      "role": "employee",
+      "permission": "profile.self"
+    },
+    {
+      "role": "employee",
+      "permission": "task.self"
+    },
+    {
+      "role": "employee",
+      "permission": "ticket.self"
+    },
+    {
+      "role": "employee",
+      "permission": "time.self"
+    },
+    {
+      "role": "admin",
+      "permission": "account.read"
+    },
+    {
+      "role": "admin",
+      "permission": "admin.workspace"
+    },
+    {
+      "role": "admin",
+      "permission": "audit.read_security"
+    },
+    {
+      "role": "admin",
+      "permission": "calendar.read"
+    },
+    {
+      "role": "admin",
+      "permission": "dashboard.read"
+    },
+    {
+      "role": "admin",
+      "permission": "directory.read"
+    },
+    {
+      "role": "admin",
+      "permission": "integration.manage"
+    },
+    {
+      "role": "admin",
+      "permission": "org.configure"
+    },
+    {
+      "role": "admin",
+      "permission": "org.read"
+    },
+    {
+      "role": "admin",
+      "permission": "policy.read"
+    },
+    {
+      "role": "admin",
+      "permission": "preferences.self"
+    },
+    {
+      "role": "admin",
+      "permission": "profile.self"
+    },
+    {
+      "role": "admin",
+      "permission": "role.assign"
+    },
+    {
+      "role": "admin",
+      "permission": "system.configure"
+    },
+    {
+      "role": "admin",
+      "permission": "system.health"
+    },
+    {
+      "role": "admin",
+      "permission": "task.self"
+    },
+    {
+      "role": "admin",
+      "permission": "ticket.self"
+    },
+    {
+      "role": "admin",
+      "permission": "time.self"
+    },
+    {
+      "role": "manager",
+      "permission": "attendance.review"
+    },
+    {
+      "role": "manager",
+      "permission": "calendar.read"
+    },
+    {
+      "role": "manager",
+      "permission": "dashboard.read"
+    },
+    {
+      "role": "manager",
+      "permission": "directory.read"
+    },
+    {
+      "role": "manager",
+      "permission": "leave.approve"
+    },
+    {
+      "role": "manager",
+      "permission": "manager.workspace"
+    },
+    {
+      "role": "manager",
+      "permission": "org.read"
+    },
+    {
+      "role": "manager",
+      "permission": "policy.read"
+    },
+    {
+      "role": "manager",
+      "permission": "preferences.self"
+    },
+    {
+      "role": "manager",
+      "permission": "profile.self"
+    },
+    {
+      "role": "manager",
+      "permission": "task.assign_team"
+    },
+    {
+      "role": "manager",
+      "permission": "task.self"
+    },
+    {
+      "role": "manager",
+      "permission": "team.read"
+    },
+    {
+      "role": "manager",
+      "permission": "team.report.read"
+    },
+    {
+      "role": "manager",
+      "permission": "ticket.self"
+    },
+    {
+      "role": "manager",
+      "permission": "time.self"
+    }
+  ]
+}

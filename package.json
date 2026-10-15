@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:rbac": "node --test tests/*.test.mjs",
+    "test:rbac:browser": "node tests/rbac.browser.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
@@ -22,6 +24,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
+    "@electric-sql/pglite": "^0.5.9",
     "@eslint/js": "^10.0.1",
     "@rolldown/plugin-babel": "^0.2.3",
     "@types/react": "^19.2.14",

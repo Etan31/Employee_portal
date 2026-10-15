@@ -1,161 +1,30 @@
-import express from "express";
-import {
-  requireRole,
-  requireOwnerOrAdmin,
-} from "../middleware/auth.middleware.js";
-import { supabaseAdmin as supabase } from "../utils/supabaseAdmin.js";
+import express from 'express';
+import { requirePermission, requireOwner } from '../middleware/auth.middleware.js';
+import { supabaseAdmin as supabase } from '../utils/supabaseAdmin.js';
 
 const router = express.Router();
-
-/**
- * GET /api/protected/profiles/me
- * Get current user's profile
- * Auth: Required (verifyToken already applied by parent route)
- */
-router.get("/me", async (req, res, next) => {
-  try {
-    res.json({
-      user: {
-        id: req.user.id,
-        email: req.user.email,
-        role: req.user.role,
-      },
-      profile: req.user.profile,
-    });
-  } catch (error) {
-    next(error);
+router.get('/me', requirePermission('profile.self'), (req, res) => res.json({ profile: req.user.profile, roles: req.user.roles }));
+router.get('/:userId', requirePermission('profile.self'), requireOwner, (req, res) => res.json(req.user.profile));
+router.put('/:userId', requirePermission('profile.self'), requireOwner, async (req, res, next) => {
+  const allowed = ['first_name', 'last_name', 'avatar_url'];
+  const body = req.body;
+  if (!body || Array.isArray(body) || !Object.keys(body).length || Object.keys(body).some(key => !allowed.includes(key)) ||
+    Object.entries(body).some(([key, value]) => value !== null && (typeof value !== 'string' || value.length > (key === 'avatar_url' ? 2048 : 100)))) {
+    return res.status(400).json({ error: 'Provide only valid personal profile fields' });
   }
-});
-
-/**
- * GET /api/protected/profiles/:userId
- * Get user profile (admin only or self)
- * Auth: Required + requireOwnerOrAdmin
- */
-router.get("/:userId", requireOwnerOrAdmin(), async (req, res, next) => {
   try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select(
-        `
-        id,
-        email,
-        role_id,
-        roles!inner(name),
-        created_at,
-        updated_at
-      `,
-      )
-      .eq("id", req.params.userId)
-      .single();
-
-    if (error) {
-      return res.status(404).json({
-        error: "Not Found",
-        message: "User profile not found",
-      });
-    }
-
-    // Return data with role name mapped
-    res.json({
-      ...data,
-      role: data.roles?.name || "employee",
-    });
-  } catch (error) {
-    next(error);
-  }
+    const { data, error } = await supabase.from('profiles').update(body).eq('id', req.user.id).eq('is_active', true)
+      .select('id, email, first_name, last_name, avatar_url').single();
+    if (error) return res.status(400).json({ error: 'Profile could not be updated' });
+    res.json(data);
+  } catch (error) { next(error); }
 });
-
-/**
- * PUT /api/protected/profiles/:userId
- * Update user profile (admin only or self)
- * Auth: Required + requireOwnerOrAdmin
- */
-router.put("/:userId", requireOwnerOrAdmin(), async (req, res, next) => {
+// Account administration exposes account metadata only, never full HR profiles.
+router.get('/', requirePermission('account.read'), async (_req, res, next) => {
   try {
-    const { id, role_id, ...updateData } = req.body;
-
-    // Prevent users from changing their own role (only admins can do this)
-    if (role_id !== undefined && req.user.role !== "admin") {
-      return res.status(403).json({
-        error: "Forbidden",
-        message: "Only admins can update user roles",
-      });
-    }
-
-    // If role_id is provided, include it in update
-    const finalUpdateData =
-      role_id !== undefined ? { ...updateData, role_id } : updateData;
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .update(finalUpdateData)
-      .eq("id", req.params.userId)
-      .select(
-        `
-        id,
-        email,
-        role_id,
-        roles!inner(name),
-        created_at,
-        updated_at
-      `,
-      )
-      .single();
-
-    if (error) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: error.message,
-      });
-    }
-
-    res.json({
-      ...data,
-      role: data.roles?.name || "employee",
-    });
-  } catch (error) {
-    next(error);
-  }
+    const { data, error } = await supabase.from('profiles').select('id, email, is_active').order('email');
+    if (error) return res.status(503).json({ error: 'Accounts unavailable' });
+    res.json(data);
+  } catch (error) { next(error); }
 });
-
-/**
- * GET /api/protected/profiles
- * List all profiles (admin only)
- * Auth: Required + requireRole('admin')
- */
-router.get("/", requireRole("admin"), async (req, res, next) => {
-  try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select(
-        `
-        id,
-        email,
-        role_id,
-        roles!inner(name),
-        created_at
-      `,
-      )
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: error.message,
-      });
-    }
-
-    // Map role names for response
-    const profilesWithRoles = data.map((profile) => ({
-      ...profile,
-      role: profile.roles?.name || "employee",
-    }));
-
-    res.json(profilesWithRoles);
-  } catch (error) {
-    next(error);
-  }
-});
-
 export default router;

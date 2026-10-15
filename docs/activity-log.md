@@ -113,3 +113,44 @@ and reasoning recorded in CLAUDE.md's Error Pages section directly.
 verification (staggered entrance, reduced-motion, role-based quick-link differences) needs
 manual browser confirmation — no browser-automation tool was available in this session for
 this stack.
+
+---
+
+## 2026-10-15 — RBAC and role workspaces
+
+- Added database-backed permissions, multiple role assignments and guarded routes for Employee, Manager, HR Administrator, Support Agent and Admin.
+- Login waits for verified access, selects a permitted workspace and denies inactive/unassigned accounts. Hidden routes use the same checks.
+- Added admin account listings, audited role assignment and security audit screens; protected the last active role administrator.
+- Restricted profile edits to personal fields and removed implicit admin/private-profile access. Added the RBAC migration and [setup instructions](./RBAC.md).
+- Other workspace modules have protected placeholder routes; their business workflows remain unavailable.
+- Verified: 10 PostgreSQL/RLS and API tests, 7 mocked browser scenarios, targeted lint and production build. Live Supabase migration is not applied.
+- Updated Impeccable to v4.5.2 as requested.
+
+## 2026-10-15 — RBAC migration compatibility fix
+
+- Updated `006_rbac.sql` to accept an existing role-code column and constraints, preserve populated codes, and fill missing codes.
+- Verified 12 tests, including the supplied five role names, pre-existing codes and replacement of a legacy recursive policy. Live database unchanged.
+
+## 2026-10-15 — RBAC migration retry support
+
+- Reuse compatible RBAC tables/indexes and replace existing migration functions/trigger on retry; reject incompatible column definitions.
+- Preserve existing assignments, revoked grants and audit history. Default grants/backfill run only for newly created assignment tables.
+- Verified 15 tests, including existing permissions and repeated full migration runs. Live database unchanged.
+
+## 2026-10-15 — Existing RBAC schema conversion
+
+- Extended `006_rbac.sql` to backfill `role_permissions.permission_code` from existing permission UUIDs and rename `user_roles.assigned_by`/`assigned_at`, preserving assignment data.
+- Added preflight checks for orphaned or conflicting grants, duplicate role assignments, and incompatible constraints. Supabase was not connected; live data counts must be checked before applying.
+
+## 2026-10-15 — RBAC initialization and compatibility hardening
+
+- Replaced table-existence bootstrap checks with private one-time migration markers: seed standard grants only if the table is initially empty, and import each missing legacy profile assignment once. Retries preserve later removals.
+- Reconciled `user_roles.granted_by` to `auth.users`, made `is_admin()` check `role.assign`, validated required identity columns, and limited direct profile SELECT to non-sensitive fields; adjusted the profile update API selection.
+- Documented the intentional identity-policy reset and added coverage for empty existing RBAC tables, partial assignment backfill, FK conversion and retry behavior.
+- Verified `pnpm run test:rbac` (16 tests). Live Supabase was not connected.
+
+## 2026-10-15 — Role-specific login authorization
+
+- Reviewed the implemented 006 SQL and database export; HR and Support assignments had no role permissions. Added `007_hr_support_authorization.sql` to grant their employee/workspace access once without resetting other roles or assignments.
+- Added shared client/API access-response validation and required workspace plus action permissions on child routes.
+- Verified login destinations and cross-role denials using sanitized exported grants: 20 database/API tests, 7 browser scenarios, targeted lint and production build. Apply 007 in Supabase to enable the missing HR/Support access; unfinished modules remain placeholders.

@@ -39,3 +39,6 @@ ds-bundle/
 .design-sync/.cache/
 .design-sync/learnings/
 .design-sync/node_modules
+# Local package cache
+.pnpm-store/
+tests/rbac-*.png

@@ -31,7 +31,7 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [people, setPeople] = useState(null);
-  const { profile, user, signOut } = useAuth();
+  const { profile, user, signOut, permissions } = useAuth();
   const {
     notifications,
     unreadCount,
@@ -94,7 +94,7 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
 
   // Lazy-load the employee list the first time the user searches.
   const ensurePeople = () => {
-    if (people) return;
+    if (people || !permissions.includes('directory.read')) return;
     Promise.all([import("../../data/orgSample.js"), import("../../utils/orgData.js")])
       .then(([org, util]) => {
         const tree = org.default.large?.org || org.default.standard.org;
@@ -111,7 +111,7 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
     const nav = sidebarItems.filter((item) =>
       item.label.toLowerCase().includes(q),
     );
-    const matchedPeople = (people || [])
+    const matchedPeople = (permissions.includes('directory.read') ? people || [] : [])
       .filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
@@ -119,7 +119,7 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
       )
       .slice(0, 5);
     return { nav: nav.slice(0, 4), people: matchedPeople };
-  }, [query, sidebarItems, people]);
+  }, [query, sidebarItems, people, permissions]);
 
   const hasResults = results.nav.length > 0 || results.people.length > 0;
 

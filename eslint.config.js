@@ -30,7 +30,7 @@ export default defineConfig([
   },
   // Backend + config: Node globals (process, __dirname, ...), no React rules.
   {
-    files: ['server/**/*.js', 'api/**/*.js', '*.config.js'],
+    files: ['server/**/*.js', 'api/**/*.js', 'shared/**/*.js', '*.config.js'],
     extends: [js.configs.recommended],
     languageOptions: {
       globals: globals.node,

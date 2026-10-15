@@ -9,7 +9,7 @@ CREATE TABLE public.roles (
   created_at timestamptz DEFAULT now()
 );
 -- IDs also match the portal's legacy numeric role mapping.
-INSERT INTO public.roles (name) VALUES ('admin'), ('manager'), ('employee'), ('hr'), ('finance');
+INSERT INTO public.roles (name) VALUES ('admin'), ('manager'), ('employee'), ('hr administrator'), ('support agent');
 
 CREATE TABLE public.profiles (
   id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,

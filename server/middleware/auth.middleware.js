@@ -1,191 +1,40 @@
-import { supabaseAdmin as supabase } from "../utils/supabaseAdmin.js";
-import { logger } from "../utils/logger.js";
+import { supabaseAdmin } from '../utils/supabaseAdmin.js';
+import { logger } from '../utils/logger.js';
+import { resolveAccessContext } from '../../shared/authorization.js';
 
-/**
- * Extract JWT token from Authorization header
- * Expected format: "Bearer <token>"
- */
-function extractToken(authHeader) {
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return null;
-  }
-  return authHeader.slice(7); // Remove "Bearer " prefix
-}
-
-/**
- * Verify Supabase JWT token
- * Validates the token with the project's Auth server, including current signing keys.
- */
-async function verifySupabaseToken(token) {
-  const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data?.user) {
-    throw new Error("Invalid or expired session. Please sign in again.");
-  }
-  return { sub: data.user.id, email: data.user.email };
-}
-
-/**
- * Fetch user profile with role information from database
- * This ensures roles are current and not just from the token
- */
-async function fetchUserProfile(userId) {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select(
-      `
-      id,
-      email,
-      role_id,
-      roles!inner(name)
-    `,
-    )
-    .eq("id", userId)
-    .single();
-
-  if (error) {
-    throw new Error(`Failed to fetch profile: ${error.message}`);
-  }
-
-  return {
-    ...data,
-    role: data.roles?.name || "employee", // Map role name from joined table
-  };
-}
-
-/**
- * Middleware: Verify JWT token and attach user to request
- * Usage: app.use(verifyToken) or app.get('/protected', verifyToken, handler)
- *
- * Attaches to req.user:
- * - id: user ID from token
- * - email: user email from token
- * - role: normalized role (admin, manager, employee, etc.)
- */
-export const verifyToken = async (req, res, next) => {
+/** Verify identity and resolve fresh database grants on every protected request. */
+export const createVerifyToken = (supabase) => async (req, res, next) => {
+  const token = /^Bearer ([^\s]+)$/.exec(req.headers.authorization || '')?.[1];
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    const authHeader = req.headers.authorization;
-    const token = extractToken(authHeader);
-
-    if (!token) {
-      return res.status(401).json({
-        error: "Unauthorized",
-        message: "Missing or invalid Authorization header",
-      });
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data?.user) return res.status(401).json({ error: 'Unauthorized' });
+    const { data: access, error: accessError } = await supabase.rpc('get_access_context', { subject: data.user.id });
+    if (accessError) {
+      logger.error('Access context unavailable:', accessError.message);
+      return res.status(503).json({ error: 'Access verification unavailable' });
     }
-
-    // Verify JWT signature
-    const decoded = await verifySupabaseToken(token);
-
-    // Extract user ID from token
-    const userId = decoded.sub; // Supabase uses 'sub' for user ID
-
-    if (!userId) {
-      return res.status(401).json({
-        error: "Unauthorized",
-        message: "Invalid token payload",
-      });
+    const resolved = resolveAccessContext(access, data.user.id);
+    if (!resolved) {
+      return res.status(403).json({ error: 'Account has no active access' });
     }
-
-    // Fetch fresh profile data (ensures role is current)
-    const profile = await fetchUserProfile(userId);
-
-    // Attach user info to request
-    req.user = {
-      id: userId,
-      email: decoded.email || profile.email,
-      role: normalizeRole(profile.role || profile.role_id || profile.role_name),
-      profile, // Full profile data available if needed
-    };
-
+    req.user = { id: data.user.id, email: data.user.email, ...resolved };
     next();
   } catch (error) {
-    logger.error("Auth:", error.message);
-    res.status(401).json({
-      error: "Unauthorized",
-      message: error.message,
-    });
+    logger.error('Authentication service unavailable:', error.message);
+    res.status(503).json({ error: 'Access verification unavailable' });
   }
 };
+export const verifyToken = createVerifyToken(supabaseAdmin);
 
-/**
- * Middleware: Require specific role(s)
- * Usage: app.get('/admin', requireRole('admin'), handler)
- *        app.get('/staff', requireRole(['admin', 'manager']), handler)
- */
-export const requireRole = (allowedRoles) => {
-  const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
-
-  return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({
-        error: "Unauthorized",
-        message: "No user context",
-      });
-    }
-
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        error: "Forbidden",
-        message: `This resource requires one of: ${roles.join(", ")}. You are: ${req.user.role}`,
-      });
-    }
-
-    next();
-  };
+/** Capability checks do not replace resource ownership/scope checks. */
+export const requirePermission = (permission) => (req, res, next) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  if (!req.user.permissions.includes(permission)) return res.status(403).json({ error: 'Forbidden' });
+  next();
 };
-
-/**
- * Normalize role from various database formats
- * Maps numeric IDs and string names to standardized role names
- */
-function normalizeRole(role) {
-  if (!role) return "employee";
-
-  const ROLE_MAP = {
-    1: "admin",
-    2: "manager",
-    3: "employee",
-    admin: "admin",
-    manager: "manager",
-    employee: "employee",
-    hr: "hr",
-    finance: "finance",
-  };
-
-  const key = typeof role === "string" ? role.toLowerCase() : role;
-  return ROLE_MAP[key] || "employee";
-}
-
-/**
- * Middleware: Require user to own the resource (or be admin)
- * Usage: app.get('/users/:userId', verifyToken, requireOwnerOrAdmin(), handler)
- */
-export const requireOwnerOrAdmin = () => {
-  return (req, res, next) => {
-    const { userId } = req.params;
-
-    if (req.user.role === "admin") {
-      return next();
-    }
-
-    if (req.user.id === userId) {
-      return next();
-    }
-
-    return res.status(403).json({
-      error: "Forbidden",
-      message: "You can only access your own data",
-    });
-  };
+export const requireOwner = (req, res, next) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  if (req.user.id !== req.params.userId) return res.status(403).json({ error: 'Forbidden' });
+  next();
 };
-
-/**
- * Optional: Custom error class for auth errors
- */
-export class AuthError extends Error {
-  constructor(message, statusCode = 401) {
-    super(message);
-    this.statusCode = statusCode;
-    this.name = "AuthError";
-  }
-}

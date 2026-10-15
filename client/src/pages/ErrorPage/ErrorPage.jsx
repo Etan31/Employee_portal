@@ -3,8 +3,8 @@ import { ERROR_CONTENT } from "./errorContent.js";
 import { Icon } from "../../components/Icon/Icon.jsx";
 import { useAuth } from "../../hooks/auth.hooks.jsx";
 import { useNavigation } from "../../hooks/useNavigation.js";
-import { NAV_ITEMS } from "../../data/nav.js";
-import { filterNavItemsByRole } from "../../utils/authPermissions.js";
+import { NAV_ITEMS, ROUTES } from "../../data/nav.js";
+import { canAccess, permittedItems, homeRoute } from '../../utils/access.js';
 import "./ErrorPage.css";
 
 const LAST_ROUTE_KEY = "nx:lastValidRoute";
@@ -18,7 +18,7 @@ export function ErrorPage({
   showQuickLinks = false,
 }) {
   const { navigate } = useNavigation();
-  const { role } = useAuth();
+  const { permissions } = useAuth();
   const headingRef = useRef(null);
 
   useEffect(() => {
@@ -29,17 +29,18 @@ export function ErrorPage({
 
   const goBack = () => {
     const lastRoute = sessionStorage.getItem(LAST_ROUTE_KEY);
-    navigate(lastRoute ? `#/${lastRoute}` : "#/dashboard");
+    const item = ROUTES.find(item => item.id === lastRoute);
+    navigate(canAccess(item, permissions) ? item.route : homeRoute(ROUTES, permissions) || '#/login');
   };
 
   const primary = primaryAction || {
-    label: "Go to Dashboard",
-    onClick: () => navigate("#/dashboard"),
+    label: "Go to workspace",
+    onClick: () => navigate(homeRoute(ROUTES, permissions) || '#/login'),
   };
   const secondary =
     secondaryAction === null ? null : secondaryAction || { label: "Go back", onClick: goBack };
 
-  const quickLinks = showQuickLinks ? filterNavItemsByRole(NAV_ITEMS, role).slice(0, 4) : [];
+  const quickLinks = showQuickLinks ? permittedItems(NAV_ITEMS, permissions).slice(0, 4) : [];
 
   return (
     <div className={`nx-error${standalone ? " nx-error--standalone" : ""}`}>

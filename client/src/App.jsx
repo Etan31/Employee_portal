@@ -1,11 +1,14 @@
 import { lazy, Suspense, useEffect } from "react";
 import { useNavigation } from "./hooks/useNavigation.js";
-import { NAV_ITEMS, HIDDEN_ROUTES } from "./data/nav.js";
+import { NAV_ITEMS, ROUTES } from "./data/nav.js";
 import { DashboardLayout } from "./layouts/DashboardLayout/DashboardLayout.jsx";
 import { Login } from "./pages/Login/Login.jsx";
-import { NotFound, AuthError } from "./pages/ErrorPage/ErrorPage.jsx";
+import { NotFound, AuthError, ErrorPage } from "./pages/ErrorPage/ErrorPage.jsx";
 import { useAuth } from "./hooks/auth.hooks.jsx";
-import { filterNavItemsByRole } from "./utils/authPermissions.js";
+import { canAccess, permittedItems, homeRoute, loginDestination } from './utils/access.js';
+import { Workspace } from './pages/Workspace/Workspace.jsx';
+import { RoleAdministration, AccessAudit } from './pages/Workspace/RoleAdministration.jsx';
+import { AppDataProvider } from './hooks/appData.hooks.jsx';
 
 import "./styles/global.css";
 
@@ -78,37 +81,36 @@ const PAGE_COMPONENTS = {
 
 export default function App() {
   const { active } = useNavigation();
-  const { user, loading, role } = useAuth();
+  const { user, loading, permissions, accessError, signOut, refreshProfile } = useAuth();
 
-  // Look up against the full route set (not the role-filtered one) so a
-  // restricted-but-known route can be told apart from a route that doesn't exist.
-  const permittedNav = filterNavItemsByRole(NAV_ITEMS, role);
-  const requestedItem =
-    NAV_ITEMS.find((item) => item.id === active) ||
-    HIDDEN_ROUTES.find((item) => item.id === active);
-  const isPermitted =
-    permittedNav.some((item) => item.id === active) ||
-    HIDDEN_ROUTES.some((item) => item.id === active);
+  const permittedNav = permittedItems(NAV_ITEMS, permissions);
+  const requestedItem = ROUTES.find((item) => item.id === active);
+  const isPermitted = canAccess(requestedItem, permissions);
+  const home = homeRoute(ROUTES, permissions, sessionStorage.getItem('nx:workspace'));
 
   useEffect(() => {
-    if (!loading && !user && active !== "login") {
+    if (!loading && !accessError && !user && active !== "login") {
+      if (ROUTES.some(item => item.id === active)) sessionStorage.setItem('nx:returnTo', active);
       window.location.hash = "#/login";
     }
-  }, [active, loading, user]);
+  }, [active, loading, user, accessError]);
 
   useEffect(() => {
-    if (!loading && user && active === "login") {
-      window.location.hash = "#/dashboard";
+    if (!loading && !accessError && user && active === "login") {
+      const destination = loginDestination(ROUTES, permissions, sessionStorage.getItem('nx:returnTo'), sessionStorage.getItem('nx:workspace'));
+      sessionStorage.removeItem('nx:returnTo');
+      if (destination) window.location.hash = destination;
     }
-  }, [active, loading, user]);
+  }, [active, loading, user, accessError, permissions]);
 
   // Remember the last route that actually rendered, so error pages can offer
   // "go back to where you were" even after a hard reload on a broken hash.
   useEffect(() => {
-    if (user && requestedItem && isPermitted) {
+    if (!loading && !accessError && user && requestedItem && isPermitted) {
       sessionStorage.setItem(LAST_ROUTE_KEY, active);
+      if (requestedItem.home) sessionStorage.setItem('nx:workspace', active);
     }
-  }, [active, user, requestedItem, isPermitted]);
+  }, [active, user, requestedItem, isPermitted, loading, accessError]);
 
   if (loading) {
     return (
@@ -120,12 +122,19 @@ export default function App() {
     );
   }
 
+  if (accessError || (user && !home)) {
+    return <ErrorPage code={accessError || 403} standalone
+      detail={accessError === 503 ? 'Access could not be verified. Please retry.' : 'Your account needs active role permissions. Contact your administrator.'}
+      primaryAction={{ label: 'Retry', onClick: refreshProfile }}
+      secondaryAction={{ label: 'Sign out', onClick: () => signOut().catch(() => window.location.reload()) }} />;
+  }
+
   if (!user) {
     return active === "login" ? <Login /> : <AuthError code={401} />;
   }
 
   if (active === "login") {
-    // Authenticated but the hash hasn't flipped to #/dashboard yet (see effect above).
+    // Wait for the centralized permission-aware login destination.
     return null;
   }
 
@@ -134,6 +143,12 @@ export default function App() {
     pageContent = <NotFound />;
   } else if (!isPermitted) {
     pageContent = <AuthError code={403} />;
+  } else if (requestedItem.home && requestedItem.workspace) {
+    pageContent = <Workspace workspaceId={requestedItem.workspace} />;
+  } else if (active === 'admin/roles' || active === 'admin/accounts') {
+    pageContent = <RoleAdministration key={active} readOnly={active === 'admin/accounts'} />;
+  } else if (active === 'admin/audit') {
+    pageContent = <AccessAudit />;
   } else {
     const PageComponent = PAGE_COMPONENTS[active];
     pageContent = (
@@ -154,8 +169,8 @@ export default function App() {
   }
 
   return (
-    <DashboardLayout activeRoute={active} navItems={permittedNav}>
+    <AppDataProvider key={user.id}><DashboardLayout activeRoute={active} navItems={permittedNav}>
       {pageContent}
-    </DashboardLayout>
+    </DashboardLayout></AppDataProvider>
   );
 }

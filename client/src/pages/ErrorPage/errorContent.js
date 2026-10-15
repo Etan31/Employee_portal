@@ -45,7 +45,7 @@ export const ERROR_CONTENT = {
     icon: "settings",
     tone: "fault-transient",
     title: "Nexus is temporarily unavailable",
-    message: "We're performing scheduled maintenance. Please check back shortly.",
+    message: "A required service is unavailable. Please try again shortly.",
   },
   504: {
     icon: "clock",

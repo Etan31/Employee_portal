@@ -1,19 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./Login.css";
 import { useAuth } from "../../hooks/auth.hooks.jsx";
 
 export function Login() {
-  const { user, loading, signIn } = useAuth();
+  const { loading, signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [signingIn, setSigningIn] = useState(false);
 
-  useEffect(() => {
-    if (!loading && user) {
-      window.location.hash = "#/dashboard";
-    }
-  }, [loading, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +17,7 @@ export function Login() {
 
     try {
       await signIn(email, password);
-      window.location.hash = "#/dashboard";
+
     } catch (error) {
       setSigningIn(false);
       setErrorMessage(
@@ -136,9 +131,7 @@ export function Login() {
               )}
             </button>
 
-            <p className="demo-credentials">
-              <b>Demo: </b>employee@gmail.com / employee12345
-            </p>
+
           </form>
 
           <p className="login-footer-text">

@@ -1,136 +1,114 @@
-// src/hooks/auth.hooks.js
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
-import { supabase } from "../lib/supabaseClient.js";
-import {
-  loginUser,
-  logoutUser,
-  getUserProfile,
-  registerUser,
-} from "../api/auth.api.js";
-import { normalizeRole } from "../utils/authPermissions.js";
-import { logError } from "../utils/logger.js";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { supabase } from '../lib/supabaseClient.js';
+import { loginUser, logoutUser, getAccessContext } from '../api/auth.api.js';
+import { logError } from '../utils/logger.js';
+import { resolveAccessContext } from '../../../shared/authorization.js';
 
 const AuthContext = createContext(null);
+const emptyAccess = { profile: null, roles: [], permissions: [] };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [role, setRole] = useState("employee");
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState({ user: null, ...emptyAccess, loading: true, accessError: null });
+  const generation = useRef(0);
+  const currentId = useRef(null);
 
-  const loadProfile = useCallback(async (userId) => {
+  const resolveSession = useCallback(async (session, background = false) => {
+    const revision = ++generation.current;
+    const user = session?.user ?? null;
+    const sameUser = currentId.current === user?.id;
+    if (!sameUser) {
+      sessionStorage.removeItem('nx:lastValidRoute');
+      sessionStorage.removeItem('nx:workspace');
+    }
+    currentId.current = user?.id ?? null;
+    if (!background || !sameUser) setState({ user, ...emptyAccess, loading: Boolean(user), accessError: null });
+    if (!user) return;
     try {
-      const data = await getUserProfile(userId);
-      setProfile(data);
-      setRole(normalizeRole(data?.role || data?.role_id || data?.role_name));
+      const access = await getAccessContext();
+      if (revision !== generation.current) return;
+      const resolved = resolveAccessContext(access, user.id);
+      setState({ user, ...(resolved || emptyAccess), loading: false, accessError: resolved ? null : 403 });
     } catch (error) {
-      logError("Critical: Unable to load profile:", error);
-      setProfile(null);
-      setRole("employee");
+      if (revision !== generation.current) return;
+      logError('Access resolution failed:', error);
+      setState({ user, ...emptyAccess, loading: false, accessError: error.code === '42501' ? 403 : 503 });
     }
   }, []);
 
   useEffect(() => {
-    const handleSession = async (currentSession) => {
-      const currentUser = currentSession?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        // Load profile asynchronously without blocking loading state
-        loadProfile(currentUser.id);
-      } else {
-        setProfile(null);
-        setRole("employee");
+    let disposed = false;
+    let eventReceived = false;
+    // Do not await Supabase calls inside its auth event callback (auth lock).
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      eventReceived = true;
+      const eventRevision = ++generation.current;
+      if (!disposed && currentId.current !== session?.user?.id) {
+        setState({ user: session?.user ?? null, ...emptyAccess, loading: Boolean(session?.user), accessError: null });
       }
-      setLoading(false);
-    };
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      handleSession(currentSession);
+      // Leave the Supabase auth lock before requesting the access RPC.
+      window.setTimeout(() => {
+        if (!disposed && eventRevision === generation.current) void resolveSession(session, true);
+      }, 0);
     });
-
-    supabase.auth
-      .getSession()
-      .then(({ data: { session } }) => {
-        handleSession(session);
-      })
-      .catch((error) => {
-        logError("Supabase session initialization failed:", error);
-        setLoading(false);
-      });
-
-    return () => {
-      subscription?.unsubscribe?.();
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (disposed || eventReceived) return;
+      if (error) setState({ user: null, ...emptyAccess, loading: false, accessError: 503 });
+      else void resolveSession(data.session);
+    }).catch(() => {
+      if (!disposed && !eventReceived) setState({ user: null, ...emptyAccess, loading: false, accessError: 503 });
+    });
+    const refresh = async () => {
+      const revision = generation.current;
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (disposed || revision !== generation.current) return;
+        if (error) setState(previous => ({ ...previous, ...emptyAccess, loading: false, accessError: 503 }));
+        else void resolveSession(data.session, true);
+      } catch {
+        if (!disposed && revision === generation.current) setState(previous => ({ ...previous, ...emptyAccess, loading: false, accessError: 503 }));
+      }
     };
-  }, []);
+    window.addEventListener('focus', refresh);
+    const timer = window.setInterval(refresh, 60000);
+    return () => {
+      disposed = true;
+      // This is an async request generation counter, not a DOM ref.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      generation.current++;
+      subscription.unsubscribe();
+      window.removeEventListener('focus', refresh);
+      window.clearInterval(timer);
+    };
+  }, [resolveSession]);
 
-  // Re-fetch the signed-in user's profile (e.g. after a profile edit).
   const refreshProfile = useCallback(async () => {
-    if (user?.id) {
-      await loadProfile(user.id);
-    }
-  }, [user?.id, loadProfile]);
-
-  const signIn = useCallback(async (email, password) => {
-    setLoading(true);
+    const revision = generation.current;
     try {
-      return await loginUser({ email, password });
-    } catch (error) {
-      setLoading(false);
-      throw error;
+      const { data, error } = await supabase.auth.getSession();
+      if (revision !== generation.current) return;
+      if (error) throw error;
+      await resolveSession(data.session, true);
+    } catch {
+      if (revision === generation.current) setState(previous => ({ ...previous, ...emptyAccess, loading: false, accessError: 503 }));
     }
-  }, []);
-
-  const signUp = useCallback(async (email, password, profileData = {}) => {
-    setLoading(true);
-    try {
-      return await registerUser({ email, password, profileData });
-    } catch (error) {
-      setLoading(false);
-      throw error;
-    }
-  }, []);
-
+  }, [resolveSession]);
+  const signIn = useCallback((email, password) => loginUser({ email, password }), []);
   const signOut = useCallback(async () => {
-    setLoading(true);
-    try {
-      await logoutUser();
-    } catch (error) {
-      logError("Logout failed:", error);
-    }
-  }, []);
+    await logoutUser();
+    sessionStorage.removeItem('nx:returnTo');
+    await resolveSession(null);
+  }, [resolveSession]);
+  const role = state.roles?.map((item) => item.name).join(', ') || 'No assigned role';
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        profile,
-        role,
-        isAdmin: role === "admin",
-        isManager: role === "manager",
-        loading,
-        signIn,
-        signUp,
-        signOut,
-        refreshProfile,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ ...state, role, signIn, signOut, refreshProfile,
+    isAdmin: state.permissions.includes('role.assign'), isManager: state.permissions.includes('manager.workspace'),
+  }}>{children}</AuthContext.Provider>;
 };
 
+// Context and its hook intentionally share this module.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 };
