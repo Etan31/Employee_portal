@@ -1,4 +1,7 @@
 .nx-workspace { grid-column: 1 / -1; min-width: 0; display: grid; gap: 24px; color: var(--nx-text); }
+.nx-workspace-switcher { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: var(--nx-sp-3); font-weight: 600; }
+.nx-workspace-switcher select { max-width: 100%; padding: var(--nx-sp-2) var(--nx-sp-3); color: var(--nx-text); background: var(--nx-surface); border: 1px solid var(--nx-border-strong); border-radius: var(--nx-radius-sm); font: inherit; }
+.nx-workspace-switcher select:focus-visible { outline: 2px solid var(--nx-primary); outline-offset: 3px; }
 .nx-workspace header { display: grid; gap: 8px; }
 .nx-workspace p { color: var(--nx-text-soft); max-width: 70ch; overflow-wrap: anywhere; }
 .nx-workspace a { color: var(--nx-primary-700); }

@@ -17,6 +17,6 @@ export function Workspace({ workspaceId }) {
       </li>)}</ul>
       {!modules.length && <p>No tools have been assigned to this workspace.</p>}
     </div>
-    {permissions.includes('dashboard.read') && <a href="#/dashboard">Back to employee dashboard</a>}
+    {permissions.includes('dashboard.read') && <a href="#/my-dashboard">My employee dashboard</a>}
   </section>;
 }
