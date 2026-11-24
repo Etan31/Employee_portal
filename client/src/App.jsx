@@ -10,6 +10,8 @@ import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute.jsx';
 import { DashboardHome } from './pages/Workspace/DashboardHome.jsx';
 import { RoleAdministration, AccessAudit } from './pages/Workspace/RoleAdministration.jsx';
 import { AppDataProvider } from './hooks/appData.hooks.jsx';
+import { StaffAdministration } from './pages/Workspace/StaffAdministration.jsx';
+import { AcceptInvitation } from './pages/Workspace/AcceptInvitation.jsx';
 
 import "./styles/global.css";
 
@@ -82,6 +84,7 @@ const PAGE_COMPONENTS = {
 
 export default function App() {
   const { active } = useNavigation();
+  if (active === 'accept-invitation') return <AcceptInvitation />;
   return active === 'login'
     ? <ProtectedRoute publicOnly><Login /></ProtectedRoute>
     : <ProtectedRoute><ProtectedApplication active={active} /></ProtectedRoute>;
@@ -108,7 +111,10 @@ function ProtectedApplication({ active }) {
 function RouteContent({ item }) {
   let content;
   if (item.id === 'dashboard') content = <DashboardHome employeeDashboard={<Dashboard />} />;
-  else if (item.id === 'admin/roles' || item.id === 'admin/accounts') content = <RoleAdministration key={item.id} readOnly={item.id === 'admin/accounts'} />;
+  else if (item.id === 'admin/roles') content = <RoleAdministration />;
+  else if (item.id === 'admin/accounts') content = <StaffAdministration accounts />;
+  else if (['hr/lifecycle', 'hr/employees', 'hr/employee-records'].includes(item.id)) content = <StaffAdministration />;
+  else if (item.id === 'manager/team') content = <Employees teamOnly />;
   else if (item.id === 'admin/audit') content = <AccessAudit />;
   else {
     const PageComponent = PAGE_COMPONENTS[item.id];

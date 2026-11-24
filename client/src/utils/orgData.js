@@ -12,7 +12,7 @@ export function flattenOrgTree(nodes, depth = 0, unit = null, acc = []) {
         name: profile.name,
         position: profile.position,
         email: profile.email || "",
-        unit: unit || node.label,
+        unit: profile.unit || unit || node.label,
         depth,
         hasReports: Boolean(node.children?.length),
       });
