@@ -98,9 +98,10 @@ All `/api/protected/*` routes require `Authorization: Bearer <supabase-jwt>`.
 | GET | `/health` | none | Liveness check |
 | GET | `/health/db` | none | Liveness + Supabase reachability |
 | GET | `/api/protected/profiles/me` | JWT | Current user's profile |
-| GET | `/api/protected/profiles/:userId` | owner or admin | Fetch a profile |
-| PUT | `/api/protected/profiles/:userId` | owner or admin | Update a profile (role change is admin-only) |
-| GET | `/api/protected/profiles` | admin | List all profiles |
+| GET | `/api/protected/profiles/:userId` | owner + profile.self | Fetch own profile |
+| PUT | `/api/protected/profiles/:userId` | owner + profile.self | Update display name/avatar only |
+| GET | `/api/protected/profiles` | account.read | Company account metadata only |
+| POST | `/api/protected/invitations/:staffId/send` | account.invite | Deliver/reconcile an HR-requested invitation |
 
 ## Deployment
 
@@ -109,6 +110,10 @@ All `/api/protected/*` routes require `Authorization: Bearer <supabase-jwt>`.
 - **Render** runs `node server/index.js`, which also serves the built SPA from `client/dist`.
 
 ## Notes
+
+- Identity foundation: [migration, invitation workflow and deployment gate](docs/identity-foundation.md).
+- The staff directory, profile and organization now use protected database records.
+  Other business modules still contain prototype data; follow the blueprint phase order.
 
 - Use pnpm only; npm/yarn lockfiles are gitignored.
 - Never commit `.env` or the Supabase service-role key.

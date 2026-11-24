@@ -161,3 +161,14 @@ this stack.
 - All roles now enter through `#/dashboard`. Replaced role-directory URLs with feature URLs and added permission-checked workspace switching on the dashboard.
 - Workspace preferences persist across reloads and clear on account changes. API/database authorization remains enforced; no SQL changes required.
 - Verified 22 policy/database tests, 10 browser scenarios, targeted lint and production build.
+
+## 2026-10-15 — Identity foundation and invitation lifecycle
+
+- Assessed the blueprint and current implementation: RBAC existed, but Phase 1 lacked company/staff records, reporting scopes, real directory/profile data and managed onboarding/offboarding.
+- Added migration `008_identity_foundation.sql`: companies, departments, employees, separate private records, invitations, protected lifecycle audit and identity synchronization jobs. Existing assignments/activity are preserved; company defaults to Nexus / Asia/Manila pending operational confirmation.
+- Added HR staff creation, department setup, manager transfers and account requests; administrator invitation delivery/reconciliation; verified invitation acceptance; audited suspension, restoration and deactivation. Effective role dates are enforced and cross-company role/account access is denied.
+- Connected directory, staff search, profile, team roster and organization views to protected records. Removed sample private profile details and the mood widget. Preserved five additive personas; private HR access is not implied by system administration.
+- Added a retryable single-worker Auth ban synchronization command. Immediate app eligibility remains database-controlled even with existing JWTs or an Auth outage.
+- Verified 32 database/API/service tests, 10 existing RBAC browser scenarios, 4 new identity browser scenarios, targeted lint and production build. Browser tests mock network delivery; no actual invitation email was sent.
+- Deployment remains pending: apply 008 after 006/007, disable public signups, configure SMTP/redirects, schedule the identity worker and verify real acceptance in staging. No live database was changed. See [identity foundation](./identity-foundation.md) and [foundation assessment](./foundation-plan.md).
+- Next: verify the Phase 1 deployment gate before Phase 2 attendance. Later business modules remain prototypes/placeholders; support queue scopes and task reassignment belong to their workflow phases.
