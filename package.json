@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test:rbac": "node --test tests/*.test.mjs",
-    "test:rbac:browser": "node tests/rbac.browser.mjs"
+    "test:rbac:browser": "node tests/rbac.browser.mjs",
+    "test:identity:browser": "node tests/identity.browser.mjs",
+    "sync:identity": "node scripts/sync-identity.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",

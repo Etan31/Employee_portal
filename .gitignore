@@ -42,3 +42,4 @@ ds-bundle/
 # Local package cache
 .pnpm-store/
 tests/rbac-*.png
+tests/identity-*.png
