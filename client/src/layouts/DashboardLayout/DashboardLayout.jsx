@@ -95,11 +95,8 @@ export function DashboardLayout({ children, activeRoute, navItems }) {
   // Lazy-load the employee list the first time the user searches.
   const ensurePeople = () => {
     if (people || !permissions.includes('directory.read')) return;
-    Promise.all([import("../../data/orgSample.js"), import("../../utils/orgData.js")])
-      .then(([org, util]) => {
-        const tree = org.default.large?.org || org.default.standard.org;
-        setPeople(util.flattenOrgTree(tree));
-      })
+    import('../../api/staff.api.js').then(api => api.getDirectory())
+      .then(setPeople)
       .catch((error) => logError("Employee search index failed:", error));
   };
 

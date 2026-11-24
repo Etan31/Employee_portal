@@ -156,66 +156,6 @@ function RequestSidebar({ mode, onClose, selectedIds, onSave }) {
   );
 }
 
-/* ── Mood check-in (local-only; no backend for team mood yet) ── */
-function MoodCard() {
-  const MOODS = [
-    { id: 'great', label: 'Great', icon: 'sparkle' },
-    { id: 'good', label: 'Good', icon: 'thumbs-up' },
-    { id: 'okay', label: 'Okay', icon: 'message-square' },
-  ];
-  const [mood, setMood] = useState(null);
-  const [note, setNote] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = () => {
-    if (!mood) return;
-    setSubmitted(true);
-  };
-
-  if (submitted) {
-    return (
-      <article className="nx-card nx-focus-card nx-focus-card--mood">
-        <h4 className="nx-focus-card__title">How's your mood?</h4>
-        <div className="nx-mood-thanks">
-          <Icon name="check" size={18} />
-          <span>Thanks for sharing how you're feeling today.</span>
-        </div>
-      </article>
-    );
-  }
-
-  return (
-    <article className="nx-card nx-focus-card nx-focus-card--mood">
-      <h4 className="nx-focus-card__title">How's your mood?</h4>
-      <div className="nx-focus-mood-options">
-        {MOODS.map((m) => (
-          <button
-            key={m.id}
-            className={`nx-mood-btn ${mood === m.id ? 'nx-mood-btn--active' : ''}`}
-            title={m.label}
-            aria-pressed={mood === m.id}
-            onClick={() => setMood(m.id)}
-          >
-            <Icon name={m.icon} size={20} />
-          </button>
-        ))}
-      </div>
-      <div className="nx-focus-mood-input-box">
-        <input
-          type="text"
-          placeholder="Tell us more..."
-          className="nx-focus-mood-input"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-        />
-        <button className="nx-mood-submit-btn" onClick={handleSubmit} disabled={!mood}>
-          Submit
-        </button>
-      </div>
-    </article>
-  );
-}
-
 /* ── Dashboard ── */
 export function Dashboard() {
   const clock = useClock();
@@ -289,7 +229,7 @@ export function Dashboard() {
             <h2 className="nx-h2">Daily Focus</h2>
           </header>
           <div className="nx-focus-grid">
-            <MoodCard />
+
             <article className="nx-card nx-focus-card nx-focus-card--goal">
               <header className="nx-focus-goal-header">
                 <h4 className="nx-focus-card__title">Company Highlights</h4>

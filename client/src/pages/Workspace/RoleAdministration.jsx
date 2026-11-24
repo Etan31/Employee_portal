@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/auth.hooks.jsx';
 import { getRoleAdministration, setUserRoles, getAccessAudit } from '../../api/auth.api.js';
+import { staffRpc } from '../../api/staff.api.js';
 import './Workspace.css';
 
 export function RoleAdministration({ readOnly = false }) {
@@ -69,15 +70,18 @@ export function AccessAudit() {
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let active = true;
-    getAccessAudit().then(data => { if (active) { setRows(data); setError(''); } }).catch(() => { if (active) setError('Audit records could not be loaded.'); });
+    Promise.all([getAccessAudit(), staffRpc('get_staff_audit')]).then(([roles, staff]) => {
+      if (active) { setRows([...roles.map(row => ({ ...row, key: `role-${row.id}` })), ...staff.map(row => ({ ...row, key: `staff-${row.id}` }))].sort((a,b) => b.occurred_at.localeCompare(a.occurred_at))); setError(''); }
+    }).catch(() => { if (active) setError('Audit records could not be loaded.'); });
     return () => { active = false; };
   }, [attempt]);
-  return <section className="nx-workspace"><header><a href="#/dashboard">System Administration</a><h1 className="nx-h1">Security Audit</h1><p>The latest 100 role-assignment changes.</p></header>
+  return <section className="nx-workspace"><header><a href="#/dashboard">System Administration</a><h1 className="nx-h1">Security Audit</h1><p>The latest 100 role changes and 100 staff lifecycle events in your company.</p></header>
     {error && <div role="alert">{error} <button className="nx-workspace__button" onClick={() => setAttempt(value => value + 1)}>Retry</button></div>}
     {!rows && !error && <p role="status">Loading audit records…</p>}
-    {rows && <div className="nx-card nx-workspace__panel">{rows.length ? <ol className="nx-workspace__audit">{rows.map(row => <li key={row.id}>
+    {rows && <div className="nx-card nx-workspace__panel">{rows.length ? <ol className="nx-workspace__audit">{rows.map(row => <li key={row.key}>
       <time dateTime={row.occurred_at}>{new Date(row.occurred_at).toLocaleString()}</time><p>{row.reason}</p>
-      <small>Account: {row.target_user_id}<br />Changed by: {row.actor_id}<br />Roles: {row.old_roles.join(', ') || 'None'} → {row.new_roles.join(', ') || 'None'}</small>
+      <small>Event: {row.action}<br />Account/staff: {row.target_user_id || row.employee_id || 'Organization'}<br />Changed by: {row.actor_id}
+        {row.old_roles && <><br />Roles: {row.old_roles.join(', ') || 'None'} → {row.new_roles.join(', ') || 'None'}</>}</small>
     </li>)}</ol> : <p>No role changes have been recorded yet.</p>}</div>}
   </section>;
 }

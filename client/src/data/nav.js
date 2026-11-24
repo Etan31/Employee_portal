@@ -42,7 +42,8 @@ export const ROUTES = [
   ...SHARED_ROUTES,
   ...WORKSPACES.flatMap((workspace) => [
     ...workspace.modules.map(([id, label, permission]) => route(`${workspace.id}/${id}`, label, permission, {
-      route: `#/${FEATURE_PATHS[workspace.id][id]}`, workspace: workspace.id, hidden: true, available: workspace.id === 'admin' && ['accounts', 'roles', 'audit'].includes(id),
+      route: `#/${FEATURE_PATHS[workspace.id][id]}`, workspace: workspace.id, hidden: true,
+      available: (workspace.id === 'admin' && ['accounts', 'roles', 'audit'].includes(id)) || (workspace.id === 'hr' && ['employees', 'employee-records', 'lifecycle'].includes(id)) || (workspace.id === 'manager' && id === 'team'),
       permissions: [workspace.permission, permission],
     })),
   ]),

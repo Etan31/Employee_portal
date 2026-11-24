@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "./OrgChartView.css";
-import sampleData from "../../data/orgSample";
 
 function nodeMatches(node, q) {
   if (!q) return true;
@@ -138,16 +137,15 @@ function ListView({ data, searchQuery = "" }) {
   );
 }
 
-export default function OrgChartView({ searchQuery = "" }) {
+export default function OrgChartView({ searchQuery = "", nodes = [] }) {
   const [view, setView] = useState("org");
-  const [variant, setVariant] = useState("standard");
-  const current = sampleData[variant] || sampleData.standard;
+  const current = { org: nodes, tree: nodes };
 
   return (
     <div className="org-wrapper">
       <div className="org-controls">
         <div className="view-group">
-          {sampleData.views.map((item) => (
+          {[{ id: 'org', label: 'Org chart' }, { id: 'tree', label: 'Tree' }, { id: 'list', label: 'List' }].map((item) => (
             <button
               key={item.id}
               className={view === item.id ? "active" : ""}
@@ -158,17 +156,6 @@ export default function OrgChartView({ searchQuery = "" }) {
           ))}
         </div>
 
-        <div className="variant-group">
-          {sampleData.variants.map((item) => (
-            <button
-              key={item.id}
-              className={variant === item.id ? "active" : ""}
-              onClick={() => setVariant(item.id)}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="view-area">

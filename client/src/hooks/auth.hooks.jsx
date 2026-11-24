@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
       const access = await getAccessContext();
       if (revision !== generation.current) return;
       const resolved = resolveAccessContext(access, user.id);
+      if (access.onboarding === true) window.location.hash = '#/accept-invitation';
       setState({ user, ...(resolved || emptyAccess), loading: false, accessError: resolved ? null : 403 });
     } catch (error) {
       if (revision !== generation.current) return;

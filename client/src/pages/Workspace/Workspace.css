@@ -25,6 +25,9 @@
 .nx-workspace fieldset { border: 1px solid var(--nx-border); padding: 16px; border-radius: 8px; }
 .nx-workspace__check { display: flex; gap: 10px; align-items: center; padding: 8px 0; }
 .nx-workspace textarea { display: block; width: 100%; min-height: 88px; margin-top: 8px; font: inherit; padding: 12px; border: 1px solid var(--nx-border-strong); border-radius: 8px; }
+.nx-workspace__form label { display: block; margin-bottom: var(--nx-sp-3); }
+.nx-workspace__form input:not([type="checkbox"]), .nx-workspace__form select { display: block; width: 100%; margin-top: var(--nx-sp-2); padding: var(--nx-sp-3); font: inherit; color: var(--nx-text); background: var(--nx-surface); border: 1px solid var(--nx-border-strong); border-radius: var(--nx-radius-sm); }
+.nx-onboarding { max-width: 720px; margin: var(--nx-sp-7) auto; padding: var(--nx-sp-5); }
 .nx-workspace__actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .nx-workspace summary { cursor: pointer; font-weight: 600; }
 .nx-workspace details h2 { margin: 16px 0 8px; }

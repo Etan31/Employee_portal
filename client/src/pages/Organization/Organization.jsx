@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import OrgChartView from "../../components/OrgChartView/OrgChartView";
 import { useAsyncData } from "../../hooks/useAsyncData.js";
 import { getOrgStats } from "../../utils/orgData.js";
+import { getDirectory } from '../../api/staff.api.js';
+import { staffTree } from '../../utils/staff-tree.js';
 import "./Organization.css";
 
 function SearchIcon() {
@@ -67,14 +69,13 @@ function StatCard({ icon, label, value, color }) {
 
 export default function Organization() {
   const [search, setSearch] = useState("");
-  const { data } = useAsyncData(() => import("../../data/orgSample.js"));
+  const { data, loading, error } = useAsyncData(getDirectory);
+  const tree = useMemo(() => staffTree(data || []), [data]);
 
   const stats = useMemo(() => {
     if (!data) return null;
-    const sample = data.default;
-    const tree = sample.large?.org || sample.standard.org;
     return getOrgStats(tree);
-  }, [data]);
+  }, [data, tree]);
 
   return (
     <div className="organization-page">
@@ -120,7 +121,7 @@ export default function Organization() {
           )}
         </div>
         <div className="org-chart-body">
-          <OrgChartView searchQuery={search} />
+          {loading ? <p role="status">Loading organization…</p> : error ? <p role="alert">Organization could not be loaded. Refresh to retry.</p> : !data?.length ? <p>No active staff records yet.</p> : <OrgChartView searchQuery={search} nodes={tree} />}
         </div>
       </div>
     </div>

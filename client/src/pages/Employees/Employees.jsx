@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useAsyncData } from "../../hooks/useAsyncData.js";
-import { flattenOrgTree } from "../../utils/orgData.js";
+import { getDirectory } from '../../api/staff.api.js';
 import { Icon } from "../../components/Icon/Icon.jsx";
 import "./Employees.css";
 
@@ -14,18 +14,12 @@ function initialsOf(name) {
     .toUpperCase();
 }
 
-export function Employees() {
-  const { data, loading, error } = useAsyncData(() => import("../../data/orgSample.js"));
+export function Employees({ teamOnly = false }) {
+  const { data, loading, error } = useAsyncData(() => getDirectory(teamOnly));
   const [query, setQuery] = useState("");
   const [unit, setUnit] = useState("All");
 
-  // orgSample is a default export; prefer the large tree, fall back to standard.
-  const people = useMemo(() => {
-    if (!data) return [];
-    const sample = data.default;
-    const tree = sample.large?.org || sample.standard.org;
-    return flattenOrgTree(tree);
-  }, [data]);
+  const people = useMemo(() => data || [], [data]);
 
   const units = useMemo(() => [...new Set(people.map((p) => p.unit))], [people]);
 
@@ -51,7 +45,7 @@ export function Employees() {
   if (error) {
     return (
       <div className="emp-page">
-        <h1 className="nx-h1">Employees</h1>
+        <h1 className="nx-h1">{teamOnly ? 'My Team' : 'Employees'}</h1>
         <p className="emp-load-error">The directory could not be loaded. Refresh to try again.</p>
       </div>
     );
@@ -60,7 +54,7 @@ export function Employees() {
   return (
     <div className="emp-page">
       <header className="emp-header">
-        <h1 className="nx-h1">Employees</h1>
+        <h1 className="nx-h1">{teamOnly ? 'My Team' : 'Employees'}</h1>
         <p className="emp-subtitle">
           {people.length} people across {units.length} units
         </p>
@@ -132,6 +126,7 @@ export function Employees() {
                 </div>
                 <p className="emp-card__position">{person.position}</p>
                 <p className="emp-card__unit">{person.unit}</p>
+                <p className="emp-card__unit">Manager: {person.manager_name || 'Not assigned'}</p>
                 {person.email && (
                   <a className="emp-card__email" href={`mailto:${person.email}`}>
                     {person.email}
