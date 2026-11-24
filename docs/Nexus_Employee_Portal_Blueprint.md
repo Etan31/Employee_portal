@@ -392,6 +392,14 @@ Until answered, label the module **Sales & Leasing (planned)**, and do not claim
 
 # 16. Work board — the exact next tasks
 
+**15 October 2026 implementation update:** Identity foundation code now includes company/staff
+records, current reporting scopes, protected directory/profile/organization, HR provisioning
+requests, administrator invitations, verified acceptance, suspension/deactivation and Auth-sync
+jobs. See [foundation assessment](foundation-plan.md) and [deployment gate](identity-foundation.md).
+The board below remains a production acceptance checklist: do not mark provisioning and
+Phase 1 complete until migration 008 and the real Auth/email flow are verified in staging.
+Later business workflows still contain prototypes/placeholders.
+
 - [ ] **P0-01** Confirm company, department and reporting structure; choose primary company timezone.
 - [ ] **P0-02** Create glossary: task vs support ticket vs leave request vs approval vs chassis contract.
 - [ ] **P0-03** Create seed accounts for all five roles, plus manager from another department and multi-role sales employee.
