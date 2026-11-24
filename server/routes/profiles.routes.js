@@ -20,11 +20,13 @@ router.put('/:userId', requirePermission('profile.self'), requireOwner, async (r
   } catch (error) { next(error); }
 });
 // Account administration exposes account metadata only, never full HR profiles.
-router.get('/', requirePermission('account.read'), async (_req, res, next) => {
+router.get('/', requirePermission('account.read'), async (req, res, next) => {
   try {
-    const { data, error } = await supabase.from('profiles').select('id, email, is_active').order('email');
+    const { data: staff, error: staffError } = await supabase.from('employees').select('company_id').eq('auth_user_id', req.user.id).single();
+    if (staffError || !staff) return res.status(403).json({ error: 'Company membership required' });
+    const { data, error } = await supabase.from('employees').select('auth_user_id, work_email, account_status').eq('company_id', staff.company_id).order('work_email');
     if (error) return res.status(503).json({ error: 'Accounts unavailable' });
-    res.json(data);
+    res.json(data.map(row => ({ id: row.auth_user_id, email: row.work_email, is_active: row.account_status === 'active' })));
   } catch (error) { next(error); }
 });
 export default router;

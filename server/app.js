@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import { verifyToken } from "./middleware/auth.middleware.js";
 import { supabaseAdmin } from "./utils/supabaseAdmin.js";
 import profileRoutes from "./routes/profiles.routes.js";
+import invitationRoutes from './routes/invitations.routes.js';
 import { logger } from "./utils/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -89,6 +90,7 @@ app.get("/api/protected/access-context", (req, res) => {
   res.json({ active: req.user.active, profile: req.user.profile, roles: req.user.roles, permissions: req.user.permissions });
 });
 app.use("/api/protected/profiles", profileRoutes);
+app.use('/api/protected/invitations', invitationRoutes);
 app.use("/api", (_req, res) => res.status(404).json({ error: "Not Found" }));
 
 /**
