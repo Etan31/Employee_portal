@@ -1,10 +1,12 @@
 # Set up a replacement Supabase project
 
-**RBAC update:** After this base setup, apply `supabase/migrations/006_rbac.sql`
-and follow [RBAC setup](../docs/RBAC.md). After migration, roles are managed in
-`user_roles` or the portal's Roles & Permissions screen, not `profiles.role_id`.
-New accounts are inactive/unassigned until provisioned. The instructions below
-describe the base bootstrap before that migration.
+**RBAC update:** After this base setup, apply `supabase/migrations/006_rbac.sql`,
+`007_hr_support_authorization.sql`, `008_identity_foundation.sql` and
+`009_permission_gaps.sql` in that order, and follow [RBAC setup](../docs/RBAC.md).
+After migration, roles are managed in `user_roles` or the portal's Roles &
+Permissions screen, not `profiles.role_id`. New accounts are inactive/unassigned
+until provisioned. The instructions below describe the base bootstrap before
+those migrations.
 
 This creates a fresh database; it does not restore the deleted project's users or records.
 The current portal connects authentication and profiles to Supabase. Other screens currently
