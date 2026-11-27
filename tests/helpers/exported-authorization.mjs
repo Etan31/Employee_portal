@@ -29,7 +29,10 @@ export async function exportedAuthorizationFixture({ applyFollowup = true } = {}
       for (const code of codes) await db.query('INSERT INTO public.user_roles(user_id, role_id) SELECT $1, id FROM public.roles WHERE code = $2', [id, code]);
       accounts.push({id, code:primaryRole});
     }
-    if (applyFollowup) await db.exec(fs.readFileSync('supabase/migrations/007_hr_support_authorization.sql', 'utf8'));
+    if (applyFollowup) {
+      await db.exec(fs.readFileSync('supabase/migrations/007_hr_support_authorization.sql', 'utf8'));
+      await db.exec(fs.readFileSync('supabase/migrations/009_permission_gaps.sql', 'utf8'));
+    }
     const accessFor = async code => {
       const account = accounts.find(item => item.code === code);
       if (!account) throw new Error(`Missing exported role fixture: ${code}`);
