@@ -19,21 +19,21 @@ export const SHARED_ROUTES = [
 export const WORKSPACES = [
   { id: 'admin', label: 'System Administration', permission: 'admin.workspace', home: 1,
     description: 'Manage account access and system configuration.',
-    modules: [['accounts', 'Accounts', 'account.read'], ['roles', 'Roles & Permissions', 'role.assign'], ['organization', 'Organization Configuration', 'org.configure'], ['feature-flags', 'Feature Flags', 'system.configure'], ['integrations', 'Integrations', 'integration.manage'], ['audit', 'Security Audit', 'audit.read_security'], ['health', 'System Health', 'system.health']] },
+    modules: [['accounts', 'Accounts', 'account.read'], ['roles', 'Roles & Permissions', 'role.assign'], ['organization', 'Organization Configuration', 'org.configure'], ['feature-flags', 'Feature Flags', 'feature_flag.manage'], ['integrations', 'Integrations', 'integration.manage'], ['audit', 'Security Audit', 'audit.read_security'], ['health', 'System Health', 'system.health']] },
   { id: 'hr', label: 'HR Administration', permission: 'hr.workspace', home: 2,
     description: 'People operations and employee records within your authorized scope.',
-    modules: [['employees', 'HR People Directory', 'employee.read_private'], ['employee-records', 'Employee Records', 'employee.read_private'], ['lifecycle', 'Onboarding & Offboarding', 'employee.update_employment'], ['leave-policies', 'Leave Policies', 'leave.policy.manage'], ['leave-adjustments', 'Leave Adjustments', 'leave.adjust'], ['holidays', 'Holiday Calendar', 'holiday.manage'], ['policies', 'Policies & Acknowledgments', 'policy.publish'], ['requests', 'HR Requests', 'hr.request.read'], ['reports', 'HR Reports', 'hr.report.read']] },
+    modules: [['employees', 'HR People Directory', 'employee.read_private'], ['employee-records', 'Employee Records', 'employee.read_private'], ['attendance', 'Attendance', 'attendance.read_hr'], ['lifecycle', 'Onboarding & Offboarding', 'employee.update_employment'], ['leave-policies', 'Leave Policies', 'leave.policy.manage'], ['leave-adjustments', 'Leave Adjustments', 'leave.adjust'], ['holidays', 'Holiday Calendar', 'holiday.manage'], ['policies', 'Policies & Acknowledgments', 'policy.publish'], ['requests', 'HR Requests', 'hr.request.read'], ['reports', 'HR Reports', 'hr.report.read']] },
   { id: 'manager', label: 'Manager Workspace', permission: 'manager.workspace', home: 3,
     description: 'Team operations and approvals within your reporting scope.',
     modules: [['team', 'Team Overview', 'team.read'], ['calendar', 'Team Calendar', 'team.read'], ['leave-approvals', 'Leave Approvals', 'leave.approve'], ['attendance-exceptions', 'Attendance Exceptions', 'attendance.review'], ['tasks', 'Team Tasks', 'task.assign_team'], ['reports', 'Team Reports', 'team.report.read']] },
   { id: 'support', label: 'Support Operations', permission: 'support.workspace', home: 4,
     description: 'Service requests and support operations for your assigned queues.',
-    modules: [['queues', 'Queue Inbox', 'ticket.triage'], ['my-tickets', 'My Assigned Tickets', 'ticket.assigned'], ['escalations', 'SLAs & Escalations', 'ticket.escalate'], ['knowledge-base', 'Knowledge Base', 'knowledge.manage'], ['reports', 'Queue Analytics', 'queue.report.read']] },
+    modules: [['queues', 'Queue Inbox', 'ticket.triage'], ['my-tickets', 'My Assigned Tickets', 'ticket.assigned'], ['escalations', 'SLAs & Escalations', 'ticket.escalate'], ['knowledge-base', 'Knowledge Base', 'knowledge.read'], ['reports', 'Queue Analytics', 'queue.report.read']] },
 ];
 
 const FEATURE_PATHS = {
   admin: { accounts: 'accounts', roles: 'roles-permissions', organization: 'organization-configuration', 'feature-flags': 'feature-flags', integrations: 'integrations', audit: 'security-audit', health: 'system-health' },
-  hr: { employees: 'people-administration', 'employee-records': 'employee-records', lifecycle: 'employee-lifecycle', 'leave-policies': 'leave-policies', 'leave-adjustments': 'leave-adjustments', holidays: 'holiday-administration', policies: 'policy-administration', requests: 'people-requests', reports: 'people-reports' },
+  hr: { employees: 'people-administration', 'employee-records': 'employee-records', attendance: 'attendance-administration', lifecycle: 'employee-lifecycle', 'leave-policies': 'leave-policies', 'leave-adjustments': 'leave-adjustments', holidays: 'holiday-administration', policies: 'policy-administration', requests: 'people-requests', reports: 'people-reports' },
   manager: { team: 'team', calendar: 'team-calendar', 'leave-approvals': 'leave-approvals', 'attendance-exceptions': 'attendance-exceptions', tasks: 'team-tasks', reports: 'team-reports' },
   support: { queues: 'queues', 'my-tickets': 'assigned-tickets', escalations: 'escalations', 'knowledge-base': 'knowledge-base', reports: 'queue-analytics' },
 };
