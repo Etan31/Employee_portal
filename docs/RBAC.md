@@ -6,6 +6,8 @@ The portal uses Supabase Auth for identity and database permissions for access. 
 
 **After the implemented 006 migration:** apply `supabase/migrations/007_hr_support_authorization.sql` once in SQL Editor, then sign in again (or refocus the portal to revalidate access). The supplied export has HR and Support assignments without permissions for those roles. This follow-up explicitly adds their shared employee and workspace capabilities. It leaves Admin/Manager grants and all account assignments intact. A private migration marker prevents retries from restoring rights revoked afterward. No rerun of 006 is required for this follow-up.
 
+**After 007 and 008:** apply `supabase/migrations/009_permission_gaps.sql` once. It adds `notification.read`, `knowledge.read`, `feature_flag.manage` and `attendance.read_hr`, grants them behind a one-time marker, and preserves prior access for custom roles that held `knowledge.manage` or `system.configure`.
+
 Successful login uses `#/dashboard` for all roles. Dashboard content is selected from current permissions; users with multiple authorized workspaces can switch them without changing the URL. A permitted requested feature destination takes precedence after login. Feature routes require both their workspace-entry capability and their action capability. No role directory appears in feature URLs.
 
 1. Back up the database and inspect existing roles and identity-table policies. Apply the entire `supabase/migrations/006_rbac.sql` in Supabase SQL Editor before deploying this client/API. Do not rerun `bootstrap.sql` on an existing project.

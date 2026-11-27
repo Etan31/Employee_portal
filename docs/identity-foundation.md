@@ -15,7 +15,8 @@ from 006/007 are preserved. System administrators never receive private HR acces
 ## Deploy in order
 
 1. Back up the database and test against staging. Apply **006**, **007**, then
-   `supabase/migrations/008_identity_foundation.sql` once. On an empty project first use
+   `supabase/migrations/008_identity_foundation.sql` and
+   `supabase/migrations/009_permission_gaps.sql` once. On an empty project first use
    `supabase/bootstrap.sql`; do not also apply historical v1/v2 schemas.
    Migration 008 is atomic, intentionally rejects conflicting existing tables, and is not
    a repeatable seed script. Record it in your migration runner before deploying the app.
