@@ -172,3 +172,12 @@ this stack.
 - Verified 32 database/API/service tests, 10 existing RBAC browser scenarios, 4 new identity browser scenarios, targeted lint and production build. Browser tests mock network delivery; no actual invitation email was sent.
 - Deployment remains pending: apply 008 after 006/007, disable public signups, configure SMTP/redirects, schedule the identity worker and verify real acceptance in staging. No live database was changed. See [identity foundation](./identity-foundation.md) and [foundation assessment](./foundation-plan.md).
 - Next: verify the Phase 1 deployment gate before Phase 2 attendance. Later business modules remain prototypes/placeholders; support queue scopes and task reassignment belong to their workflow phases.
+
+## 2026-11-27 — Phase 0 artifacts and permission gap migration
+
+- Added `docs/permission-matrix-and-glossary.md`: domain glossary, capability registry, default role grants, navigation map, scope rules, security test grid, data ownership and explicit deny examples. Reconciled against migrations 006/007/008 instead of the blueprint prose.
+- Added `docs/attendance-leave-slice-contract.md`: locked decisions for the first vertical slice (hours-based leave, fixed 8-hour shifts, Asia/Manila, approved leave blocks clock-in, 1-year retention, system-admin fallback approver), data model, state machines, API/RPC contracts, RLS intents, audit events and acceptance grid.
+- Added `supabase/migrations/009_permission_gaps.sql`: `notification.read`, `knowledge.read`, `feature_flag.manage`, `attendance.read_hr`. Grants are applied once behind a migration marker; retries do not restore revoked grants. Feature-flag access is preserved from any role that already held `system.configure`.
+- Wired the nav registry to the new codes: Knowledge Base uses `knowledge.read` (edit still needs `knowledge.manage`), Feature Flags uses `feature_flag.manage`, and HR has an Attendance module gated by `attendance.read_hr`.
+- Added `tests/permission-gaps.test.mjs` for grant breadth, idempotency and revocation preservation. Verified `pnpm test:rbac` (32 tests), the new test file (2 tests) and `pnpm build`. `pnpm lint` still reports pre-existing unused-React and react-refresh errors in `Icon.jsx`, `appData.hooks.jsx` and `PageStub.jsx`; no new lint errors came from this change.
+- Next: apply 009 in Supabase, then implement the attendance/leave schema + RLS + RPCs from the slice contract. No live database was changed.
