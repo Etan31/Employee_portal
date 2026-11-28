@@ -52,7 +52,7 @@ source of vague requirements.
 
 Codes are the exact strings in `permissions.code`. Scope legend:
 `O` own, `T` team/delegated, `H` authorized HR, `Q` assigned queue, `C` configuration,
-`V` organization-safe public-work fields.
+`V` organization-safe public-work fields, `F` explicitly routed fallback queue.
 
 | Code | Meaning | Default scope |
 |---|---|---|
@@ -70,6 +70,7 @@ Codes are the exact strings in `permissions.code`. Scope legend:
 | `manager.workspace` | Enter manager workspace | T |
 | `team.read` | Read direct-report roster and work fields | T |
 | `leave.approve` | Approve/reject leave for assigned scope | T |
+| `leave.approve_fallback` | Approve leave explicitly routed to the configured fallback approver | F |
 | `attendance.review` | Review team attendance exceptions and corrections | T |
 | `attendance.read_hr` | Read company attendance for authorized HR scope | H |
 | `task.assign_team` | Assign tasks to team members | T |
@@ -122,6 +123,7 @@ Mirrors `006`/`007`/`008`. Base `employee` capabilities are additive to every el
 | `manager.workspace` | - | x | - | - | - |
 | `team.read` | - | x | - | - | - |
 | `leave.approve` | - | x | - | - | - |
+| `leave.approve_fallback` | - | - | - | - | x |
 | `attendance.review` | - | x | - | - | - |
 | `attendance.read_hr` | - | - | x | - | - |
 | `task.assign_team` | - | x | - | - | - |
@@ -187,7 +189,7 @@ Gaps marked `GAP` must be resolved before that nav item ships.
 | Preferences | `preferences.self` | |
 | Team Overview | `manager.workspace` + `team.read` | |
 | Team Calendar | `manager.workspace` + `calendar.read` | Team scope enforced by API |
-| Leave Approval Inbox | `leave.approve` | |
+| Leave Approval Inbox | `leave.approve`; configured fallback uses `leave.approve_fallback` | Queue is always filtered to `approver_id = self` |
 | Attendance Exceptions | `attendance.review` | |
 | Team Tasks | `task.assign_team` | |
 | Team Reports | `team.report.read` | |
@@ -306,8 +308,8 @@ Still open:
 4. Sales/leasing business questions (blueprint section 15) are unanswered; keep
    module labeled "planned" and do not implement financial workflows yet.
 5. Multi-company support is deferred; schema allows it later without forcing it now.
-6. Exact accrual values, paid local holidays, night-shift business dates and the
-   fallback approver account need HR/Admin confirmation (tracked in the slice contract).
+6. Exact accrual values, paid local holidays and the production fallback approver
+   account still need HR/Admin confirmation (tracked in the slice contract).
 
 ## 11. Next steps (recommended order)
 
@@ -316,12 +318,15 @@ Still open:
 2. ~~Build the menu registry from section 4~~ The existing `client/src/data/nav.js` registry
    now uses the new codes for Knowledge Base and Feature Flags. Notifications stay on the
    header bell, gated by `notification.read` when the notification API lands.
-3. Pick **one vertical slice** to prove the model end-to-end before broad UI work:
-   recommended = Employee clocks in/out + requests leave + Manager approves + ledger
-   updates + calendar reflects it (Phases 2-3 combined). This single flow exercises
-   identity, permissions, RLS, audit, notifications, and calendar.
-4. Seed test accounts for all five base roles + a multi-role user + a manager from
-   another department, then run the security test grid.
+3. ~~Build the first vertical slice~~ Done in `supabase/migrations/010_attendance_leave.sql`:
+   attendance clock-in/out, corrections, shifts, leave requests in hours, approvals,
+   ledger balances, holidays, fallback routing, RLS and audit. The flow is
+   Employee clocks in/out + requests leave + Manager approves + ledger updates.
+4. ~~Seed test accounts~~ `tests/attendance-leave.test.mjs` covers all five base roles,
+   direct-report scope, fallback approval, negative cases and direct-write denial.
+   Still needed: a manager from another department and the full security grid.
 5. Only after the slice passes, replace sample data in the remaining modules.
+6. Wire the existing Time Management, Manager and HR pages to the new RPCs; the
+   current pages still render sample data.
 
 Record decisions and blockers in `docs/activity-log.md`.

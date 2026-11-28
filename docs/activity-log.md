@@ -181,3 +181,17 @@ this stack.
 - Wired the nav registry to the new codes: Knowledge Base uses `knowledge.read` (edit still needs `knowledge.manage`), Feature Flags uses `feature_flag.manage`, and HR has an Attendance module gated by `attendance.read_hr`.
 - Added `tests/permission-gaps.test.mjs` for grant breadth, idempotency and revocation preservation. Verified `pnpm test:rbac` (32 tests), the new test file (2 tests) and `pnpm build`. `pnpm lint` still reports pre-existing unused-React and react-refresh errors in `Icon.jsx`, `appData.hooks.jsx` and `PageStub.jsx`; no new lint errors came from this change.
 - Next: apply 009 in Supabase, then implement the attendance/leave schema + RLS + RPCs from the slice contract. No live database was changed.
+
+## 2026-11-28 — Attendance/leave slice backend
+
+- Added `supabase/migrations/010_attendance_leave.sql`: shifts, employee shift assignments, attendance events, missed-punch corrections, leave types/policies/ledger/requests/days/attachments/events, company holidays, RLS policies and the RPCs described in the slice contract.
+- Attendance RPCs: `clock_attendance`, `my_attendance`, `team_attendance`, `request_attendance_correction`, `review_attendance_correction`. Night-shift business dates are resolved from the employee's assigned shift; approved leave blocks clock-in for the covered time.
+- Leave RPCs: `leave_catalog`, `my_leave_balances`, `employee_leave_balances`, `my_leave_requests`, `pending_leave_approvals`, `staff_leave_requests`, `team_leave_calendar`, `create_leave_request`, `decide_leave_request`, `cancel_leave_request`, `adjust_leave_balance`, `add_leave_attachment`.
+- HR configuration RPCs: `save_shift`, `assign_shift`, `save_leave_type`, `save_leave_policy`, `save_holiday`, `set_fallback_leave_approver`.
+- Added `leave.approve_fallback` for the configured fallback approver. It only works on requests routed to that person; admins retain no automatic company-wide leave visibility.
+- Leave is counted in hours. Paid leave is balance-limited, including pending requests; unpaid leave is allowed without a balance. Half-days are stored as hours. Weekends and company holidays are excluded from the working-day loop.
+- Approved leave blocks clock-in. Approval writes a negative ledger entry; cancellation restores paid balances. Every mutation writes `staff_audit` and the relevant notification.
+- Seeded leave types (`annual`, `sick`, `bereavement`, `maternity`, `paternity`, `lwop`), policies, a one-time fallback approver and opening paid balances for active employees. Seeds are marked so retries do not duplicate credits.
+- Added `tests/attendance-leave.test.mjs` covering clock-in/out, duplicate punches, approved-leave blocking, hourly and half-day math, overlap rejection, insufficient balance, unpaid leave, manager approval, fallback approval, self-approval denial, direct-write denial, RLS scope and manager team calendar.
+- Updated `docs/permission-matrix-and-glossary.md`, `docs/attendance-leave-slice-contract.md`, `docs/RBAC.md`, `docs/identity-foundation.md` and `supabase/SETUP.md` for migration 010 and the new capability.
+- Not done yet: wire the Employee/Manager/HR screens to the RPCs, create the attachments storage bucket, schedule the 1-year retention job, and apply 009/010 in Supabase. No live database was changed.

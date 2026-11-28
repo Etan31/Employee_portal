@@ -36,7 +36,7 @@ in below.
 | D5 | Half-day support | Yes | 4 hours AM or PM against a fixed 8-hour shift; stored as hours |
 | D6 | Accrual method | Common private-company default: annual grant at year start, monthly pro-rating for new hires, carryover cap 5 days, unused carryover expires Mar 31 | All values configurable per leave type; cron deferred, seed manually |
 | D7 | Negative balance | Not allowed except an HR adjustment with reason and audit | |
-| D8 | Approver routing | Snapshot current manager at submit. If none, route to a configurable fallback approver, **defaulting to the System Administrator account**. The fallback account needs an explicit `leave.approve` grant; do not grant it to every admin. Scale to role-based fallbacks later. | |
+| D8 | Approver routing | Snapshot current manager at submit. If none, route to a configurable fallback approver, **defaulting to the System Administrator account**. The dedicated `leave.approve_fallback` capability only works on requests where `approver_id = self`; it does not grant company-wide leave access. Scale to role-based fallbacks later. | Implemented in 010 |
 | D9 | Manager transfer mid-request | Snapshot approver at submit; HR/fallback reassigns with audit | |
 | D10 | Own leave approval | Always denied | Manager uses their manager or fallback |
 | D11 | Overlapping leave | Rejected across active requests | Checked against `leave_request_days` |
@@ -60,6 +60,7 @@ in below.
 | Request correction | `time.self` | Own |
 | Read team attendance/leave | `attendance.review` / `team.read` | Current direct reports |
 | Approve/reject leave | `leave.approve` | Current direct reports / delegate |
+| Approve fallback-routed leave | `leave.approve_fallback` | Only requests with `approver_id = self` |
 | Review corrections | `attendance.review` | Current direct reports |
 | Read private employment data | `employee.read_private` | Authorized HR scope |
 | Read company attendance | `attendance.read_hr` | Authorized HR scope (added in migration 009) |
@@ -355,7 +356,8 @@ HR, Support Agent, System Admin, multi-role, disabled user.
 - Manager transfer between submit and decision: snapshot approver; fallback/HR reassigns
   with audit.
 - Employee with no manager: route to the configured fallback approver (default: System
-  Administrator account with an explicit `leave.approve` grant), never auto-approve.
+  Administrator account with `leave.approve_fallback`), never auto-approve. The fallback
+  queue is always filtered to `approver_id = self`.
 - Fallback approver is also the requester: route one level up; if none, block submission
   with a clear message instead of self-approval.
 - Leave crossing month/year: one ledger usage entry per request with
@@ -378,7 +380,7 @@ The 10 original questions are answered in Section 2. These are follow-ups for HR
 1. Exact accrual values per leave type (hours/year, carryover cap, expiry date).
 2. Which local/regional holidays are paid, and who maintains the list.
 3. Night-shift business-date rule if a shift crosses midnight.
-4. The specific fallback approver account and whether a dedicated role replaces it later.
+4. The production fallback approver account (010 seeds the first active admin) and whether a dedicated role replaces it later.
 5. Whether the 3-consecutive-day sick-leave proof rule counts calendar days or working days.
 6. Whether lateness should ever feed payroll; currently informational only.
 7. Whether leave can be requested in 0.5h increments or only whole/half days.
@@ -395,3 +397,24 @@ The 10 original questions are answered in Section 2. These are follow-ups for HR
 - Timezone and concurrency tests pass.
 - 1-year retention job exists (or is scheduled) for attendance events and attachments.
 - `pnpm test:rbac` and the new slice tests run in CI.
+
+## 13. Implementation status (2026-11-28)
+
+- `supabase/migrations/010_attendance_leave.sql` creates shifts, attendance events,
+  correction requests, leave types/policies/ledger/requests/days/attachments/events,
+  holidays, RLS policies and the core RPCs.
+- `leave.approve_fallback` is granted to the admin role; the fallback queue is filtered
+  to the configured approver.
+- Paid leave is balance-limited (including pending reservations); unpaid leave is allowed
+  without a balance.
+- Attachment policy fields are in place and enforced at approval when HR enables
+  `requires_attachment`; sick proof stays optional with the seeded defaults.
+- Opening balances (120h annual, 80h sick, 24h bereavement) are seeded once for active
+  employees and can be adjusted by HR.
+- `tests/attendance-leave.test.mjs` covers clock-in/out, duplicate punches, approved-leave
+  blocking, hourly leave math, half-days, overlap rejection, insufficient balance,
+  unpaid leave, manager approval, fallback approval, self-approval denial, HR scope,
+  direct-write denial and manager team calendar.
+- Not yet done: UI wiring to the RPCs, production storage bucket for attachments,
+  automated monthly accrual/pro-rating, carryover expiry on March 31, 1-year retention
+  job, full cross-department security grid and staging deployment.
