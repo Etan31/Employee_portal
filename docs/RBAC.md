@@ -8,6 +8,8 @@ The portal uses Supabase Auth for identity and database permissions for access. 
 
 **After 007 and 008:** apply `supabase/migrations/009_permission_gaps.sql` once. It adds `notification.read`, `knowledge.read`, `feature_flag.manage` and `attendance.read_hr`, grants them behind a one-time marker, and preserves prior access for custom roles that held `knowledge.manage` or `system.configure`.
 
+**After 009:** apply `supabase/migrations/010_attendance_leave.sql` once. It adds the attendance/leave schema, RLS, RPCs and the `leave.approve_fallback` capability. It seeds leave types, policies, a fallback approver and opening paid balances once; later edits are not overwritten on retry.
+
 Successful login uses `#/dashboard` for all roles. Dashboard content is selected from current permissions; users with multiple authorized workspaces can switch them without changing the URL. A permitted requested feature destination takes precedence after login. Feature routes require both their workspace-entry capability and their action capability. No role directory appears in feature URLs.
 
 1. Back up the database and inspect existing roles and identity-table policies. Apply the entire `supabase/migrations/006_rbac.sql` in Supabase SQL Editor before deploying this client/API. Do not rerun `bootstrap.sql` on an existing project.

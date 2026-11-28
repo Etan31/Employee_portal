@@ -1,8 +1,9 @@
 # Set up a replacement Supabase project
 
 **RBAC update:** After this base setup, apply `supabase/migrations/006_rbac.sql`,
-`007_hr_support_authorization.sql`, `008_identity_foundation.sql` and
-`009_permission_gaps.sql` in that order, and follow [RBAC setup](../docs/RBAC.md).
+`007_hr_support_authorization.sql`, `008_identity_foundation.sql`,
+`009_permission_gaps.sql` and `010_attendance_leave.sql` in that order, and follow
+[RBAC setup](../docs/RBAC.md).
 After migration, roles are managed in `user_roles` or the portal's Roles &
 Permissions screen, not `profiles.role_id`. New accounts are inactive/unassigned
 until provisioned. The instructions below describe the base bootstrap before
