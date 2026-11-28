@@ -1,15 +1,8 @@
 name: Supabase Keepalive
 
-# Keeps the Supabase free-tier project from being paused after 7 days of
-# inactivity by pinging the REST API on a schedule. Any request counts as
-# activity and resets the pause timer.
-
 on:
   schedule:
-    # Runs daily at 06:00 UTC. Well under the 7-day inactivity window, with
-    # plenty of margin even if GitHub delays or skips the occasional run.
     - cron: "0 6 * * *"
-  # Allow manual runs from the Actions tab.
   workflow_dispatch:
 
 jobs:
@@ -19,26 +12,31 @@ jobs:
       - name: Ping Supabase REST API
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
             echo "::error::SUPABASE_URL and/or SUPABASE_ANON_KEY secrets are not set."
             exit 1
           fi
 
-          echo "Pinging Supabase to keep the project alive..."
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${SUPABASE_URL}/rest/v1/profiles?select=id&limit=1" \
-            -H "apikey: ${SUPABASE_ANON_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+          CLEAN_URL=$(printf '%s' "$SUPABASE_URL" | tr -d '\r\n' | sed 's:/*$::')
+          BODY_FILE=$(mktemp)
 
-          echo "HTTP status: $HTTP_STATUS"
+          HTTP_STATUS=$(curl -sS -o "$BODY_FILE" -w "%{http_code}" \
+            "${CLEAN_URL}/rest/v1/profiles?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_KEY}") || CURL_EXIT=$?
 
-          # 2xx = healthy. A 200 with an empty array (due to RLS) still counts
-          # as database activity, which is all we need.
-          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+          CURL_EXIT=${CURL_EXIT:-0}
+          echo "curl exit: $CURL_EXIT | HTTP status: $HTTP_STATUS"
+
+          if [ "$CURL_EXIT" -eq 0 ] && [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
             echo "Supabase keepalive ping succeeded."
+            rm -f "$BODY_FILE"
           else
-            echo "::error::Keepalive ping failed with status $HTTP_STATUS"
+            echo "Response body:"
+            cat "$BODY_FILE"
+            echo ""
+            rm -f "$BODY_FILE"
+            echo "::error::Keepalive ping failed (curl exit $CURL_EXIT, HTTP $HTTP_STATUS)."
             exit 1
           fi
